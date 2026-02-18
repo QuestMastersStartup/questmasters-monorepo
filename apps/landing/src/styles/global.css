@@ -1,0 +1,265 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 12%;
+    --foreground: 45 100% 85%;
+
+    --card: 210 40% 16%;
+    --card-foreground: 45 100% 85%;
+
+    --popover: 210 40% 16%;
+    --popover-foreground: 45 100% 85%;
+
+    --primary: 45 100% 51%;
+    --primary-foreground: 210 40% 12%;
+
+    --secondary: 210 50% 25%;
+    --secondary-foreground: 45 100% 85%;
+
+    --muted: 210 40% 20%;
+    --muted-foreground: 45 20% 65%;
+
+    --accent: 263 70% 25%;
+    --accent-foreground: 45 100% 85%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 40% 25%;
+    --input: 210 40% 22%;
+    --ring: 45 100% 51%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-image:
+      radial-gradient(
+        circle at 20% 80%,
+        rgba(70, 130, 180, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(100, 149, 237, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 40%,
+        rgba(138, 43, 226, 0.12) 0%,
+        transparent 50%
+      );
+  }
+
+  .font-cinzel {
+    font-family: "Cinzel", serif;
+  }
+
+  .font-sans {
+    font-family: "Inter", sans-serif;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-background/60 backdrop-blur-md border border-border/50;
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff8c00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .fantasy-border {
+    position: relative;
+  }
+
+  .fantasy-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(45deg, #ffd700, #ff8c00, #8a2be2);
+    border-radius: inherit;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  .golden-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .golden-rain::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 200px);
+    background-image:
+      radial-gradient(
+        1px 1px at 10px 20px,
+        rgba(255, 215, 0, 0.8),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 50px 60px,
+        rgba(255, 215, 0, 0.6),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 120px 30px,
+        rgba(255, 215, 0, 0.4),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 180px 90px,
+        rgba(255, 215, 0, 0.7),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 250px 40px,
+        rgba(255, 215, 0, 0.5),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 320px 80px,
+        rgba(255, 215, 0, 0.6),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 380px 20px,
+        rgba(255, 215, 0, 0.4),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 450px 70px,
+        rgba(255, 215, 0, 0.8),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 520px 10px,
+        rgba(255, 215, 0, 0.3),
+        transparent
+      ),
+      radial-gradient(
+        1px 1px at 590px 50px,
+        rgba(255, 215, 0, 0.6),
+        transparent
+      );
+    background-repeat: repeat;
+    background-size: 600px 100px;
+    animation: golden-rain-fall 8s linear infinite;
+  }
+
+  @keyframes golden-rain-fall {
+    0% {
+      transform: translateY(-100px) translateX(-20px);
+    }
+    100% {
+      transform: translateY(100vh) translateX(20px);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6))
+        drop-shadow(0 0 30px rgba(255, 215, 0, 0.4));
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8))
+        drop-shadow(0 0 40px rgba(255, 215, 0, 0.6));
+      transform: scale(1.05);
+    }
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-lg {
+    @apply h-11 px-8 rounded-md;
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+
+  .card-content {
+    @apply p-6;
+  }
+
+  .card-header {
+    @apply flex flex-col space-y-1.5 p-6;
+  }
+
+  .card-title {
+    @apply text-2xl font-semibold leading-none tracking-tight;
+  }
+
+  .card-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+}

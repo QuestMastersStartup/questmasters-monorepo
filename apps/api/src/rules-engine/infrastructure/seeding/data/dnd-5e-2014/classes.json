@@ -1,0 +1,122 @@
+[
+  {
+    "index": "barbarian",
+    "name": "Barbarian",
+    "type": "class",
+    "data": {
+      "hit_die": 12,
+      "primary_ability": ["Strength"],
+      "saves": ["Strength", "Constitution"]
+    }
+  },
+  {
+    "index": "bard",
+    "name": "Bard",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Charisma"],
+      "saves": ["Dexterity", "Charisma"]
+    }
+  },
+  {
+    "index": "cleric",
+    "name": "Cleric",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Wisdom"],
+      "saves": ["Wisdom", "Charisma"]
+    }
+  },
+  {
+    "index": "druid",
+    "name": "Druid",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Wisdom"],
+      "saves": ["Intelligence", "Wisdom"]
+    }
+  },
+  {
+    "index": "fighter",
+    "name": "Fighter",
+    "type": "class",
+    "data": {
+      "hit_die": 10,
+      "primary_ability": ["Strength", "Dexterity"],
+      "saves": ["Strength", "Constitution"]
+    }
+  },
+  {
+    "index": "monk",
+    "name": "Monk",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Dexterity", "Wisdom"],
+      "saves": ["Strength", "Dexterity"]
+    }
+  },
+  {
+    "index": "paladin",
+    "name": "Paladin",
+    "type": "class",
+    "data": {
+      "hit_die": 10,
+      "primary_ability": ["Strength", "Charisma"],
+      "saves": ["Wisdom", "Charisma"]
+    }
+  },
+  {
+    "index": "ranger",
+    "name": "Ranger",
+    "type": "class",
+    "data": {
+      "hit_die": 10,
+      "primary_ability": ["Dexterity", "Wisdom"],
+      "saves": ["Strength", "Dexterity"]
+    }
+  },
+  {
+    "index": "rogue",
+    "name": "Rogue",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Dexterity"],
+      "saves": ["Dexterity", "Intelligence"]
+    }
+  },
+  {
+    "index": "sorcerer",
+    "name": "Sorcerer",
+    "type": "class",
+    "data": {
+      "hit_die": 6,
+      "primary_ability": ["Charisma"],
+      "saves": ["Constitution", "Charisma"]
+    }
+  },
+  {
+    "index": "warlock",
+    "name": "Warlock",
+    "type": "class",
+    "data": {
+      "hit_die": 8,
+      "primary_ability": ["Charisma"],
+      "saves": ["Wisdom", "Charisma"]
+    }
+  },
+  {
+    "index": "wizard",
+    "name": "Wizard",
+    "type": "class",
+    "data": {
+      "hit_die": 6,
+      "primary_ability": ["Intelligence"],
+      "saves": ["Intelligence", "Wisdom"]
+    }
+  }
+]

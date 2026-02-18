@@ -1,0 +1,55 @@
+---
+const testimonials = [
+  {
+    name: "Braulio Avalos",
+    role: "DM con 5 años de experiencia",
+    content: "Esta herramienta sería un cambio total para mi forma de preparar sesiones. Me encantaría poder probarla.",
+    rating: 5
+  },
+  {
+    name: "Eduardo Fonseca",
+    role: "Jugador Veterano",
+    content: "He estado esperando algo así durante años. La gestión de personajes se ve increíblemente útil.",
+    rating: 5
+  },
+  {
+    name: "Fabricio Ruiz",
+    role: "Quiere empezar a jugar D&D",
+    content: "Como principiante, esto me daría la confianza para finalmente probar ser DM. ¡Quiero acceso temprano!",
+    rating: 5
+  }
+];
+---
+
+<section class="py-20 px-6">
+  <div class="container mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-cinzel font-bold text-4xl mb-4 gold-gradient">
+        La Comunidad Ya Está Emocionada
+      </h2>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        Reacciones reales de la comunidad D&D sobre QuestMasters
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {testimonials.map((testimonial) => (
+        <div class="card glass-effect hover-glow">
+          <div class="card-content p-6">
+            <div class="flex items-center gap-1 mb-4">
+              {[...Array(testimonial.rating)].map((_, i) => (
+                <svg class="w-4 h-4 fill-yellow-400 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ))}
+            </div>
+            <svg class="w-8 h-8 text-primary/20 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+            <p class="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
+            <div>
+              <p class="font-semibold">{testimonial.name}</p>
+              <p class="text-sm text-muted-foreground">{testimonial.role}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

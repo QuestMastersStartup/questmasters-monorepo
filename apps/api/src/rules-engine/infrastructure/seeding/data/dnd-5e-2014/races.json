@@ -1,0 +1,44 @@
+[
+  {
+    "index": "human",
+    "name": "Human",
+    "type": "race",
+    "data": {
+      "size": "Medium",
+      "speed": 30,
+      "languages": ["Common", "One Extra"]
+    }
+  },
+  {
+    "index": "elf",
+    "name": "Elf",
+    "type": "race",
+    "data": {
+      "size": "Medium",
+      "speed": 30,
+      "languages": ["Common", "Elvish"],
+      "darkvision": 60
+    }
+  },
+  {
+    "index": "dwarf",
+    "name": "Dwarf",
+    "type": "race",
+    "data": {
+      "size": "Medium",
+      "speed": 25,
+      "languages": ["Common", "Dwarvish"],
+      "darkvision": 60
+    }
+  },
+  {
+    "index": "halfling",
+    "name": "Halfling",
+    "type": "race",
+    "data": {
+      "size": "Small",
+      "speed": 25,
+      "languages": ["Common", "Halfling"]
+    }
+  }
+]

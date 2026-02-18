@@ -1,0 +1,104 @@
+---
+const plans = [
+  {
+    name: "Free",
+    price: "$0",
+    period: "/mes",
+    description: "Perfecto para comenzar tu aventura",
+    icon: "🛡️",
+    features: [
+      "Máximo 5 personajes",
+      "1 campaña con IA",
+      "Uso limitado del chatbot",
+      "Herramientas básicas de D&D",
+      "Acceso a reglas básicas"
+    ],
+    buttonText: "Acceso Directo",
+    color: "bg-muted"
+  },
+  {
+    name: "Básico",
+    price: "$5",
+    period: "/mes",
+    description: "Para aventureros dedicados",
+    icon: "⭐",
+    features: [
+      "Personajes ilimitados",
+      "Más opciones de personalización",
+      "Personalización de equipo base",
+      "Trasfondos personalizables",
+      "Rasgos y linaje personalizable",
+      "Más usos del chatbot",
+      "Campañas ligeramente personalizables"
+    ],
+    buttonText: "Acceso Directo",
+    color: "bg-primary/10"
+  },
+  {
+    name: "Completo",
+    price: "$25",
+    period: "/mes",
+    description: "Para Dungeon Masters profesionales",
+    icon: "👑",
+    features: [
+      "Todo del plan Básico",
+      "Personalización completa de campañas",
+      "Muchos más usos del chatbot",
+      "Acceso completo a libros adicionales",
+      "Integración de IA en tablero 2D",
+      "Mayor personalización de campaña",
+      "Soporte prioritario"
+    ],
+    buttonText: "Acceso Directo",
+    color: "bg-gradient-to-br from-yellow-500/20 to-orange-500/20"
+  }
+];
+---
+
+<section class="py-20 px-6 bg-muted/30">
+  <div class="container mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-cinzel font-bold text-4xl mb-4 gold-gradient">
+        Planes Futuros
+      </h2>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        Precios estimados - sujetos a cambio durante el desarrollo
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {plans.map((plan) => (
+        <div class="card glass-effect hover-glow transition-all duration-300">
+          <div class="card-header text-center pb-4">
+            <div class={`w-16 h-16 mx-auto rounded-lg flex items-center justify-center mb-4 ${plan.color}`}>
+              <span class="text-3xl">{plan.icon}</span>
+            </div>
+            <h3 class="card-title font-cinzel text-2xl">{plan.name}</h3>
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-4xl font-bold gold-gradient">{plan.price}</span>
+              <span class="text-muted-foreground">{plan.period}</span>
+            </div>
+            <p class="card-description">{plan.description}</p>
+          </div>
+
+          <div class="card-content space-y-6">
+            <div>
+              <ul class="space-y-2">
+                {plan.features.map((feature) => (
+                  <li class="flex items-start gap-2 text-sm">
+                    <svg class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button class="btn btn-outline btn-lg w-full hover-glow">
+              {plan.buttonText}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

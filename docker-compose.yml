@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: questmasters-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: questmasters_local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d questmasters_local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - questmasters-net
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: questmasters-api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://admin:password123@postgres:5432/questmasters_local
+      DB_SSL: "false"
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - questmasters-net
+
+volumes:
+  postgres_data:
+
+networks:
+  questmasters-net:
+    driver: bridge

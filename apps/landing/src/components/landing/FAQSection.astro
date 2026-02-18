@@ -1,0 +1,53 @@
+---
+const faqs = [
+  {
+    question: "¿Cuándo estará disponible QuestMasters?",
+    answer: "Estamos en fase de desarrollo activo. Los primeros usuarios beta tendrán acceso en los próximos meses. Mantente atento para ser notificado cuando esté listo."
+  },
+  {
+    question: "¿Reemplazará completamente al Dungeon Master humano?",
+    answer: "¡Para nada! QuestMasters está diseñado para potenciar tu creatividad, no reemplazarla. La IA maneja las tareas repetitivas para que te concentres en la narrativa y diversión."
+  },
+  {
+    question: "¿Funcionará con mis campañas existentes?",
+    answer: "Sí, podrás importar tus personajes y campañas existentes. QuestMasters se adaptará a tu estilo de juego y mundo existente."
+  },
+  {
+    question: "¿Habrá una versión gratuita?",
+    answer: "Sí, tendremos un plan gratuito robusto para que todos puedan experimentar la magia de QuestMasters, con opciones premium para funciones avanzadas."
+  }
+];
+---
+
+<section class="py-20 px-6">
+  <div class="container mx-auto max-w-4xl">
+    <div class="text-center mb-16">
+      <h2 class="font-cinzel font-bold text-4xl mb-4 gold-gradient">
+        Preguntas Frecuentes
+      </h2>
+      <p class="text-xl text-muted-foreground">
+        Todo lo que necesitas saber sobre QuestMasters
+      </p>
+    </div>
+
+    <div class="w-full space-y-4">
+      {faqs.map((faq, index) => (
+        <details class="glass-effect rounded-lg px-6 group" data-faq-item>
+          <summary class="font-cinzel font-semibold text-left py-4 cursor-pointer list-none flex items-center justify-between hover:text-primary transition-colors">
+            <span>{faq.question}</span>
+            <svg class="w-5 h-5 transition-transform group-open:rotate-180 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="pb-4 text-muted-foreground">
+            {faq.answer}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

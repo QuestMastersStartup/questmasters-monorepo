@@ -1,0 +1,56 @@
+---
+const features = [
+  {
+    icon: "💬",
+    title: "Chatbot Dungeon Master",
+    description: "IA especializada que actuará como tu DM personal, creando aventuras épicas y gestionando campañas automáticamente."
+  },
+  {
+    icon: "👤",
+    title: "Gestión de Personajes",
+    description: "Crea y administra fichas de personajes completas con estadísticas, inventario y progresión de nivel."
+  },
+  {
+    icon: "⚔️",
+    title: "Campañas Organizadas",
+    description: "Planifica y sigue el progreso de tus campañas con herramientas intuitivas de gestión."
+  },
+  {
+    icon: "📚",
+    title: "Biblioteca de Contenido",
+    description: "Acceso a una vasta colección de libros, reglas y contenido oficial de D&D."
+  },
+  {
+    icon: "🔧",
+    title: "Homebrew Creator",
+    description: "Crea y comparte contenido personalizado: clases, razas, hechizos y objetos únicos. Workshop comunitario donde puedes descubrir, calificar y usar creaciones de otros jugadores."
+  }
+];
+---
+
+<section class="py-20 px-6 bg-muted/30">
+  <div class="container mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-cinzel font-bold text-4xl mb-4 gold-gradient">
+        Herramientas Épicas en Desarrollo
+      </h2>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        Estamos construyendo las herramientas que siempre has soñado tener
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+      {features.map((feature) => (
+        <div class="card glass-effect hover-glow transition-all duration-300 hover:scale-105">
+          <div class="card-content p-6 text-center">
+            <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">{feature.icon}</span>
+            </div>
+            <h3 class="font-cinzel font-semibold text-lg mb-3">{feature.title}</h3>
+            <p class="text-muted-foreground text-sm">{feature.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

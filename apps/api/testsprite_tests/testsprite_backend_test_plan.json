@@ -1,0 +1,57 @@
+[
+  {
+    "id": "TC001",
+    "title": "create_pack_with_valid_payload",
+    "description": "Test creating a new pack with a valid payload including name, slug, type, and creatorId. Expect a 201 Created response with the created pack JSON including the slug."
+  },
+  {
+    "id": "TC002",
+    "title": "create_pack_with_missing_required_field",
+    "description": "Test creating a new pack with a payload missing a required field such as creatorId. Expect a 400 Bad Request response with a validation error."
+  },
+  {
+    "id": "TC003",
+    "title": "create_pack_with_duplicate_slug",
+    "description": "Test creating a new pack with a slug that already exists. Expect a 400 Bad Request response indicating a conflict error."
+  },
+  {
+    "id": "TC004",
+    "title": "update_existing_pack",
+    "description": "Test updating an existing pack by slug with valid updated fields. Expect a 200 OK response with updated pack JSON and subsequent GET to confirm updates."
+  },
+  {
+    "id": "TC005",
+    "title": "update_non_existent_pack",
+    "description": "Test updating a pack with a non-existent slug. Expect a 404 Not Found response."
+  },
+  {
+    "id": "TC006",
+    "title": "suspend_existing_pack",
+    "description": "Test suspending an existing pack by slug. Expect a 200 OK response with pack status set to 'suspended' and subsequent GET to confirm status."
+  },
+  {
+    "id": "TC007",
+    "title": "unsuspend_existing_pack",
+    "description": "Test unsuspending a suspended pack by slug. Expect a 200 OK response with pack status set to 'active' and subsequent GET to confirm status."
+  },
+  {
+    "id": "TC008",
+    "title": "delete_existing_pack",
+    "description": "Test deleting an existing pack by slug. Expect a 204 No Content response and subsequent GET to confirm the pack is not found."
+  },
+  {
+    "id": "TC009",
+    "title": "create_asset_in_existing_pack",
+    "description": "Test creating a new asset in an existing pack with valid payload including index, type, and data. Expect a 201 Created response with asset metadata."
+  },
+  {
+    "id": "TC010",
+    "title": "resolve_asset_with_valid_selections",
+    "description": "Test resolving an asset using the rules resolution API with a valid selections payload referencing packSlug and selectors. Expect a 200 OK response with the resolved asset payload."
+  },
+  {
+    "id": "TC011",
+    "title": "update_srd_pack_metadata",
+    "description": "Test updating metadata (name, description) of an SRD pack with non-semver version format (e.g. 5.1, 2024.1). Verify version validation accepts major.minor format, changes persist via GET, and original values are restored."
+  }
+]

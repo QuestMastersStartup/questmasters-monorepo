@@ -1,0 +1,29 @@
+{
+  "name": "@questmasters/dnd-rules",
+  "version": "0.1.0",
+  "description": "Isomorphic Rules Engine for QuestMasters",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly",
+    "dev": "tsup src/index.ts --format cjs,esm --watch",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "dnd",
+    "rules-engine",
+    "isomorphic"
+  ],
+  "author": "QuestMasters",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  }
+}

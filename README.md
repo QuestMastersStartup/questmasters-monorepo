@@ -1,135 +1,193 @@
-# Turborepo starter
+# QuestMasters
 
-This Turborepo starter is maintained by the Turborepo core team.
+Plataforma Virtual Tabletop (VTT) de nueva generacion para juegos de rol, con asistente de IA integrado y marketplace de contenido homebrew.
 
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Arquitectura del Monorepo
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+questmasters-monorepo/
+├── apps/
+│   ├── api/          # Backend — NestJS + PostgreSQL (puerto 3000)
+│   ├── client/       # Frontend — React + Vite + TailwindCSS (puerto 3001)
+│   └── landing/      # Landing page publica
+├── packages/
+│   ├── dnd-rules/    # Tipos y logica de reglas D&D compartida
+│   ├── ui/           # Componentes UI compartidos
+│   ├── eslint-config/
+│   └── typescript-config/
+├── docker-compose.yml
+└── turbo.json
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Tech Stack
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+| Capa | Tecnologia |
+|------|------------|
+| **Monorepo** | Turborepo + pnpm workspaces |
+| **Frontend** | React 18, Vite, TailwindCSS, React Router |
+| **Backend** | NestJS, TypeORM, PostgreSQL 17 |
+| **Shared** | `@questmasters/dnd-rules` — tipos TypeScript canonicos + logica de reglas |
+| **Infra** | Docker Compose (postgres + api) |
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## Inicio Rapido
 
-### Develop
+### Requisitos
 
-To develop all apps and packages, run the following command:
+- Node.js >= 18
+- pnpm >= 8
+- Docker (para PostgreSQL)
 
-```
-cd my-turborepo
+### Setup
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+```bash
+# Instalar dependencias
+pnpm install
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+# Levantar base de datos
+docker compose up -d postgres
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+# Desarrollo (api + client en paralelo)
+pnpm turbo dev --filter=api --filter=client
 ```
 
-### Remote Caching
+- API: http://localhost:3000
+- Client: http://localhost:3001
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Apps
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### `apps/api` — Backend
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+API REST construida con NestJS siguiendo arquitectura hexagonal (DDD).
 
+**Modulos principales:**
+
+- **Rules Engine** (`src/rules-engine/`) — Motor de reglas D&D con seeding de datos SRD 5e
+  - `domain/` — Entidades y logica de negocio
+  - `application/` — Casos de uso
+  - `infrastructure/` — Repositorios, seeding de datos SRD (JSON)
+
+**Endpoints principales:**
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/packs` | Listar packs |
+| POST | `/packs` | Crear pack con assets |
+| GET | `/packs/:id` | Detalle de un pack |
+| PUT | `/packs/:id` | Editar pack |
+| DELETE | `/packs/:id` | Eliminar pack |
+
+### `apps/client` — Frontend
+
+SPA React con sistema de rutas, dark theme, y formularios especializados para creacion de contenido D&D.
+
+**Paginas:**
+
+| Ruta | Archivo | Descripcion |
+|------|---------|-------------|
+| `/library` | `Library.tsx` | Biblioteca personal de packs |
+| `/marketplace` | `Marketplace.tsx` | Marketplace de contenido homebrew |
+| `/packs/new` | `CreatePack.tsx` | Crear nuevo pack |
+| `/packs/:id` | `PackDetails.tsx` | Ver detalle de pack |
+| `/packs/:id/edit` | `EditPack.tsx` | Editar pack existente |
+
+**Sistema de formularios de assets:**
+
+El sistema de creacion de packs incluye formularios especializados para los 8 tipos core de D&D, con campos estructurados segun el SRD:
+
+| Tipo | Layout | Formulario |
+|------|--------|------------|
+| **Class** | Slide-over panel | Hit die, saving throws, proficiencies, equipment, subclasses |
+| **Race** | Slide-over panel | Speed, size, ability bonuses, languages, traits, subraces |
+| **Spell** | Slide-over panel | Level, casting time, components V/S/M, damage, school, classes |
+| **Equipment** | Slide-over panel | Category, cost, damage, range, weapon properties |
+| **Monster** | Slide-over panel | 6 ability scores, AC, HP, speed, CR/XP, actions, legendary actions |
+| **Feat** | Modal expandido | Description, prerequisites (ability score + minimum) |
+| **Magic Item** | Modal expandido | Description, rarity, equipment category |
+| **Background** | Modal expandido | Proficiencies, languages, feature, starting equipment |
+| *Otros 19 tipos* | Modal basico | Nombre + descripcion |
+
+**Componentes de formulario reutilizables** (`form-fields/`):
+
+- `FormField` — Wrapper con label, hint, error
+- `NumberField`, `SelectField`, `TextAreaField` — Inputs tipados
+- `CollapsibleSection` — Secciones expandibles con chevron
+- `TagInput` — Multi-value con pills
+- `DescriptionArrayField` — Lista ordenada de parrafos
+- `ReferencePicker` — Buscar/seleccionar assets del pack + creacion inline
+- `AbilityBonusList` — Repeater ability score + bonus
+- `DiceField` — Input con validacion de notacion de dados (2d6+3)
+- `CostField` — Cantidad + unidad monetaria (gp/sp/cp)
+- `ActionEditor` — Repeater para acciones de monstruo (nombre, desc, ataque, danio)
+
+**Infraestructura del formulario:**
+
+- `AssetFormPanel` — Slide-over drawer (derecho, full height) para tipos complejos
+- `AddAssetModal` — Modal de seleccion de tipo con despacho por layout
+- `asset-forms/index.ts` — Registry con `getAssetForm()` + `getFormLayout()`
+- Persistencia de borradores con `useDraftPersistence` (localStorage)
+
+## Packages
+
+### `packages/dnd-rules`
+
+Paquete compartido con tipos TypeScript canonicos para assets D&D 5e. Define las interfaces que tanto el backend como el frontend consumen:
+
+- `BaseAsset`, `ClassAsset`, `RaceAsset`, `SpellAsset`, `EquipmentAsset`
+- `MagicItemAsset`, `MonsterAsset`, `FeatAsset`, `BackgroundAsset`, `LevelAsset`
+- `AssetType` enum con los 27 tipos soportados
+- Tipos de soporte: `Choice`, `ReferenceItem`, `Option`, `OptionSet`
+
+## Docker
+
+```bash
+# Levantar todo (postgres + api)
+docker compose up -d
+
+# Solo base de datos
+docker compose up -d postgres
+
+# Ver logs
+docker compose logs -f api
 ```
-cd my-turborepo
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+**Servicios:**
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+| Servicio | Imagen | Puerto |
+|----------|--------|--------|
+| `postgres` | postgres:17-alpine | 5433:5432 |
+| `api` | Build local | 3000:3000 |
+
+## Estructura de un Pack
+
+Un **Pack** es la unidad principal de contenido en QuestMasters. Contiene metadata y una coleccion de **Assets** tipados:
+
+```json
+{
+  "name": "Adventurer's Toolkit",
+  "description": "A collection of homebrew content",
+  "version": "1.0.0",
+  "type": "homebrew",
+  "assets": [
+    {
+      "type": "spell",
+      "name": "Arcane Bolt",
+      "data": {
+        "name": "Arcane Bolt",
+        "index": "arcane-bolt",
+        "level": 0,
+        "school": { "index": "evocation", "name": "Evocation", "url": "..." },
+        "components": ["V", "S"],
+        "range": "120 feet",
+        "duration": "Instantaneous",
+        "casting_time": "1 action",
+        "concentration": false,
+        "ritual": false,
+        "classes": [],
+        "desc": ["You hurl a bolt of arcane energy..."]
+      }
+    }
+  ]
+}
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Los assets siguen la estructura del SRD 5e para compatibilidad con el futuro agente IA y el marketplace.

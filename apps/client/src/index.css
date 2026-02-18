@@ -1,0 +1,108 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 12%;
+    --foreground: 45 100% 85%;
+
+    --card: 210 40% 16%;
+    --card-foreground: 45 100% 85%;
+
+    --popover: 210 40% 16%;
+    --popover-foreground: 45 100% 85%;
+
+    --primary: 45 100% 51%;
+    --primary-foreground: 210 40% 12%;
+
+    --secondary: 210 50% 25%;
+    --secondary-foreground: 45 100% 85%;
+
+    --muted: 210 40% 20%;
+    --muted-foreground: 45 20% 65%;
+
+    --accent: 263 70% 25%;
+    --accent-foreground: 45 100% 85%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 40% 25%;
+    --input: 210 40% 22%;
+    --ring: 45 100% 51%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-image:
+      radial-gradient(
+        circle at 20% 80%,
+        rgba(70, 130, 180, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(100, 149, 237, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 40%,
+        rgba(138, 43, 226, 0.12) 0%,
+        transparent 50%
+      );
+  }
+
+  .font-cinzel {
+    font-family: "Cinzel", serif;
+  }
+
+  .font-sans {
+    font-family: "Inter", sans-serif;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-background/60 backdrop-blur-md border border-border/50;
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff8c00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+}

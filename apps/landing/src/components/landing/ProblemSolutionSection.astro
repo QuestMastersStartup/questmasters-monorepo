@@ -1,0 +1,50 @@
+---
+const problemSolutions = [
+  {
+    icon: "🎯",
+    title: "Preparación Instantánea",
+    solution: "IA genera contenido automáticamente",
+    description: "Reduce el tiempo de preparación de sesiones a solo minutos"
+  },
+  {
+    icon: "🧠",
+    title: "Narrativa Consistente",
+    solution: "Sistema de memoria inteligente",
+    description: "La IA mantiene continuidad perfecta en tu mundo y personajes"
+  },
+  {
+    icon: "👥",
+    title: "Organización Simplificada",
+    solution: "Herramientas de coordinación integradas",
+    description: "Gestiona horarios y mantén a todos conectados fácilmente"
+  }
+];
+---
+
+<section class="py-20 px-6 bg-muted/30">
+  <div class="container mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-cinzel font-bold text-4xl mb-4 gold-gradient">
+        Mejoras que Ofrecemos
+      </h2>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        Optimizamos cada aspecto de tu experiencia D&D con tecnología de vanguardia.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8">
+      {problemSolutions.map((item) => (
+        <div class="card glass-effect hover-glow transition-all duration-300">
+          <div class="card-content p-6">
+            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">{item.icon}</span>
+            </div>
+            <h3 class="font-cinzel font-semibold text-lg mb-2 text-green-400 text-center">✅ {item.title}</h3>
+            <p class="text-sm font-medium mb-2 text-center">{item.solution}</p>
+            <p class="text-xs text-muted-foreground text-center">{item.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
