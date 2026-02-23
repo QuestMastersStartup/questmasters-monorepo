@@ -1,4 +1,3 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { Result } from '@shared/application/result';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import { Asset } from '@rules-engine/domain/entities/asset.entity';
@@ -11,17 +10,13 @@ import {
   ContentPackRepository,
   CONTENT_PACK_REPOSITORY,
 } from '@rules-engine/domain/repositories/content-pack.repository';
-import { UpdateAssetDto } from '@rules-engine/application/dto/asset.dto';
 import { AssetError } from '@rules-engine/application/errors';
 import { AssetType } from '@rules-engine/domain/value-objects/asset-type.vo';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 
-@Injectable()
 export class UpdateAssetUseCase {
   constructor(
-    @Inject(ASSET_REPOSITORY)
     private readonly assetRepository: AssetRepository,
-    @Inject(CONTENT_PACK_REPOSITORY)
     private readonly packRepository: ContentPackRepository,
   ) {}
 
@@ -29,7 +24,7 @@ export class UpdateAssetUseCase {
     packSlug: string,
     type: string,
     index: string,
-    dto: UpdateAssetDto,
+    dto: any,
   ): Promise<Result<Asset, AssetError>> {
     const pack = await this.packRepository.findBySlug(
       Slug.fromString(packSlug),
@@ -54,7 +49,7 @@ export class UpdateAssetUseCase {
     }
 
     const compatibleWith = dto.compatibleWith
-      ? dto.compatibleWith.map((id) => UUID.fromString(id))
+      ? dto.compatibleWith.map((id: string) => UUID.fromString(id))
       : undefined;
 
     const data = dto.data ? AssetData.create(dto.data) : undefined;

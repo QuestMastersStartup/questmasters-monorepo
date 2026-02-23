@@ -11,7 +11,6 @@ import { ActionEditor, type MonsterAction } from "../form-fields/ActionEditor";
 import {
   nameToIndex,
   SIZES,
-  ABILITY_SCORES,
   CHALLENGE_RATINGS,
   crToXp,
   formatCR,

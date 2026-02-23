@@ -1,4 +1,3 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { Result } from '@shared/application/result';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import { ContentPack } from '../../domain/entities/content-pack.entity';
@@ -14,12 +13,9 @@ import {
   ASSET_REPOSITORY,
 } from '../../domain/repositories/asset.repository';
 
-@Injectable()
 export class GetPackUseCase {
   constructor(
-    @Inject(CONTENT_PACK_REPOSITORY)
     private readonly packRepository: ContentPackRepository,
-    @Inject(ASSET_REPOSITORY)
     private readonly assetRepository: AssetRepository,
   ) {}
 

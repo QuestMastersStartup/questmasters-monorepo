@@ -1,10 +1,4 @@
 import {
-  Injectable,
-  Inject,
-  OnApplicationBootstrap,
-  Logger,
-} from '@nestjs/common';
-import {
   ContentPackRepository,
   CONTENT_PACK_REPOSITORY,
 } from '../../domain/repositories/content-pack.repository';
@@ -24,25 +18,17 @@ import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import { Asset } from '@rules-engine/domain/entities/asset.entity';
 
-@Injectable()
-export class SrdSeederService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(SrdSeederService.name);
-
+export class SrdSeederService {
   // Hardcoded Admin ID for system content (Valid UUID v4)
   private readonly SYSTEM_CREATOR_ID = '550e8400-e29b-41d4-a716-446655440000';
 
   constructor(
-    @Inject(CONTENT_PACK_REPOSITORY)
     private readonly packRepository: ContentPackRepository,
-    @Inject(ASSET_REPOSITORY)
     private readonly assetRepository: AssetRepository,
   ) {}
 
   async onApplicationBootstrap() {
-    this.logger.log('Checking for SRD content packs...');
-
-    // D&D 3.5 - REMOVED per user request
-    // await this.seedPackAndAssets(...)
+    console.log('[SrdSeeder] Checking for SRD content packs...');
 
     // D&D 5e (2014)
     await this.seedPackAndAssets(
@@ -69,7 +55,6 @@ export class SrdSeederService implements OnApplicationBootstrap {
     description: string,
     version: string,
     systemVal: SystemTypeValue,
-    // assetsData argument is removed, will read from disk
   ) {
     const slug = Slug.create(slugStr);
     const exists = await this.packRepository.existsBySlug(slug);
@@ -77,7 +62,7 @@ export class SrdSeederService implements OnApplicationBootstrap {
     let packId: UUID;
 
     if (!exists) {
-      this.logger.log(`Seeding Pack: ${name} (${systemVal})`);
+      console.log(`[SrdSeeder] Seeding Pack: ${name} (${systemVal})`);
       const pack = ContentPack.create({
         slug: slugStr,
         name,
@@ -104,11 +89,11 @@ export class SrdSeederService implements OnApplicationBootstrap {
     systemVal: string,
     packName: string,
   ) {
-    // Dynamic import to avoid build issues if fs/path not standard in some envs (but Node is fine)
     const fs = await import('fs/promises');
     const path = await import('path');
 
-    const dataDir = path.join(__dirname, 'data', systemVal); // Resolved relative to this file in dist folder
+    const dataDir = path.join(process.cwd(), 'dist', 'data', systemVal);
+    console.log(`[SrdSeeder] Looking for data in: ${dataDir}`);
 
     try {
       const files = await fs.readdir(dataDir);
@@ -118,7 +103,9 @@ export class SrdSeederService implements OnApplicationBootstrap {
 
         const assetTypeStr = this.mapFilenameToAssetType(file);
         if (!assetTypeStr) {
-          this.logger.warn(`Skipping file ${file}: Could not map to AssetType`);
+          console.warn(
+            `[SrdSeeder] Skipping file ${file}: Could not map to AssetType`,
+          );
           continue;
         }
 
@@ -126,8 +113,8 @@ export class SrdSeederService implements OnApplicationBootstrap {
         const fileContent = await fs.readFile(filePath, 'utf-8');
         const assets: any[] = JSON.parse(fileContent);
 
-        this.logger.log(
-          `Seeding ${assets.length} assets from ${file} (${assetTypeStr}) for ${packName}`,
+        console.log(
+          `[SrdSeeder] Seeding ${assets.length} assets from ${file} (${assetTypeStr}) for ${packName}`,
         );
 
         for (const assetData of assets) {
@@ -164,23 +151,20 @@ export class SrdSeederService implements OnApplicationBootstrap {
                 index: String(index),
                 name: String(assetName),
                 data: rest,
-                compatibleWith: (assetData.compatibleWith as string[]) || [], // Explicit cast
+                compatibleWith: (assetData.compatibleWith as string[]) || [],
               });
               await this.assetRepository.save(asset);
             }
           } catch (err: unknown) {
-            const message =
+            const _message =
               err instanceof Error ? err.message : 'Unknown error';
-            // this.logger.error(
-            //   `Failed to seed asset ${assetData.index}: ${message}`,
-            // );
           }
         }
       }
     } catch (error: any) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.warn(
-        `No seed data found for ${systemVal} at ${dataDir}: ${message}`,
+      console.warn(
+        `[SrdSeeder] No seed data found for ${systemVal} at ${dataDir}: ${message}`,
       );
     }
   }

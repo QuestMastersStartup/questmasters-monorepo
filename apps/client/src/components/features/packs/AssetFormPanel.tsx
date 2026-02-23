@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { AssetData } from "@questmasters/dnd-rules";
@@ -23,7 +24,7 @@ export function AssetFormPanel({
   onAddSubAsset,
   onClose,
 }: AssetFormPanelProps) {
-  const FormComponent = getAssetForm(type);
+  const FormComponent = useMemo(() => getAssetForm(type), [type]);
 
   const handleSubmit = (data: AssetData) => {
     const name = data.name || "Unnamed";
@@ -63,6 +64,7 @@ export function AssetFormPanel({
 
         {/* Body - scrollable */}
         <div className="flex-1 overflow-y-auto p-4">
+          {/* eslint-disable-next-line react-hooks/static-components -- dynamic form component selected by asset type */}
           <FormComponent
             onSubmit={handleSubmit}
             packAssets={packAssets}

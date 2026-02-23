@@ -1,4 +1,3 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { Result } from '@shared/application/result';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import { ContentPack } from '@rules-engine/domain/entities/content-pack.entity';
@@ -11,19 +10,15 @@ import {
   ASSET_REPOSITORY,
 } from '@rules-engine/domain/repositories/asset.repository';
 import { Asset } from '@rules-engine/domain/entities/asset.entity';
-import { UpdatePackDto } from '@rules-engine/application/dto/pack.dto';
 import { PackError } from '@rules-engine/application/errors';
 
 import { CreateAssetUseCase } from './create-asset.use-case';
 import { UpdateAssetUseCase } from './update-asset.use-case';
 import { DeleteAssetUseCase } from './delete-asset.use-case';
 
-@Injectable()
 export class UpdatePackUseCase {
   constructor(
-    @Inject(CONTENT_PACK_REPOSITORY)
     private readonly packRepository: ContentPackRepository,
-    @Inject(ASSET_REPOSITORY)
     private readonly assetRepository: AssetRepository,
     private readonly createAssetUseCase: CreateAssetUseCase,
     private readonly updateAssetUseCase: UpdateAssetUseCase,
@@ -32,7 +27,7 @@ export class UpdatePackUseCase {
 
   async execute(
     slug: string,
-    dto: UpdatePackDto,
+    dto: any,
   ): Promise<Result<ContentPack, PackError>> {
     const pack = await this.packRepository.findBySlug(Slug.fromString(slug));
 
@@ -84,7 +79,7 @@ export class UpdatePackUseCase {
       }
 
       // 3. Delete Remaining Assets (those not present in incoming DTO)
-      for (const [key, asset] of existingAssetsMap) {
+      for (const [_key, asset] of existingAssetsMap) {
         await this.deleteAssetUseCase.execute(
           slug,
           asset.type.toString(),

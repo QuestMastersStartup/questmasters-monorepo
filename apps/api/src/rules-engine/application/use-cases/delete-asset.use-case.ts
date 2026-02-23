@@ -1,4 +1,3 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { Result } from '@shared/application/result';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import {
@@ -12,12 +11,9 @@ import {
 import { AssetError } from '@rules-engine/application/errors';
 import { AssetType } from '@rules-engine/domain/value-objects/asset-type.vo';
 
-@Injectable()
 export class DeleteAssetUseCase {
   constructor(
-    @Inject(ASSET_REPOSITORY)
     private readonly assetRepository: AssetRepository,
-    @Inject(CONTENT_PACK_REPOSITORY)
     private readonly packRepository: ContentPackRepository,
   ) {}
 

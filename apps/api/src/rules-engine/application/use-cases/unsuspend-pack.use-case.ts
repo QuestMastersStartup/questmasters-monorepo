@@ -1,4 +1,3 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { Result } from '@shared/application/result';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
 import { ContentPack } from '@rules-engine/domain/entities/content-pack.entity';
@@ -8,12 +7,8 @@ import {
 } from '@rules-engine/domain/repositories/content-pack.repository';
 import { PackError } from '@rules-engine/application/errors';
 
-@Injectable()
 export class UnsuspendPackUseCase {
-  constructor(
-    @Inject(CONTENT_PACK_REPOSITORY)
-    private readonly packRepository: ContentPackRepository,
-  ) {}
+  constructor(private readonly packRepository: ContentPackRepository) {}
 
   async execute(slug: string): Promise<Result<ContentPack, PackError>> {
     const pack = await this.packRepository.findBySlug(Slug.fromString(slug));

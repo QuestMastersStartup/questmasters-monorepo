@@ -81,7 +81,7 @@ const ASSET_TYPE_CATEGORIES = [
       { value: "rule-section", label: "Rule Section" },
     ],
   },
-] as const;
+];
 
 function getIconForType(type: string) {
   switch (type) {

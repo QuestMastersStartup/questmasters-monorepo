@@ -41,8 +41,8 @@ export function PackDetails() {
     try {
       await deletePack(slug);
       navigate("/library");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
       setShowDeleteModal(false);
     } finally {
       setDeleting(false);
@@ -292,7 +292,7 @@ function LazyCollapsibleCategory({
           {assets && (
             <div className="p-4 grid grid-cols-1 gap-3">
               {assets.map((asset) => {
-                const data = (asset.data || {}) as Record<string, unknown>;
+                const data = (asset.data || {}) as unknown as Record<string, unknown>;
                 const description = data.description as string | undefined;
                 const desc = data.desc as string[] | undefined;
                 return (

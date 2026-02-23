@@ -25,9 +25,9 @@ export function CreatePack() {
     try {
       await createPack({ ...data, slug, creatorId, assets });
       navigate("/library");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to create pack", err);
-      alert(`Error: ${err.message}`); // Simple feedback
+      alert(`Error: ${err instanceof Error ? err.message : String(err)}`); // Simple feedback
     } finally {
       setLoading(false);
     }

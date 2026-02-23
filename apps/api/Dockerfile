@@ -1,19 +1,33 @@
-FROM node:20-alpine AS base
-
-RUN npm install -g pnpm
-
+# Stage 1: Build
+FROM oven/bun:1.2-alpine AS build
 WORKDIR /app
 
-COPY turbo.json package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy root metadata
+COPY package.json bun.lock ./
 
-COPY . .
+# Copy shared packages
+COPY packages packages
 
-RUN pnpm install
+# Copy api app
+COPY apps/api apps/api
 
+# Install dependencies
+RUN bun install
+
+# Build the API
+WORKDIR /app/apps/api
+RUN bun run build
+
+# Stage 2: Runtime
+FROM oven/bun:1.2-alpine AS runtime
 WORKDIR /app/apps/api
 
-RUN pnpm build
+# Copy the bundled output, data and package.json
+COPY --from=build /app/apps/api/dist ./dist
+COPY --from=build /app/apps/api/package.json ./package.json
 
 EXPOSE 3000
+ENV NODE_ENV=production
 
-CMD ["node", "dist/main.js"]
+# Start the application
+CMD ["bun", "run", "start:prod"]

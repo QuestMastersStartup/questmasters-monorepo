@@ -25,7 +25,7 @@ export function EditPack() {
     }
   }, [slug]);
 
-  const handleSubmit = async (data: PackFormData, _assets: PackAsset[]) => {
+  const handleSubmit = async (data: PackFormData) => {
     if (!slug) return;
     setSaving(true);
 
@@ -36,9 +36,9 @@ export function EditPack() {
         version: data.version,
       });
       navigate(`/library/${slug}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update pack", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
@@ -70,7 +70,7 @@ export function EditPack() {
   const initialAssets: PackAsset[] = pack.assets.map((asset) => ({
     type: asset.type,
     data: asset.data,
-    name: asset.name || (asset.data as Record<string, unknown>)?.name as string,
+    name: asset.name || (asset.data as unknown as Record<string, unknown>)?.name as string,
   }));
 
   return (

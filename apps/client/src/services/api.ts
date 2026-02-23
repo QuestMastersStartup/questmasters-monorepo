@@ -57,7 +57,7 @@ export async function createPack(data: CreatePackRequest): Promise<Pack> {
   return response.json();
 }
 
-export interface UpdatePackRequest extends Partial<CreatePackRequest> {}
+export type UpdatePackRequest = Partial<CreatePackRequest>;
 
 export async function updatePack(
   slug: string,

@@ -138,6 +138,7 @@ export function PackForm({
     if (initialValues && !draftRestored) {
       setFormData((prev) => ({ ...prev, ...initialValues }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using serialized key for deep comparison
   }, [initialValuesKey]);
 
   const initialAssetsKey =
@@ -148,6 +149,7 @@ export function PackForm({
     if (initialAssets.length > 0 && !draftRestored) {
       setAssets(initialAssets);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using serialized key for deep comparison
   }, [initialAssetsKey]);
 
   // Asset Filtration
