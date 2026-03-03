@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build ./src/index.ts --outdir ./dist --target bun --sourcemap && cp -r src/rules-engine/infrastructure/seeding/data ./dist/data",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun --sourcemap && bun -e \"import { cpSync } from 'node:fs'; cpSync('src/rules-engine/infrastructure/seeding/data', './dist/data', { recursive: true })\"",
     "start": "bun run src/index.ts",
     "start:prod": "bun run dist/index.js",
     "check-types": "tsc --noEmit",
