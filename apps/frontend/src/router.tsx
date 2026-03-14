@@ -1,12 +1,24 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { Library } from "./pages/Library";
 import { Marketplace } from "./pages/Marketplace";
 import { CreatePack } from "./pages/CreatePack";
 import { PackDetails } from "./pages/PackDetails";
 import { EditPack } from "./pages/EditPack";
+import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
+import Profile from './pages/Profile';
 
 export const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
   {
     path: "/",
     element: <AppLayout />,
@@ -24,7 +36,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "create",
-            element: <CreatePack />,
+            element: <ProtectedRoute><CreatePack /></ProtectedRoute>,
           },
           {
             path: ":slug",
@@ -32,7 +44,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ":slug/edit",
-            element: <EditPack />,
+            element: <ProtectedRoute><EditPack /></ProtectedRoute>,
           },
         ],
       },
@@ -43,6 +55,14 @@ export const router = createBrowserRouter([
       {
         path: "*",
         element: <Navigate to="/library" replace />,
+      },
+      {
+        path: 'profile',
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

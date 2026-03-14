@@ -50,9 +50,27 @@ export const SuspendPackSchema = t.Object({
   reason: t.String({ minLength: 10, maxLength: 500 }),
 });
 
+export const ChangeStatusSchema = t.Object({
+  status: t.Union(
+    [
+      t.Literal('draft'),
+      t.Literal('published'),
+      t.Literal('under_review'),
+    ],
+    { error: 'Status must be one of: draft, published, under_review' },
+  ),
+});
+
 export const PackQuerySchema = t.Object({
   type: t.Optional(t.String()),
   creatorId: t.Optional(t.String()),
+  status: t.Optional(
+    t.Union([
+      t.Literal('draft'),
+      t.Literal('published'),
+      t.Literal('under_review'),
+    ]),
+  ),
 });
 
 export const AssetTypeQuerySchema = t.Object({

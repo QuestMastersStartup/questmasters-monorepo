@@ -1,52 +1,14 @@
 import { Elysia, t } from 'elysia';
 import type { Container } from '../infrastructure/container';
+import { requireAuth } from '../infrastructure/auth/supabase';
 import { CreateAssetSchema, UpdateAssetSchema } from '../schemas/asset.schema';
-import { AssetMapper } from '../rules-engine/infrastructure/adapters/out/persistence/mappers/asset.mapper';
-import { AssetError } from '../rules-engine/application/errors';
+import { AssetMapper } from '../content/infrastructure/mappers/asset.mapper';
+import { AssetError } from '../content/application/errors';
 
 export function assetsRoutes(container: Container) {
   return (
     new Elysia({ prefix: '/packs/:slug/assets' })
-      // POST /packs/:slug/assets — Create asset
-      .post(
-        '/',
-        async ({ params, body, set }) => {
-          const result = await container.createAssetUseCase.execute(
-            params.slug,
-            body,
-          );
-
-          if (result.isFailure) {
-            switch (result.error) {
-              case AssetError.PACK_NOT_FOUND:
-                set.status = 404;
-                return { message: `Pack '${params.slug}' not found` };
-              case AssetError.ALREADY_EXISTS:
-                set.status = 400;
-                return {
-                  message: `Asset '${body.type}/${body.index}' already exists in this pack`,
-                };
-              default:
-                set.status = 400;
-                return { message: result.error };
-            }
-          }
-
-          set.status = 201;
-          return AssetMapper.toResponse(result.value);
-        },
-        {
-          body: CreateAssetSchema,
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-          }),
-          detail: {
-            summary: 'Create a new asset in a pack',
-            tags: ['Assets'],
-          },
-        },
-      )
-
+      // --- PUBLIC ROUTES ---
       // GET /packs/:slug/assets — List assets
       .get(
         '/',
@@ -124,6 +86,49 @@ export function assetsRoutes(container: Container) {
           }),
           detail: {
             summary: 'Get a single asset from a pack',
+            tags: ['Assets'],
+          },
+        },
+      )
+
+      // --- PROTECTED ROUTES ---
+      .use(requireAuth)
+
+      // POST /packs/:slug/assets — Create asset
+      .post(
+        '/',
+        async ({ params, body, set }) => {
+          const result = await container.createAssetUseCase.execute(
+            params.slug,
+            body,
+          );
+
+          if (result.isFailure) {
+            switch (result.error) {
+              case AssetError.PACK_NOT_FOUND:
+                set.status = 404;
+                return { message: `Pack '${params.slug}' not found` };
+              case AssetError.ALREADY_EXISTS:
+                set.status = 400;
+                return {
+                  message: `Asset '${body.type}/${body.index}' already exists in this pack`,
+                };
+              default:
+                set.status = 400;
+                return { message: result.error };
+            }
+          }
+
+          set.status = 201;
+          return AssetMapper.toResponse(result.value);
+        },
+        {
+          body: CreateAssetSchema,
+          params: t.Object({
+            slug: t.String({ description: 'The unique slug of the pack' }),
+          }),
+          detail: {
+            summary: 'Create a new asset in a pack',
             tags: ['Assets'],
           },
         },

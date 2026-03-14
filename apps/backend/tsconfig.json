@@ -4,6 +4,7 @@
     "moduleResolution": "Bundler",
     "target": "ESNext",
     "strict": true,
+    "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -15,7 +16,7 @@
     "noImplicitAny": false,
     "paths": {
       "@shared/*": ["src/shared/*"],
-      "@rules-engine/*": ["src/rules-engine/*"]
+      "@content/*": ["src/content/*"]
     }
 
   },

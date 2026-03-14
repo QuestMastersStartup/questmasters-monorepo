@@ -8,6 +8,8 @@ import { createContainer } from './infrastructure/container';
 import { packsRoutes } from './routes/packs.routes';
 import { assetsRoutes } from './routes/assets.routes';
 import { rulesRoutes } from './routes/rules.routes';
+import { usersRoutes } from './routes/users.routes';
+import { seedAdminUser } from './infrastructure/seed-admin';
 
 // Initialize database
 const dataSource = await createDataSource();
@@ -15,8 +17,9 @@ const dataSource = await createDataSource();
 // Wire up DI container
 const container = createContainer(dataSource);
 
-// Run seeder on startup (replaces NestJS OnApplicationBootstrap)
+// Run seeders on startup
 await container.srdSeederService.onApplicationBootstrap();
+await seedAdminUser(dataSource);
 
 const allowedOrigins = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [
   'http://localhost:3001',
@@ -63,11 +66,17 @@ const app = new Elysia()
   .group('/api', (app) =>
     app
       .get('/', () => 'QuestMasters API is running!')
+      .use(usersRoutes(container))
       .use(packsRoutes(container))
       .use(assetsRoutes(container))
       .use(rulesRoutes(container)),
   )
   .onError(({ error, set }) => {
+    // Don't log auth errors as server errors
+    if ((error as any).message === 'Unauthorized') {
+      set.status = 401;
+      return { message: 'Unauthorized' };
+    }
     console.error(error);
     set.status = 500;
     return { message: 'Internal server error' };
