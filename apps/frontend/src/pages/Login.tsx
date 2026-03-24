@@ -11,6 +11,7 @@ export function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/library";
+  const message = location.state?.message;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +37,12 @@ export function Login() {
           <h1 className="text-3xl font-cinzel font-bold gold-gradient pb-2">Welcome Back</h1>
           <p className="text-sm text-muted-foreground">Sign in to your QuestMasters account</p>
         </div>
+
+        {message && !error && (
+          <div className="p-3 text-sm text-primary bg-primary/10 rounded-md border border-primary/20 text-center font-medium animate-pulse">
+            {message}
+          </div>
+        )}
 
         {error && (
           <div className="p-3 text-sm text-red-400 bg-red-500/10 rounded-md border border-red-500/20">

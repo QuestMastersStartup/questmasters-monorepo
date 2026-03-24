@@ -19,6 +19,8 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { GuestBanner } from "../components/layout/GuestBanner";
 
 interface AssetTypeSummary {
   type: string;
@@ -28,6 +30,7 @@ interface AssetTypeSummary {
 export function PackDetails() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [pack, setPack] = useState<PackWithAssets | null>(null);
   const [assetSummary, setAssetSummary] = useState<AssetTypeSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,27 +98,32 @@ export function PackDetails() {
 
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto pb-20">
+      <GuestBanner />
+
       {/* Header */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Link
             to="/library"
-            className="btn btn-ghost p-0 hover:bg-transparent text-muted-foreground hover:text-foreground gap-2"
+            className="btn btn-ghost p-0 hover:bg-transparent text-muted-foreground hover:text-foreground gap-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Library
           </Link>
-          <div className="flex items-center gap-2">
-            <Link to={`/library/${slug}/edit`} className="btn btn-outline gap-2">
-              Edit Pack
-            </Link>
-            <button
-              type="button"
-              onClick={() => setShowDeleteModal(true)}
-              className="btn btn-outline gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <Trash2 className="w-4 h-4" /> Delete
-            </button>
-          </div>
+          
+          {isAuthenticated && (
+            <div className="flex items-center gap-2">
+              <Link to={`/library/${slug}/edit`} className="btn btn-outline gap-2">
+                Edit Pack
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                className="btn btn-outline gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all"
+              >
+                <Trash2 className="w-4 h-4" /> Delete
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 p-8 border border-border">

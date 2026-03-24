@@ -3,10 +3,14 @@ import { fetchPacks, type Pack } from "../services/api";
 import { PackCard } from "../components/features/packs/PackCard";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { GuestBanner } from "../components/layout/GuestBanner";
+import { AuthActionGuard } from "../components/layout/AuthActionGuard";
 
 export function Library() {
   const [packs, setPacks] = useState<Pack[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isGuest } = useAuth();
 
   useEffect(() => {
     fetchPacks()
@@ -17,22 +21,29 @@ export function Library() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <GuestBanner />
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-cinzel font-bold gold-gradient">
-            Your Library
+            {isGuest ? "Explore Packs" : "Your Library"}
           </h2>
           <p className="text-muted-foreground mt-1">
-            Manage your collection of content packs.
+            {isGuest 
+              ? "Discover content from the QuestMasters community." 
+              : "Manage your collection of content packs."}
           </p>
         </div>
-        <Link
-          to="/library/create"
-          className="btn btn-primary btn-lg shadow-lg shadow-primary/20 gap-2 font-cinzel font-bold"
-        >
-          <Plus className="w-5 h-5" />
-          Create New Pack
-        </Link>
+        
+        <AuthActionGuard fallbackMessage="Registrate para crear tus propios packs">
+          <Link
+            to="/library/create"
+            className="btn btn-primary btn-lg shadow-lg shadow-primary/20 gap-2 font-cinzel font-bold"
+          >
+            <Plus className="w-5 h-5" />
+            Create New Pack
+          </Link>
+        </AuthActionGuard>
       </div>
 
       {loading ? (

@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/library" replace />,
+        element: <Navigate to="/marketplace" replace />,
       },
       {
         path: "library",
@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <Navigate to="/library" replace />,
+        element: <Navigate to="/marketplace" replace />,
       },
       {
         path: 'profile',
