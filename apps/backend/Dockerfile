@@ -8,23 +8,24 @@ COPY package.json bun.lock ./
 # Copy shared packages
 COPY packages packages
 
-# Copy api app
-COPY apps/api apps/api
+# Copy backend app
+COPY apps/backend apps/backend
 
 # Install dependencies
 RUN bun install
 
-# Build the API
-WORKDIR /app/apps/api
+# Build the backend
+WORKDIR /app/apps/backend
 RUN bun run build
 
 # Stage 2: Runtime
 FROM oven/bun:1.2-alpine AS runtime
-WORKDIR /app/apps/api
+WORKDIR /app/apps/backend
 
-# Copy the bundled output, data and package.json
-COPY --from=build /app/apps/api/dist ./dist
-COPY --from=build /app/apps/api/package.json ./package.json
+# Copy the bundled output and package.json
+# Note: dist contains the data/ folder which was copied during build
+COPY --from=build /app/apps/backend/dist ./dist
+COPY --from=build /app/apps/backend/package.json ./package.json
 
 EXPOSE 3000
 ENV NODE_ENV=production

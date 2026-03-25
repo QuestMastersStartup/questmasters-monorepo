@@ -22,7 +22,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: apps/backend/Dockerfile
     container_name: questmasters-api
     ports:
       - "3000:3000"
