@@ -9,6 +9,8 @@ import { packsRoutes } from './routes/packs.routes';
 import { assetsRoutes } from './routes/assets.routes';
 import { rulesRoutes } from './routes/rules.routes';
 import { usersRoutes } from './routes/users.routes';
+import { usernameRoutes } from './routes/username.routes';
+import { avatarRoutes } from './routes/avatar.routes';
 import { seedAdminUser } from './infrastructure/seed-admin';
 
 // Initialize database
@@ -67,6 +69,8 @@ const app = new Elysia()
     app
       .get('/', () => 'QuestMasters API is running!')
       .use(usersRoutes(container))
+      .use(usernameRoutes(container))
+      .use(avatarRoutes(container))
       .use(packsRoutes(container))
       .use(assetsRoutes(container))
       .use(rulesRoutes(container)),

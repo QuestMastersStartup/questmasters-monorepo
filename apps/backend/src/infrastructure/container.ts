@@ -101,6 +101,7 @@ export function createContainer(dataSource: DataSource) {
     getUserProfileUseCase,
     updateUserProfileUseCase,
     updateUserRoleUseCase,
+    userProfileRepo,
   };
 }
 
