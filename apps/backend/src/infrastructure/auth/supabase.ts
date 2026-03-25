@@ -1,5 +1,7 @@
 import { Elysia } from 'elysia';
 import { createClient, type User } from '@supabase/supabase-js';
+import type { Container } from '../container';
+import { UserProfile } from '../../users/domain/entities/user-profile.entity';
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
@@ -45,6 +47,47 @@ export async function requireUser(request: Request, set: any): Promise<User> {
     throw new Error('Unauthorized');
   }
   return user;
+}
+
+/**
+ * Validates that the user has one of the allowed roles or is an admin.
+ * Returns both the Supabase User and their Profile.
+ */
+export async function requireRole(
+  request: Request,
+  set: any,
+  allowedRoles: ('admin' | 'creator' | 'player')[],
+  container: Container
+): Promise<{ user: User; profile: UserProfile }> {
+  const user = await requireUser(request, set);
+  const profile = await container.getUserProfileUseCase.execute(user.id);
+
+  if (!allowedRoles.includes(profile.role) && !profile.isAdmin) {
+    set.status = 403;
+    throw new Error(`Forbidden: required roles [${allowedRoles.join(', ')}]`);
+  }
+
+  return { user, profile };
+}
+
+/**
+ * Validates that the user is the owner of specified resource or is an admin.
+ */
+export async function requireOwnerOrAdmin(
+  request: Request,
+  set: any,
+  ownerId: string,
+  container: Container
+): Promise<{ user: User; profile: UserProfile }> {
+  const user = await requireUser(request, set);
+  const profile = await container.getUserProfileUseCase.execute(user.id);
+
+  if (user.id !== ownerId && !profile.isAdmin) {
+    set.status = 403;
+    throw new Error('Forbidden: you are not the owner of this resource');
+  }
+
+  return { user, profile };
 }
 
 /**

@@ -27,6 +27,7 @@ import { DeleteAssetUseCase } from '../content/application/use-cases/delete-asse
 import { ResolveAssetUseCase } from '../content/application/use-cases/resolve-asset.use-case';
 import { GetUserProfileUseCase } from '../users/application/use-cases/get-user-profile.use-case';
 import { UpdateUserProfileUseCase } from '../users/application/use-cases/update-user-profile.use-case';
+import { UpdateUserRoleUseCase } from '../users/application/use-cases/update-user-role.use-case';
 
 // Seeder
 import { SrdSeederService } from '../content/infrastructure/seeding/srd-seeder.service';
@@ -53,6 +54,7 @@ export function createContainer(dataSource: DataSource) {
 
   const getUserProfileUseCase = new GetUserProfileUseCase(userProfileRepo);
   const updateUserProfileUseCase = new UpdateUserProfileUseCase(userProfileRepo);
+  const updateUserRoleUseCase = new UpdateUserRoleUseCase(userProfileRepo);
 
   const createPackUseCase = new CreatePackUseCase(packRepo, createAssetUseCase);
   const getPackUseCase = new GetPackUseCase(packRepo, assetRepo);
@@ -98,6 +100,7 @@ export function createContainer(dataSource: DataSource) {
     // Users
     getUserProfileUseCase,
     updateUserProfileUseCase,
+    updateUserRoleUseCase,
   };
 }
 

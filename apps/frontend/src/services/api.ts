@@ -7,6 +7,7 @@ export interface Pack {
   version: string;
   system: string;
   author: string;
+  creatorId: string;
 }
 
 import type { AssetData } from "@questmasters/dnd-rules";

@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { Container } from '../infrastructure/container';
-import { requireUser } from '../infrastructure/auth/supabase';
+import { requireUser, requireRole } from '../infrastructure/auth/supabase';
 
 // Helper to sanitize internal properties before sending to client
 function sanitizeProfile(profile: any) {
@@ -39,6 +39,34 @@ export const usersRoutes = (container: Container) =>
           username: t.Optional(t.String({ minLength: 3, maxLength: 50 })),
           bio: t.Optional(t.String({ maxLength: 500 })),
           avatarUrl: t.Optional(t.String()),
+        }),
+      },
+    )
+    .patch(
+      '/:id/role',
+      async ({ params, body, request, set }) => {
+        await requireRole(request, set, ['admin'], container);
+
+        try {
+          const profile = await container.updateUserRoleUseCase.execute({
+            userId: params.id,
+            role: body.role as any,
+          });
+          return sanitizeProfile(profile);
+        } catch (e: any) {
+          set.status = 400;
+          return { message: e.message };
+        }
+      },
+      {
+        params: t.Object({
+          id: t.String({ description: 'The UUID of the user' }),
+        }),
+        body: t.Object({
+          role: t.String({
+            description: 'The new role',
+            enum: ['admin', 'creator', 'player'],
+          }),
         }),
       },
     );

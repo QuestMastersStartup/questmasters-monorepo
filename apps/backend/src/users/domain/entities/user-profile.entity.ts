@@ -72,6 +72,15 @@ export class UserProfile {
     });
   }
 
+  public changeRole(role: 'admin' | 'creator' | 'player'): UserProfile {
+    return new UserProfile({
+      ...this.props,
+      role,
+      isAdmin: role === 'admin',
+      updatedAt: new Date(),
+    });
+  }
+
   public toObject(): UserProfileProps {
     return { ...this.props };
   }

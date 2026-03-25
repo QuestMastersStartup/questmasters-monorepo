@@ -1,6 +1,10 @@
 import { Elysia, t } from 'elysia';
 import type { Container } from '../infrastructure/container';
-import { requireAuth } from '../infrastructure/auth/supabase';
+import {
+  requireUser,
+  requireRole,
+  requireOwnerOrAdmin,
+} from '../infrastructure/auth/supabase';
 import {
   CreatePackSchema,
   UpdatePackSchema,
@@ -70,15 +74,14 @@ export function packsRoutes(container: Container) {
       )
 
       // --- PROTECTED ROUTES ---
-      .use(requireAuth)
 
       // POST /packs — Create pack
       .post(
         '/',
-        // @ts-ignore: Elysia type inference for plugins can sometimes miss request decorators
-        async ({ body, user, set }: any) => {
+        async ({ body, request, set }) => {
+          const user = await requireUser(request, set);
           // Inject the authenticated user as the creator
-          body.creatorId = user.id;
+          (body as any).creatorId = user.id;
 
           const result = await container.createPackUseCase.execute(body as any);
 
@@ -106,18 +109,30 @@ export function packsRoutes(container: Container) {
       // PUT /packs/:slug — Update pack
       .put(
         '/:slug',
-        async ({ params, body, set }) => {
+        async ({ params, body, request, set }) => {
+          // 1. Fetch pack to get creatorId
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          // 2. Authorize: Owner or Admin
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
+          // 3. Execute update
           const result = await container.updatePackUseCase.execute(
             params.slug,
             body,
           );
 
           if (result.isFailure) {
-            if (result.error === PackError.NOT_FOUND) {
-              set.status = 404;
-              return { message: `Pack with slug '${params.slug}' not found` };
-            }
-            set.status = 400;
+            set.status = result.error === PackError.NOT_FOUND ? 404 : 400;
             return { message: result.error };
           }
 
@@ -138,7 +153,20 @@ export function packsRoutes(container: Container) {
       // PATCH /packs/:slug/status — Change pack publication status
       .patch(
         '/:slug/status',
-        async ({ params, body, set }) => {
+        async ({ params, body, request, set }) => {
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
           const result = await container.changePackStatusUseCase.execute(
             params.slug,
             body.status,
@@ -177,21 +205,19 @@ export function packsRoutes(container: Container) {
         },
       )
 
-      // PATCH /packs/:slug/suspend — Suspend pack
+      // PATCH /packs/:slug/suspend — Suspend pack (Admin only)
       .patch(
         '/:slug/suspend',
-        async ({ params, body, set }) => {
+        async ({ params, body, request, set }) => {
+          await requireRole(request, set, ['admin'], container);
+
           const result = await container.suspendPackUseCase.execute(
             params.slug,
             body,
           );
 
           if (result.isFailure) {
-            if (result.error === PackError.NOT_FOUND) {
-              set.status = 404;
-              return { message: `Pack with slug '${params.slug}' not found` };
-            }
-            set.status = 400;
+            set.status = result.error === PackError.NOT_FOUND ? 404 : 400;
             return { message: result.error };
           }
 
@@ -209,19 +235,18 @@ export function packsRoutes(container: Container) {
         },
       )
 
+      // PATCH /packs/:slug/unsuspend — Unsuspend pack (Admin only)
       .patch(
         '/:slug/unsuspend',
-        async ({ params, set }) => {
+        async ({ params, request, set }) => {
+          await requireRole(request, set, ['admin'], container);
+
           const result = await container.unsuspendPackUseCase.execute(
             params.slug,
           );
 
           if (result.isFailure) {
-            if (result.error === PackError.NOT_FOUND) {
-              set.status = 404;
-              return { message: `Pack with slug '${params.slug}' not found` };
-            }
-            set.status = 400;
+            set.status = result.error === PackError.NOT_FOUND ? 404 : 400;
             return { message: result.error };
           }
 
@@ -238,17 +263,27 @@ export function packsRoutes(container: Container) {
         },
       )
 
+      // DELETE /packs/:slug — Delete pack
       .delete(
         '/:slug',
-        async ({ params, set }) => {
+        async ({ params, request, set }) => {
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
           const result = await container.deletePackUseCase.execute(params.slug);
 
           if (result.isFailure) {
-            if (result.error === PackError.NOT_FOUND) {
-              set.status = 404;
-              return { message: `Pack with slug '${params.slug}' not found` };
-            }
-            set.status = 400;
+            set.status = result.error === PackError.NOT_FOUND ? 404 : 400;
             return { message: result.error };
           }
 

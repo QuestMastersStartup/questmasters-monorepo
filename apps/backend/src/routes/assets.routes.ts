@@ -1,9 +1,10 @@
 import { Elysia, t } from 'elysia';
 import type { Container } from '../infrastructure/container';
-import { requireAuth } from '../infrastructure/auth/supabase';
+import { requireOwnerOrAdmin } from '../infrastructure/auth/supabase';
 import { CreateAssetSchema, UpdateAssetSchema } from '../schemas/asset.schema';
 import { AssetMapper } from '../content/infrastructure/mappers/asset.mapper';
 import { AssetError } from '../content/application/errors';
+import { PackError } from '../content/application/errors';
 
 export function assetsRoutes(container: Container) {
   return (
@@ -92,12 +93,27 @@ export function assetsRoutes(container: Container) {
       )
 
       // --- PROTECTED ROUTES ---
-      .use(requireAuth)
 
       // POST /packs/:slug/assets — Create asset
       .post(
         '/',
-        async ({ params, body, set }) => {
+        async ({ params, body, request, set }) => {
+          // 1. Fetch pack to get creatorId
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          // 2. Authorize
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
+          // 3. Execute
           const result = await container.createAssetUseCase.execute(
             params.slug,
             body,
@@ -137,7 +153,20 @@ export function assetsRoutes(container: Container) {
       // PUT /packs/:slug/assets/:type/:index — Update asset
       .put(
         '/:type/:index',
-        async ({ params, body, set }) => {
+        async ({ params, body, request, set }) => {
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
           const result = await container.updateAssetUseCase.execute(
             params.slug,
             params.type,
@@ -183,7 +212,20 @@ export function assetsRoutes(container: Container) {
       // DELETE /packs/:slug/assets/:type/:index — Delete asset
       .delete(
         '/:type/:index',
-        async ({ params, set }) => {
+        async ({ params, request, set }) => {
+          const getResult = await container.getPackUseCase.execute(params.slug);
+          if (getResult.isFailure) {
+            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
+            return { message: getResult.error };
+          }
+
+          await requireOwnerOrAdmin(
+            request,
+            set,
+            getResult.value.pack.creatorId,
+            container,
+          );
+
           const result = await container.deleteAssetUseCase.execute(
             params.slug,
             params.type,
