@@ -51,7 +51,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       if (response.ok) {
-        const profile = await response.json();
+        let profile = await response.json();
+        
+        // If profile exists but has no username, check if we have a pending one from OAuth redirect
+        if (profile && !profile.username) {
+          const pendingUsername = sessionStorage.getItem('pending_username');
+          if (pendingUsername) {
+            try {
+              const updateRes = await fetch('/api/users/me', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ username: pendingUsername }),
+              });
+              if (updateRes.ok) {
+                profile = await updateRes.json();
+                sessionStorage.removeItem('pending_username');
+              }
+            } catch (err) {
+              console.error("Failed to sync pending username", err);
+            }
+          }
+        }
+        
         setUserProfile(profile);
       }
     } catch (e) {

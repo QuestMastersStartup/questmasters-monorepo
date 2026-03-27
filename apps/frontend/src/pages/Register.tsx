@@ -3,20 +3,33 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Check, X, Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Register() {
   const [username, setUsername] = useState("");
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [usernameChecking, setUsernameChecking] = useState(false);
+
   const [email, setEmail] = useState("");
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [emailChecking, setEmailChecking] = useState(false);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      navigate("/library", { replace: true });
+    }
+  }, [isAuthenticated, authLoading, navigate]);
+
+  // Username check effect...
   useEffect(() => {
     if (username.length < 3) {
       setUsernameAvailable(null);
@@ -44,15 +57,38 @@ export function Register() {
     return () => clearTimeout(timer);
   }, [username]);
 
+  // Email check effect
+  useEffect(() => {
+    if (!email || !email.includes('@')) {
+      setEmailAvailable(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setEmailChecking(true);
+      try {
+        const response = await fetch(`/api/auth/check-email/${encodeURIComponent(email)}`);
+        const data = await response.json();
+        setEmailAvailable(data.available);
+      } catch {
+        // Silently fail check
+      } finally {
+        setEmailChecking(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [email]);
+
   const validate = (): string | null => {
     if (!username.trim()) return "Username is required.";
     if (username.trim().length < 3) return "Username must be at least 3 characters.";
     if (usernameAvailable === false) return "Username is already taken.";
-    // ... remaining validation
     if (username.trim().length > 50) return "Username must be at most 50 characters.";
     if (!/^[a-zA-Z0-9_-]+$/.test(username.trim()))
       return "Username can only contain letters, numbers, hyphens and underscores.";
     if (!email) return "Email is required.";
+    if (emailAvailable === false) return "This email is already registered.";
     if (!password) return "Password is required.";
     if (password.length < 6) return "Password must be at least 6 characters.";
     if (password !== confirmPassword) return "Passwords do not match.";
@@ -70,10 +106,13 @@ export function Register() {
     setLoading(true);
     setError(null);
 
-    // 1. Create user in Supabase Auth
+    // 1. Create user in Supabase Auth with username in metadata
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { username: username.trim() },
+      },
     });
 
     if (signUpError) {
@@ -85,13 +124,14 @@ export function Register() {
     // 2. If we got a session (auto-confirm enabled), set the username via the API
     if (data.session) {
       try {
+        // Fetch profile to ensure it's created (backend auto-creates on GET)
         const response = await fetch("/api/users/me", {
           headers: { Authorization: `Bearer ${data.session.access_token}` },
         });
 
         if (response.ok) {
-          // Profile created by GET, now update with username
-          await fetch("/api/users/me", {
+          // Profile created or retrieved, now explicitly update with username to be sure
+          const updateRes = await fetch("/api/users/me", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -99,9 +139,14 @@ export function Register() {
             },
             body: JSON.stringify({ username: username.trim() }),
           });
+
+          if (!updateRes.ok) {
+            const errorData = await updateRes.json();
+            console.warn("Failed to set username:", errorData.message);
+          }
         }
-      } catch {
-        // Non-critical — profile will be created on next login
+      } catch (err) {
+        console.error("Post-registration profile setup failed:", err);
       }
       navigate("/library", { replace: true });
     } else {
@@ -149,7 +194,21 @@ export function Register() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
             type="button"
-            onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })}
+            onClick={() => {
+              if (username.trim().length < 3) {
+                setError("Please choose a username first to sync with your OAuth account.");
+                return;
+              }
+              // Save username to sessionStorage to persist across redirect
+              sessionStorage.setItem('pending_username', username.trim());
+              
+              supabase.auth.signInWithOAuth({ 
+                provider: 'google', 
+                options: { 
+                  redirectTo: window.location.origin + "/library",
+                } 
+              });
+            }}
             className="flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-md bg-background/50 hover:bg-accent transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -162,7 +221,21 @@ export function Register() {
           </button>
           <button
             type="button"
-            onClick={() => supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } })}
+            onClick={() => {
+              if (username.trim().length < 3) {
+                setError("Please choose a username first to sync with your OAuth account.");
+                return;
+              }
+              // Save username to sessionStorage to persist across redirect
+              sessionStorage.setItem('pending_username', username.trim());
+
+              supabase.auth.signInWithOAuth({ 
+                provider: 'discord', 
+                options: { 
+                  redirectTo: window.location.origin + "/library",
+                } 
+              });
+            }}
             className="flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-md bg-background/50 hover:bg-accent transition-colors text-sm font-medium"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -215,15 +288,30 @@ export function Register() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 border rounded-md bg-background/50 border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
-              placeholder="adventurer@example.com"
-            />
+            <div className="relative">
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={cn(
+                  "w-full px-3 py-2 border rounded-md bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors pr-10",
+                  emailAvailable === true && "border-green-500/50 ring-green-500/10",
+                  emailAvailable === false && "border-red-500/50 ring-red-500/10",
+                  emailAvailable === null && "border-border"
+                )}
+                placeholder="adventurer@example.com"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {emailChecking && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+                {!emailChecking && emailAvailable === true && <Check className="w-4 h-4 text-green-500" />}
+                {!emailChecking && emailAvailable === false && <X className="w-4 h-4 text-red-500" />}
+              </div>
+            </div>
+            {emailAvailable === false && (
+              <p className="text-xs text-red-400">This email is already registered.</p>
+            )}
           </div>
 
           <div className="space-y-2">

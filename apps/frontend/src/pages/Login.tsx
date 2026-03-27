@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -8,10 +9,17 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/library";
   const message = location.state?.message;
+
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, authLoading, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +62,7 @@ export function Login() {
           <div className="grid grid-cols-2 gap-3 mb-6">
             <button
               type="button"
-              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })}
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + "/library" } })}
               className="flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-md bg-background/50 hover:bg-accent transition-colors text-sm font-medium"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -67,7 +75,7 @@ export function Login() {
             </button>
             <button
               type="button"
-              onClick={() => supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } })}
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin + "/library" } })}
               className="flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-md bg-background/50 hover:bg-accent transition-colors text-sm font-medium"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">

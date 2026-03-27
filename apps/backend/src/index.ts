@@ -12,6 +12,7 @@ import { usersRoutes } from './routes/users.routes';
 import { usernameRoutes } from './routes/username.routes';
 import { avatarRoutes } from './routes/avatar.routes';
 import { campaignsRoutes } from './routes/campaigns.routes';
+import { checkEmailRoutes } from './routes/check-email.routes';
 import { seedAdminUser } from './infrastructure/seed-admin';
 
 // Initialize database
@@ -72,6 +73,7 @@ const app = new Elysia()
       .get('/', () => 'QuestMasters API is running!')
       .use(usersRoutes(container))
       .use(usernameRoutes(container))
+      .use(checkEmailRoutes())
       .use(avatarRoutes(container))
       .use(campaignsRoutes(container))
       .use(packsRoutes(container))

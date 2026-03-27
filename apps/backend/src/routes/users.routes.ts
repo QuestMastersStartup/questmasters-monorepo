@@ -36,7 +36,8 @@ export const usersRoutes = (container: Container) =>
     })
     .get('/me', async ({ request, set }) => {
       const user = await requireUser(request, set);
-      const profile = await container.getUserProfileUseCase.execute(user.id);
+      const metadataUsername = user.user_metadata?.username;
+      const profile = await container.getUserProfileUseCase.execute(user.id, metadataUsername);
       return sanitizeProfile(profile);
     })
     .put(

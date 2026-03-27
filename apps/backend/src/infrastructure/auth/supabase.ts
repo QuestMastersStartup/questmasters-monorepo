@@ -5,12 +5,14 @@ import { UserProfile } from '../../users/domain/entities/user-profile.entity';
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
   console.warn('⚠️ Supabase URL or Key is missing. Auth will not work properly.');
 }
 
 export const supabaseClient = createClient(supabaseUrl, supabaseKey);
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 /**
  * Extracts and verifies user from the Authorization header.
