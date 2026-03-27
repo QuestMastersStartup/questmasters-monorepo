@@ -9,6 +9,10 @@ import { EditPack } from "./pages/EditPack";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import Profile from './pages/Profile';
+import { Campaigns } from "./pages/Campaigns";
+import { CreateCampaign } from "./pages/CreateCampaign";
+import { CampaignDetails } from "./pages/CampaignDetails";
+import { EditCampaign } from "./pages/EditCampaign";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +30,27 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Navigate to="/marketplace" replace />,
+      },
+      {
+        path: "campaigns",
+        children: [
+          {
+            index: true,
+            element: <ProtectedRoute><Campaigns /></ProtectedRoute>,
+          },
+          {
+            path: "create",
+            element: <ProtectedRoute><CreateCampaign /></ProtectedRoute>,
+          },
+          {
+            path: ":id",
+            element: <ProtectedRoute><CampaignDetails /></ProtectedRoute>,
+          },
+          {
+            path: ":id/edit",
+            element: <ProtectedRoute><EditCampaign /></ProtectedRoute>,
+          },
+        ],
       },
       {
         path: "library",
@@ -53,16 +78,16 @@ export const router = createBrowserRouter([
         element: <Marketplace />,
       },
       {
-        path: "*",
-        element: <Navigate to="/marketplace" replace />,
-      },
-      {
-        path: 'profile',
+        path: "profile",
         element: (
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "*",
+        element: <Navigate to="/marketplace" replace />,
       },
     ],
   },

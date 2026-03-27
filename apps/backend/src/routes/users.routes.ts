@@ -10,6 +10,30 @@ function sanitizeProfile(profile: any) {
 
 export const usersRoutes = (container: Container) =>
   new Elysia({ prefix: '/users' })
+    .get('/search', async ({ query, request, set }) => {
+      const user = await requireUser(request, set);
+      const q = query.q as string;
+      
+      if (!q || q.length < 2) {
+        return [];
+      }
+
+      const results = await container.searchUsersUseCase.execute({
+        query: q,
+        excludeUserId: user.id,
+        limit: 10
+      });
+
+      return results.map(p => ({
+        id: p.id,
+        username: p.username,
+        avatarUrl: p.avatarUrl
+      }));
+    }, {
+      query: t.Object({
+        q: t.String({ minLength: 2 })
+      })
+    })
     .get('/me', async ({ request, set }) => {
       const user = await requireUser(request, set);
       const profile = await container.getUserProfileUseCase.execute(user.id);

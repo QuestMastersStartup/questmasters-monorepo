@@ -12,6 +12,11 @@ export interface UserProfileRepository {
   findByUsername(username: string): Promise<UserProfile | null>;
 
   /**
+   * Search UserProfiles by username partial match (case-insensitive)
+   */
+  searchByUsername(query: string, limit?: number): Promise<UserProfile[]>;
+
+  /**
    * Saves a new or updated UserProfile
    */
   save(profile: UserProfile): Promise<void>;

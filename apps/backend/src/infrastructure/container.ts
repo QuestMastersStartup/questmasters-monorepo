@@ -3,12 +3,16 @@ import { DataSource } from 'typeorm';
 // TypeORM Entities
 import { ContentPackOrmEntity } from '../content/infrastructure/typeorm/content-pack.typeorm-entity';
 import { AssetOrmEntity } from '../content/infrastructure/typeorm/asset.typeorm-entity';
+import { CampaignOrmEntity } from '../campaigns/infrastructure/typeorm/campaign.typeorm-entity';
+import { CampaignMemberOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-entity';
 
 // Repository Implementations
 import { ContentPackTypeormRepository } from '../content/infrastructure/typeorm/content-pack.typeorm-repository';
 import { AssetTypeormRepository } from '../content/infrastructure/typeorm/asset.typeorm-repository';
 import { UserProfileTypeormRepository } from '../users/infrastructure/adapters/out/persistence/typeorm/user-profile.typeorm-repository';
 import { UserProfileOrmEntity } from '../users/infrastructure/adapters/out/persistence/typeorm/user-profile.typeorm-entity';
+import { CampaignTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign.typeorm-repository';
+import { CampaignMemberTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-repository';
 
 // Use Cases
 import { CreatePackUseCase } from '../content/application/use-cases/create-pack.use-case';
@@ -28,6 +32,16 @@ import { ResolveAssetUseCase } from '../content/application/use-cases/resolve-as
 import { GetUserProfileUseCase } from '../users/application/use-cases/get-user-profile.use-case';
 import { UpdateUserProfileUseCase } from '../users/application/use-cases/update-user-profile.use-case';
 import { UpdateUserRoleUseCase } from '../users/application/use-cases/update-user-role.use-case';
+import { SearchUsersUseCase } from '../users/application/use-cases/search-users.use-case';
+
+import { CreateCampaignUseCase } from '../campaigns/application/use-cases/create-campaign.use-case';
+import { GetCampaignUseCase } from '../campaigns/application/use-cases/get-campaign.use-case';
+import { ListCampaignsUseCase } from '../campaigns/application/use-cases/list-campaigns.use-case';
+import { UpdateCampaignUseCase } from '../campaigns/application/use-cases/update-campaign.use-case';
+import { DeleteCampaignUseCase } from '../campaigns/application/use-cases/delete-campaign.use-case';
+import { InvitePlayerUseCase } from '../campaigns/application/use-cases/invite-player.use-case';
+import { ListMembersUseCase } from '../campaigns/application/use-cases/list-members.use-case';
+import { RemoveMemberUseCase } from '../campaigns/application/use-cases/remove-member.use-case';
 
 // Seeder
 import { SrdSeederService } from '../content/infrastructure/seeding/srd-seeder.service';
@@ -43,6 +57,12 @@ export function createContainer(dataSource: DataSource) {
   const userProfileRepo = new UserProfileTypeormRepository(
     dataSource.getRepository(UserProfileOrmEntity),
   );
+  const campaignRepo = new CampaignTypeormRepository(
+    dataSource.getRepository(CampaignOrmEntity),
+  );
+  const campaignMemberRepo = new CampaignMemberTypeormRepository(
+    dataSource.getRepository(CampaignMemberOrmEntity),
+  );
 
   // Use Cases — manually wired (order matters for dependencies)
   const createAssetUseCase = new CreateAssetUseCase(assetRepo, packRepo);
@@ -55,6 +75,17 @@ export function createContainer(dataSource: DataSource) {
   const getUserProfileUseCase = new GetUserProfileUseCase(userProfileRepo);
   const updateUserProfileUseCase = new UpdateUserProfileUseCase(userProfileRepo);
   const updateUserRoleUseCase = new UpdateUserRoleUseCase(userProfileRepo);
+  const searchUsersUseCase = new SearchUsersUseCase(userProfileRepo);
+
+  const createCampaignUseCase = new CreateCampaignUseCase(campaignRepo);
+  const getCampaignUseCase = new GetCampaignUseCase(campaignRepo);
+  const listCampaignsUseCase = new ListCampaignsUseCase(campaignRepo);
+  const updateCampaignUseCase = new UpdateCampaignUseCase(campaignRepo);
+  const deleteCampaignUseCase = new DeleteCampaignUseCase(campaignRepo);
+
+  const invitePlayerUseCase = new InvitePlayerUseCase(campaignRepo, campaignMemberRepo, userProfileRepo);
+  const listMembersUseCase = new ListMembersUseCase(campaignMemberRepo);
+  const removeMemberUseCase = new RemoveMemberUseCase(campaignMemberRepo);
 
   const createPackUseCase = new CreatePackUseCase(packRepo, createAssetUseCase);
   const getPackUseCase = new GetPackUseCase(packRepo, assetRepo);
@@ -78,6 +109,9 @@ export function createContainer(dataSource: DataSource) {
     // Repositories
     packRepo,
     assetRepo,
+    userProfileRepo,
+    campaignRepo,
+    campaignMemberRepo,
     // Pack Use Cases
     createPackUseCase,
     getPackUseCase,
@@ -101,7 +135,16 @@ export function createContainer(dataSource: DataSource) {
     getUserProfileUseCase,
     updateUserProfileUseCase,
     updateUserRoleUseCase,
-    userProfileRepo,
+    searchUsersUseCase,
+    // Campaigns
+    createCampaignUseCase,
+    getCampaignUseCase,
+    listCampaignsUseCase,
+    updateCampaignUseCase,
+    deleteCampaignUseCase,
+    invitePlayerUseCase,
+    listMembersUseCase,
+    removeMemberUseCase,
   };
 }
 

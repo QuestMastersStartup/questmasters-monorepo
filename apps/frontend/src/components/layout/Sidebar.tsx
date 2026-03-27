@@ -50,9 +50,9 @@ export default function Sidebar() {
             <NavItem to="/marketplace" icon={ShoppingBag} label="Explore" />
           ) : (
             <>
+              <NavItem to="/campaigns" icon={Crown} label="Campaigns" />
               <NavItem to="/library" icon={Book} label="Library" />
               <NavItem to="/marketplace" icon={ShoppingBag} label="Marketplace" />
-              <NavItem to="/workshop" icon={Crown} label="Workshop" />
             </>
           )}
         </nav>

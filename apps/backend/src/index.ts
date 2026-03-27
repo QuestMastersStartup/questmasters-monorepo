@@ -11,6 +11,7 @@ import { rulesRoutes } from './routes/rules.routes';
 import { usersRoutes } from './routes/users.routes';
 import { usernameRoutes } from './routes/username.routes';
 import { avatarRoutes } from './routes/avatar.routes';
+import { campaignsRoutes } from './routes/campaigns.routes';
 import { seedAdminUser } from './infrastructure/seed-admin';
 
 // Initialize database
@@ -61,6 +62,7 @@ const app = new Elysia()
           { name: 'Packs', description: 'Content Pack management' },
           { name: 'Assets', description: 'Asset management within packs' },
           { name: 'Rules', description: 'D&D rules engine operations' },
+          { name: 'Campaigns', description: 'Campaign and session management' },
         ],
       },
     }),
@@ -71,6 +73,7 @@ const app = new Elysia()
       .use(usersRoutes(container))
       .use(usernameRoutes(container))
       .use(avatarRoutes(container))
+      .use(campaignsRoutes(container))
       .use(packsRoutes(container))
       .use(assetsRoutes(container))
       .use(rulesRoutes(container)),
