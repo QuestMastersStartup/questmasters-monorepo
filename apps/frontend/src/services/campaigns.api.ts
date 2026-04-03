@@ -115,8 +115,8 @@ export async function installPacks(id: string, packIds: string[]): Promise<Campa
 }
 
 export async function uninstallPacks(id: string, packIds: string[]): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}/packs`, {
-    method: "DELETE",
+  const response = await fetch(`/api/campaigns/${id}/packs/uninstall`, {
+    method: "POST",
     headers: await getHeaders(),
     body: JSON.stringify({ packIds }),
   });

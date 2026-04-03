@@ -235,9 +235,9 @@ export function campaignsRoutes(container: Container) {
         },
       )
 
-      // DELETE /campaigns/:id/packs — Uninstall packs
-      .delete(
-        '/:id/packs',
+      // POST /campaigns/:id/packs/uninstall — Uninstall packs
+      .post(
+        '/:id/packs/uninstall',
         async ({ params, body, request, set }) => {
           const getResult = await container.getCampaignUseCase.execute(params.id);
           if (getResult.isFailure) {

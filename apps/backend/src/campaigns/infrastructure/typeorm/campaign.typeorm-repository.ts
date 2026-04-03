@@ -3,6 +3,7 @@ import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { Campaign } from '../../domain/entities/campaign.entity';
 import { CampaignRepository, CampaignFilters } from '../../domain/repositories/campaign.repository';
 import { CampaignOrmEntity } from './campaign.typeorm-entity';
+import { CampaignInstalledPackOrmEntity } from './campaign-installed-pack.typeorm-entity';
 import { CampaignMapper } from '../mappers/campaign.mapper';
 
 export class CampaignTypeormRepository implements CampaignRepository {
@@ -10,7 +11,26 @@ export class CampaignTypeormRepository implements CampaignRepository {
 
   async save(campaign: Campaign): Promise<void> {
     const entity = CampaignMapper.toPersistence(campaign);
+    
+    // Capture sync data and remove from entity to avoid TypeORM interference
+    const packsToSync = entity.installedPacks;
+    delete (entity as any).installedPacks;
+
+    // 1. Save campaign metadata only
     await this.repository.save(entity);
+
+    // 2. Manually sync packs
+    const packRepo = this.repository.manager.getRepository(CampaignInstalledPackOrmEntity);
+    
+    // Delete existing and re-insert the current list
+    await packRepo.delete({ campaignId: entity.id });
+    
+    if (packsToSync && packsToSync.length > 0) {
+      await packRepo.insert(packsToSync.map(p => ({
+        campaignId: entity.id,
+        packId: p.packId
+      })));
+    }
   }
 
   async findById(id: UUID): Promise<Campaign | null> {

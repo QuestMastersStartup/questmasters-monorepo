@@ -31,10 +31,7 @@ export class CampaignOrmEntity {
   @Column({ type: 'varchar', length: 20, default: 'active' })
   status: string;
 
-  @OneToMany('CampaignInstalledPackOrmEntity', 'campaign', {
-    cascade: true,
-    orphanedRowAction: 'delete',
-  })
+  @OneToMany('CampaignInstalledPackOrmEntity', 'campaign')
   installedPacks: Relation<any[]>;
 
   @OneToMany('CampaignMemberOrmEntity', 'campaign', {

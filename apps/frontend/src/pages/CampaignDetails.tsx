@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { UserSearch } from "../components/features/campaigns/UserSearch";
 import { MemberCard } from "../components/features/campaigns/MemberCard";
+import { ManagePacksModal } from "../components/features/campaigns/ManagePacksModal";
 import { supabase } from "../lib/supabase";
 
 export const CampaignDetails: React.FC = () => {
@@ -39,6 +40,7 @@ export const CampaignDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showPacksModal, setShowPacksModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -118,6 +120,10 @@ export const CampaignDetails: React.FC = () => {
     } catch (err: any) {
       alert(err.message);
     }
+  };
+
+  const handlePacksUpdated = (updatedCampaign: Campaign) => {
+    setCampaign(updatedCampaign);
   };
 
   if (loading)
@@ -394,11 +400,23 @@ export const CampaignDetails: React.FC = () => {
                       </p>
                     )}
                     {isDM && (
-                      <button className="w-full text-center py-2 text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-widest mt-2 transition-colors">
+                      <button 
+                        onClick={() => setShowPacksModal(true)}
+                        className="w-full text-center py-2 text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-widest mt-2 transition-colors"
+                      >
                         Gestionar Packs
                       </button>
                     )}
                   </div>
+                )}
+
+                {campaign.installedPackIds.length === 0 && isDM && (
+                  <button 
+                    onClick={() => setShowPacksModal(true)}
+                    className="w-full text-center py-2 text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-widest mt-2 transition-colors"
+                  >
+                    Instalar Packs
+                  </button>
                 )}
               </div>
             </div>
@@ -461,6 +479,15 @@ export const CampaignDetails: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+      {/* Manage Packs Modal */}
+      {showPacksModal && campaign && (
+        <ManagePacksModal
+          campaign={campaign}
+          isOpen={showPacksModal}
+          onClose={() => setShowPacksModal(false)}
+          onUpdated={handlePacksUpdated}
+        />
       )}
     </div>
   );

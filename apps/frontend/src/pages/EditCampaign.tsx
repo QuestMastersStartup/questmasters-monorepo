@@ -114,10 +114,12 @@ export const EditCampaign: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2 group">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label htmlFor="edit-campaign-name" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Nombre de la Campaña
             </label>
             <input
+              id="edit-campaign-name"
+              name="edit-campaign-name"
               type="text"
               required
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
@@ -128,10 +130,12 @@ export const EditCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-2 group">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label htmlFor="edit-campaign-description" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Descripción
             </label>
             <textarea
+              id="edit-campaign-description"
+              name="edit-campaign-description"
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none h-32"
               placeholder="Resume de qué tratará la aventura..."
               value={formData.description}
@@ -140,7 +144,7 @@ export const EditCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-4 pt-2">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block">
+            <label htmlFor="edit-campaign-cover-url" className="text-sm font-semibold text-slate-300 ml-1 block">
               Imagen de Portada (Opcional)
             </label>
             
@@ -185,6 +189,8 @@ export const EditCampaign: React.FC = () => {
                     <ImageIcon size={16} />
                   </div>
                   <input
+                    id="edit-campaign-cover-url"
+                    name="edit-campaign-cover-url"
                     type="url"
                     className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                     placeholder="O pega una URL directa..."

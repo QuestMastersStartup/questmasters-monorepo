@@ -86,10 +86,12 @@ export const CreateCampaign: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2 group">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label htmlFor="campaign-name" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Nombre de la Campaña
             </label>
             <input
+              id="campaign-name"
+              name="campaign-name"
               type="text"
               required
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
@@ -100,10 +102,12 @@ export const CreateCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-2 group">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label htmlFor="campaign-system" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Sistema de Juego
             </label>
             <select
+              id="campaign-system"
+              name="campaign-system"
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all appearance-none cursor-pointer"
               value={formData.system}
               onChange={(e) => setFormData({ ...formData, system: e.target.value })}
@@ -116,10 +120,12 @@ export const CreateCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-2 group">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label htmlFor="campaign-description" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Descripción
             </label>
             <textarea
+              id="campaign-description"
+              name="campaign-description"
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none h-32"
               placeholder="Resume de qué tratará la aventura..."
               value={formData.description}
@@ -128,7 +134,7 @@ export const CreateCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-4 pt-2">
-            <label className="text-sm font-semibold text-slate-300 ml-1 block">
+            <label htmlFor="campaign-cover-url" className="text-sm font-semibold text-slate-300 ml-1 block">
               Imagen de Portada (Opcional)
             </label>
             
@@ -173,6 +179,8 @@ export const CreateCampaign: React.FC = () => {
                     <ImageIcon size={16} />
                   </div>
                   <input
+                    id="campaign-cover-url"
+                    name="campaign-cover-url"
                     type="url"
                     className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                     placeholder="O pega una URL directa..."

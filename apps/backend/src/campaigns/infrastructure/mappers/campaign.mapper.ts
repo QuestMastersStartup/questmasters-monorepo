@@ -35,6 +35,7 @@ export class CampaignMapper {
       const cip = new CampaignInstalledPackOrmEntity();
       cip.campaignId = entity.id;
       cip.packId = packId.toString();
+      cip.campaign = entity;
       return cip;
     });
 
