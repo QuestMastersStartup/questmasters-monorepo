@@ -1,0 +1,197 @@
+import { supabase } from "../lib/supabase";
+import { type AbilityScores } from "@questmasters/dnd-rules";
+
+export interface Character {
+  id: string;
+  campaignId: string | null;
+  userId: string;
+  name: string;
+  raceAssetId: string;
+  classAssetId: string;
+  backgroundAssetId: string | null;
+  level: number;
+  stats: AbilityScores;
+  hitPoints: number;
+  portraitUrl: string | null;
+  backstory: string | null;
+  status: string;
+  choices: Record<string, any> | null;
+  // Enriched fields (resolved from assets)
+  raceName: string | null;
+  className: string | null;
+  backgroundName: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCharacterRequest {
+  campaignId?: string;
+  name: string;
+  raceAssetId: string;
+  classAssetId: string;
+  backgroundAssetId?: string;
+  stats: AbilityScores;
+  portraitUrl?: string;
+  backstory?: string;
+  choices?: Record<string, any>;
+  method: 'point-buy' | 'free';
+}
+
+export interface UpdateCharacterRequest {
+  // Owner fields
+  name?: string;
+  backstory?: string | null;
+  portraitUrl?: string | null;
+  choices?: Record<string, any> | null;
+  // DM fields
+  stats?: AbilityScores;
+  level?: number;
+  hitPoints?: number;
+  status?: 'active' | 'dead' | 'retired';
+}
+
+export interface Asset {
+  id: string;
+  packId: string;
+  type: string;
+  index: string;
+  name: string;
+  data: any;
+  compatibleWith: string[];
+}
+
+export interface AvailableAssetsResponse {
+  races: Asset[];
+  classes: Asset[];
+  backgrounds: Asset[];
+}
+
+async function getHeaders() {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  
+  if (session?.access_token) {
+    headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+  
+  return headers;
+}
+
+export async function createCharacter(data: CreateCharacterRequest): Promise<Character> {
+  const response = await fetch("/api/characters", {
+    method: "POST",
+    headers: await getHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al crear el personaje");
+  }
+
+  return response.json();
+}
+
+export async function fetchCharacter(id: string): Promise<Character> {
+  const response = await fetch(`/api/characters/${id}`, {
+    headers: await getHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Personaje no encontrado");
+  }
+
+  return response.json();
+}
+
+export async function updateCharacter(id: string, data: UpdateCharacterRequest): Promise<Character> {
+  const response = await fetch(`/api/characters/${id}`, {
+    method: "PUT",
+    headers: await getHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al actualizar el personaje");
+  }
+
+  return response.json();
+}
+
+export async function deleteCharacter(id: string): Promise<void> {
+  const response = await fetch(`/api/characters/${id}`, {
+    method: "DELETE",
+    headers: await getHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al eliminar el personaje");
+  }
+}
+
+export async function fetchAvailableAssets(filters: {
+  campaignId?: string;
+  type?: string;
+  query?: string;
+}): Promise<AvailableAssetsResponse> {
+  const params = new URLSearchParams();
+  if (filters.campaignId) params.append("campaignId", filters.campaignId);
+  if (filters.type) params.append("type", filters.type);
+  if (filters.query) params.append("query", filters.query);
+
+  const response = await fetch(`/api/characters/available-assets?${params.toString()}`, {
+    headers: await getHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al cargar assets");
+  }
+
+  return response.json();
+}
+
+export async function fetchCharacters(filters: {
+  campaignId?: string;
+}): Promise<Character[]> {
+  const params = new URLSearchParams();
+  if (filters.campaignId) params.append("campaignId", filters.campaignId);
+  
+  const response = await fetch(`/api/characters?${params.toString()}`, {
+    headers: await getHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al listar personajes");
+  }
+
+  return response.json();
+}
+
+export async function uploadCharacterPortrait(file: Blob): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file, "character-portrait.webp");
+
+  const headers = await getHeaders();
+  delete headers["Content-Type"];
+
+  const response = await fetch("/api/campaigns/portrait", {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al subir retrato");
+  }
+
+  const data = await response.json();
+  return data.portraitUrl;
+}

@@ -10,6 +10,12 @@ import {
   type Campaign,
   type CampaignMember,
 } from "../services/campaigns.api";
+import {
+  fetchCharacters,
+  deleteCharacter,
+  updateCharacter,
+  type Character,
+} from "../services/characters.api";
 import { fetchPacks, type Pack } from "../services/api";
 import {
   ArrowLeft,
@@ -25,10 +31,14 @@ import {
   UserPlus,
   X,
   ShieldAlert,
+  Swords,
+  Plus,
 } from "lucide-react";
 import { UserSearch } from "../components/features/campaigns/UserSearch";
 import { MemberCard } from "../components/features/campaigns/MemberCard";
 import { ManagePacksModal } from "../components/features/campaigns/ManagePacksModal";
+import { CharacterCard } from "../components/features/characters/CharacterCard";
+import { ConfirmModal } from "../components/features/characters/ConfirmModal";
 import { supabase } from "../lib/supabase";
 
 export const CampaignDetails: React.FC = () => {
@@ -42,6 +52,16 @@ export const CampaignDetails: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showPacksModal, setShowPacksModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    confirmLabel: string;
+    confirmColor: 'red' | 'amber';
+    action: () => Promise<void>;
+  } | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth
@@ -53,14 +73,16 @@ export const CampaignDetails: React.FC = () => {
     const loadData = async () => {
       if (!id) return;
       try {
-        const [campaignData, packsData, membersData] = await Promise.all([
+        const [campaignData, packsData, membersData, charsData] = await Promise.all([
           fetchCampaign(id),
           fetchPacks(),
           fetchMembers(id),
+          fetchCharacters({ campaignId: id }),
         ]);
         setCampaign(campaignData);
         setPacks(packsData);
         setMembers(membersData);
+        setCharacters(charsData);
       } catch (err: any) {
         console.error(err);
       } finally {
@@ -124,6 +146,52 @@ export const CampaignDetails: React.FC = () => {
 
   const handlePacksUpdated = (updatedCampaign: Campaign) => {
     setCampaign(updatedCampaign);
+  };
+
+  const handleDeleteCharacter = (char: Character) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Eliminar Personaje",
+      description: `¿Estás seguro de que quieres eliminar a "${char.name}"? Esta acción no se puede deshacer.`,
+      confirmLabel: "Eliminar",
+      confirmColor: "red",
+      action: async () => {
+        await deleteCharacter(char.id);
+        setCharacters((prev) => prev.filter((c) => c.id !== char.id));
+      },
+    });
+  };
+
+  const handleStatusChange = (char: Character, newStatus: 'dead' | 'retired') => {
+    const labels = { dead: 'Matar', retired: 'Retirar' };
+    const descs = {
+      dead: `¿Matar a "${char.name}"? Los personajes muertos no pueden volver a activarse.`,
+      retired: `¿Retirar a "${char.name}"? Los personajes retirados no pueden volver a activarse.`,
+    };
+    setConfirmModal({
+      isOpen: true,
+      title: `${labels[newStatus]} Personaje`,
+      description: descs[newStatus],
+      confirmLabel: labels[newStatus],
+      confirmColor: newStatus === 'dead' ? 'red' : 'amber',
+      action: async () => {
+        const updated = await updateCharacter(char.id, { status: newStatus });
+        setCharacters((prev) => prev.map((c) => (c.id === char.id ? updated : c)));
+      },
+    });
+  };
+
+  const executeConfirm = async () => {
+    if (!confirmModal) return;
+    setConfirmLoading(true);
+    try {
+      await confirmModal.action();
+      setConfirmModal(null);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setConfirmLoading(false);
+    }
   };
 
   if (loading)
@@ -310,6 +378,47 @@ export const CampaignDetails: React.FC = () => {
                   )}
                 </div>
               </section>
+
+              {/* Characters Section */}
+              <section className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2 border-l-4 border-amber-500 pl-3">
+                    <Swords size={20} className="text-amber-400" />
+                    Personajes
+                  </h3>
+                  {currentUserId && (
+                    <Link
+                      to={`/campaigns/${campaign.id}/characters/create`}
+                      className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg shadow-amber-600/20 text-sm"
+                    >
+                      <Plus size={16} />
+                      Crear Personaje
+                    </Link>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {characters.map((char) => (
+                    <CharacterCard
+                      key={char.id}
+                      character={char}
+                      isDM={isDM}
+                      isOwner={currentUserId === char.userId}
+                      onEdit={() => navigate(`/campaigns/${campaign.id}/characters/${char.id}/edit`)}
+                      onDelete={() => handleDeleteCharacter(char)}
+                      onStatusChange={(status) => handleStatusChange(char, status)}
+                    />
+                  ))}
+                  {characters.length === 0 && (
+                    <div className="col-span-full py-12 text-center bg-slate-900/20 rounded-3xl border-2 border-dashed border-slate-800">
+                      <Swords className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+                      <p className="text-slate-500 font-medium">
+                        Aún no hay personajes en esta campaña.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
 
             {/* Side Column */}
@@ -487,6 +596,19 @@ export const CampaignDetails: React.FC = () => {
           isOpen={showPacksModal}
           onClose={() => setShowPacksModal(false)}
           onUpdated={handlePacksUpdated}
+        />
+      )}
+      {/* Confirm Modal */}
+      {confirmModal && (
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          title={confirmModal.title}
+          description={confirmModal.description}
+          confirmLabel={confirmModal.confirmLabel}
+          confirmColor={confirmModal.confirmColor}
+          loading={confirmLoading}
+          onConfirm={executeConfirm}
+          onCancel={() => setConfirmModal(null)}
         />
       )}
     </div>

@@ -24,6 +24,12 @@ export interface AssetRepository {
     type: AssetType,
     index: string,
   ): Promise<boolean>;
+  findByIds(ids: UUID[]): Promise<Asset[]>;
+  search(filters: {
+    type?: string;
+    name?: string;
+    packIds?: string[];
+  }): Promise<Asset[]>;
 }
 
 export const ASSET_REPOSITORY = Symbol('AssetRepository');

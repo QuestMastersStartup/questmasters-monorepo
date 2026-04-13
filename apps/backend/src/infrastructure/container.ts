@@ -5,6 +5,7 @@ import { ContentPackOrmEntity } from '../content/infrastructure/typeorm/content-
 import { AssetOrmEntity } from '../content/infrastructure/typeorm/asset.typeorm-entity';
 import { CampaignOrmEntity } from '../campaigns/infrastructure/typeorm/campaign.typeorm-entity';
 import { CampaignMemberOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-entity';
+import { CharacterOrmEntity } from '../characters/infrastructure/typeorm/character.typeorm-entity';
 
 // Repository Implementations
 import { ContentPackTypeormRepository } from '../content/infrastructure/typeorm/content-pack.typeorm-repository';
@@ -13,6 +14,7 @@ import { UserProfileTypeormRepository } from '../users/infrastructure/adapters/o
 import { UserProfileOrmEntity } from '../users/infrastructure/adapters/out/persistence/typeorm/user-profile.typeorm-entity';
 import { CampaignTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign.typeorm-repository';
 import { CampaignMemberTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-repository';
+import { CharacterTypeormRepository } from '../characters/infrastructure/typeorm/character.typeorm-repository';
 
 // Use Cases
 import { CreatePackUseCase } from '../content/application/use-cases/create-pack.use-case';
@@ -43,6 +45,13 @@ import { InvitePlayerUseCase } from '../campaigns/application/use-cases/invite-p
 import { ListMembersUseCase } from '../campaigns/application/use-cases/list-members.use-case';
 import { RemoveMemberUseCase } from '../campaigns/application/use-cases/remove-member.use-case';
 
+import { CreateCharacterUseCase } from '../characters/application/use-cases/create-character.use-case';
+import { GetCharacterUseCase } from '../characters/application/use-cases/get-character.use-case';
+import { ListCharactersUseCase } from '../characters/application/use-cases/list-characters.use-case';
+import { UpdateCharacterUseCase } from '../characters/application/use-cases/update-character.use-case';
+import { DeleteCharacterUseCase } from '../characters/application/use-cases/delete-character.use-case';
+import { ListAvailableAssetsUseCase } from '../characters/application/use-cases/list-available-assets.use-case';
+
 // Seeder
 import { SrdSeederService } from '../content/infrastructure/seeding/srd-seeder.service';
 
@@ -63,6 +72,9 @@ export function createContainer(dataSource: DataSource) {
   const campaignMemberRepo = new CampaignMemberTypeormRepository(
     dataSource.getRepository(CampaignMemberOrmEntity),
   );
+  const characterRepo = new CharacterTypeormRepository(
+    dataSource.getRepository(CharacterOrmEntity),
+  );
 
   // Use Cases — manually wired (order matters for dependencies)
   const createAssetUseCase = new CreateAssetUseCase(assetRepo, packRepo);
@@ -82,6 +94,13 @@ export function createContainer(dataSource: DataSource) {
   const listCampaignsUseCase = new ListCampaignsUseCase(campaignRepo);
   const updateCampaignUseCase = new UpdateCampaignUseCase(campaignRepo);
   const deleteCampaignUseCase = new DeleteCampaignUseCase(campaignRepo);
+
+  const createCharacterUseCase = new CreateCharacterUseCase(characterRepo, campaignRepo, campaignMemberRepo, assetRepo);
+  const getCharacterUseCase = new GetCharacterUseCase(characterRepo);
+  const listCharactersUseCase = new ListCharactersUseCase(characterRepo);
+  const updateCharacterUseCase = new UpdateCharacterUseCase(characterRepo, campaignMemberRepo);
+  const deleteCharacterUseCase = new DeleteCharacterUseCase(characterRepo, campaignMemberRepo);
+  const listAvailableAssetsUseCase = new ListAvailableAssetsUseCase(assetRepo, campaignRepo);
 
   const invitePlayerUseCase = new InvitePlayerUseCase(campaignRepo, campaignMemberRepo, userProfileRepo);
   const listMembersUseCase = new ListMembersUseCase(campaignMemberRepo);
@@ -112,6 +131,7 @@ export function createContainer(dataSource: DataSource) {
     userProfileRepo,
     campaignRepo,
     campaignMemberRepo,
+    characterRepo,
     // Pack Use Cases
     createPackUseCase,
     getPackUseCase,
@@ -142,6 +162,14 @@ export function createContainer(dataSource: DataSource) {
     listCampaignsUseCase,
     updateCampaignUseCase,
     deleteCampaignUseCase,
+    // Characters
+    createCharacterUseCase,
+    getCharacterUseCase,
+    listCharactersUseCase,
+    updateCharacterUseCase,
+    deleteCharacterUseCase,
+    listAvailableAssetsUseCase,
+    // Members
     invitePlayerUseCase,
     listMembersUseCase,
     removeMemberUseCase,

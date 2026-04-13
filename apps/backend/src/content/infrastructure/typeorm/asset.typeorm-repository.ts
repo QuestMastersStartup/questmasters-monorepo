@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Asset } from '@content/domain/entities/asset.entity';
 import {
   AssetRepository,
@@ -85,5 +85,44 @@ export class AssetTypeormRepository implements AssetRepository {
       },
     });
     return count > 0;
+  }
+
+  async findByIds(ids: UUID[]): Promise<Asset[]> {
+    if (ids.length === 0) return [];
+    const stringIds = ids.map((id) => id.toString());
+    const entities = await this.repository.find({
+      where: { id: In(stringIds) },
+    });
+    return entities.map(AssetMapper.toDomain);
+  }
+
+  async search(filters: {
+    type?: string;
+    name?: string;
+    packIds?: string[];
+  }): Promise<Asset[]> {
+    const queryBuilder = this.repository.createQueryBuilder('asset');
+
+    if (filters.type) {
+      queryBuilder.andWhere('asset.type = :type', { type: filters.type });
+    }
+
+    if (filters.name) {
+      queryBuilder.andWhere('asset.name ILIKE :name', {
+        name: `%${filters.name}%`,
+      });
+    }
+
+    if (filters.packIds && filters.packIds.length > 0) {
+      queryBuilder.andWhere('asset.packId IN (:...packIds)', {
+        packIds: filters.packIds,
+      });
+    }
+
+    queryBuilder.orderBy('asset.name', 'ASC');
+    queryBuilder.limit(50); // Hard limit for safety
+
+    const entities = await queryBuilder.getMany();
+    return entities.map(AssetMapper.toDomain);
   }
 }
