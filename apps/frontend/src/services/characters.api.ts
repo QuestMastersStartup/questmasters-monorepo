@@ -24,6 +24,11 @@ export interface Character {
   updatedAt: string;
 }
 
+/** Character enriquecido con campaignName — devuelto por GET /characters/me */
+export interface MyCharacter extends Character {
+  campaignName: string | null;
+}
+
 export interface CreateCharacterRequest {
   campaignId?: string;
   name: string;
@@ -161,7 +166,7 @@ export async function fetchCharacters(filters: {
 }): Promise<Character[]> {
   const params = new URLSearchParams();
   if (filters.campaignId) params.append("campaignId", filters.campaignId);
-  
+
   const response = await fetch(`/api/characters?${params.toString()}`, {
     headers: await getHeaders(),
   });
@@ -169,6 +174,22 @@ export async function fetchCharacters(filters: {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "Error al listar personajes");
+  }
+
+  return response.json();
+}
+
+/** Devuelve todos los personajes del usuario autenticado con campaignName resuelto.
+ *  Llama a GET /characters (sin campaignId) que activa la rama "Mis Personajes"
+ *  del backend e incluye el campo campaignName en cada item. */
+export async function fetchMyCharacters(): Promise<MyCharacter[]> {
+  const response = await fetch("/api/characters", {
+    headers: await getHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Error al listar tus personajes");
   }
 
   return response.json();

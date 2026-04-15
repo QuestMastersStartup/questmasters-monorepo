@@ -23,7 +23,9 @@ export class ListCharactersUseCase {
       }
 
       return Result.ok(characters);
-    } catch {
+    } catch (e) {
+      // Log real error para debug (ej: tabla "characters" no existe — ejecutar migraciones)
+      console.error('[ListCharactersUseCase] DB error:', String(e));
       return Result.fail(CharacterError.NOT_FOUND);
     }
   }

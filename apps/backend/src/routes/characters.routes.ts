@@ -81,6 +81,9 @@ export function charactersRoutes(container: Container) {
   return new Elysia({ prefix: '/characters' })
 
     // ─── GET /characters — List characters ────────────────────────────
+    // Cuando NO hay campaignId: devuelve los personajes del usuario autenticado
+    // con campaignName resuelto (usado por la página "Mis Personajes").
+    // Cuando hay campaignId: devuelve los personajes de esa campaña.
     .get(
       '/',
       async ({ query, request, set }) => {
@@ -88,7 +91,7 @@ export function charactersRoutes(container: Container) {
 
         const result = await container.listCharactersUseCase.execute({
           campaignId: query.campaignId,
-          userId: query.campaignId ? undefined : user.id, // If no campaignId, list user's characters
+          userId: query.campaignId ? undefined : user.id,
         });
 
         if (result.isFailure) {
@@ -96,13 +99,39 @@ export function charactersRoutes(container: Container) {
           return { message: result.error };
         }
 
-        const names = await resolveAssetNames(result.value, container.assetRepo);
-        return result.value.map((c) => CharacterMapper.toEnrichedResponse(c, names));
+        const assetNames = await resolveAssetNames(result.value, container.assetRepo);
+
+        // Sin filtro de campaña → vista "Mis Personajes": incluir campaignName
+        if (!query.campaignId) {
+          const campaignIds = new Set<string>();
+          for (const c of result.value) {
+            if (c.campaignId) campaignIds.add(c.campaignId.toString());
+          }
+
+          const campaignNameMap = new Map<string, string>();
+          if (campaignIds.size > 0) {
+            const campaigns = await Promise.all(
+              [...campaignIds].map((id) => container.campaignRepo.findById(UUID.fromString(id))),
+            );
+            for (const campaign of campaigns) {
+              if (campaign) campaignNameMap.set(campaign.id.toString(), campaign.name);
+            }
+          }
+
+          return result.value.map((c) => ({
+            ...CharacterMapper.toEnrichedResponse(c, assetNames),
+            campaignName: c.campaignId
+              ? (campaignNameMap.get(c.campaignId.toString()) ?? null)
+              : null,
+          }));
+        }
+
+        return result.value.map((c) => CharacterMapper.toEnrichedResponse(c, assetNames));
       },
       {
         query: CharacterQuerySchema,
         detail: {
-          summary: 'List characters (by campaign or my own)',
+          summary: 'List characters (by campaign or my own with campaign names)',
           tags: ['Characters'],
         },
       },

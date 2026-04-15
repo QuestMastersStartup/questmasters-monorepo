@@ -73,20 +73,26 @@ export const CampaignDetails: React.FC = () => {
     const loadData = async () => {
       if (!id) return;
       try {
-        const [campaignData, packsData, membersData, charsData] = await Promise.all([
+        const [campaignData, packsData, membersData] = await Promise.all([
           fetchCampaign(id),
           fetchPacks(),
           fetchMembers(id),
-          fetchCharacters({ campaignId: id }),
         ]);
         setCampaign(campaignData);
         setPacks(packsData);
         setMembers(membersData);
-        setCharacters(charsData);
       } catch (err: any) {
         console.error(err);
       } finally {
         setLoading(false);
+      }
+      // Character fetch is non-fatal — falls back to [] if table missing (pending migrations)
+      try {
+        const charsData = await fetchCharacters({ campaignId: id });
+        setCharacters(charsData);
+      } catch (err: any) {
+        console.error('[CampaignDetails] Characters load failed:', err.message);
+        setCharacters([]);
       }
     };
     loadData();

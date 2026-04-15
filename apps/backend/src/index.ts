@@ -3,6 +3,8 @@ import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { rateLimit } from 'elysia-rate-limit';
 import { swagger } from '@elysiajs/swagger';
+import { env } from './infrastructure/env';
+import { logger } from './shared/infrastructure/logger';
 import { createDataSource } from './infrastructure/database';
 import { createContainer } from './infrastructure/container';
 import { packsRoutes } from './routes/packs.routes';
@@ -16,6 +18,9 @@ import { charactersRoutes } from './routes/characters.routes';
 import { checkEmailRoutes } from './routes/check-email.routes';
 import { seedAdminUser } from './infrastructure/seed-admin';
 
+// US-0.7: Env validation happens at import — fails fast if vars are missing
+logger.info('Environment validated', { NODE_ENV: env.NODE_ENV, PORT: env.PORT });
+
 // Initialize database
 const dataSource = await createDataSource();
 
@@ -26,13 +31,32 @@ const container = createContainer(dataSource);
 await container.srdSeederService.onApplicationBootstrap();
 await seedAdminUser(dataSource);
 
-const allowedOrigins = Bun.env.ALLOWED_ORIGINS?.split(',') ?? [
+const allowedOrigins = env.ALLOWED_ORIGINS?.split(',') ?? [
   'http://localhost:3001',
   'http://localhost:3000',
 ];
 
 // Create Elysia app
 const app = new Elysia()
+  // US-0.6: Health check endpoint
+  .get('/health', () => ({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  }))
+  // US-0.6: Request logging middleware
+  .onRequest(({ request }) => {
+    (request as any)._startTime = Date.now();
+  })
+  .onAfterResponse(({ request, set }) => {
+    const duration = Date.now() - ((request as any)._startTime ?? Date.now());
+    logger.info('request', {
+      method: request.method,
+      path: new URL(request.url).pathname,
+      status: set.status ?? 200,
+      duration_ms: duration,
+    });
+  })
   .use(
     cors({
       origin: (request) => {
@@ -89,12 +113,12 @@ const app = new Elysia()
       set.status = 401;
       return { message: 'Unauthorized' };
     }
-    console.error(error);
+    logger.error('Unhandled server error', { error: String(error) });
     set.status = 500;
     return { message: 'Internal server error' };
   })
-  .listen(Bun.env.PORT ?? 3000);
+  .listen(env.PORT);
 
-console.log(
-  `🦊 QuestMasters API running at http://${app.server?.hostname}:${app.server?.port}`,
-);
+logger.info(`QuestMasters API running`, {
+  url: `http://${app.server?.hostname}:${app.server?.port}`,
+});

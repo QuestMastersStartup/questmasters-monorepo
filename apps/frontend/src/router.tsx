@@ -15,6 +15,7 @@ import { CampaignDetails } from "./pages/CampaignDetails";
 import { EditCampaign } from "./pages/EditCampaign";
 import { CreateCharacter } from "./pages/CreateCharacter";
 import { EditCharacter } from "./pages/EditCharacter";
+import { Characters } from "./pages/Characters";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: "characters",
         children: [
+          {
+            index: true,
+            element: <ProtectedRoute><Characters /></ProtectedRoute>,
+          },
           {
             path: "create",
             element: <ProtectedRoute><CreateCharacter /></ProtectedRoute>,

@@ -5,6 +5,7 @@ import { UserProfileOrmEntity } from '../users/infrastructure/adapters/out/persi
 import { CampaignOrmEntity } from '../campaigns/infrastructure/typeorm/campaign.typeorm-entity';
 import { CampaignInstalledPackOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-installed-pack.typeorm-entity';
 import { CampaignMemberOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-entity';
+import { CharacterOrmEntity } from '../characters/infrastructure/typeorm/character.typeorm-entity';
 
 export async function createDataSource(): Promise<DataSource> {
   const ds = new DataSource({
@@ -17,10 +18,12 @@ export async function createDataSource(): Promise<DataSource> {
       CampaignOrmEntity,
       CampaignInstalledPackOrmEntity,
       CampaignMemberOrmEntity,
+      CharacterOrmEntity,
     ],
+    // Migrations run explicitly via `bun run migration:run` — never at startup.
+    // Do NOT enable migrationsRun or synchronize: they conflict with each other
+    // and cause FK failures on fresh databases.
     migrations: [import.meta.dir + '/../migrations/*.ts'],
-    migrationsRun: true,
-    synchronize: process.env.NODE_ENV === 'development',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   });
 

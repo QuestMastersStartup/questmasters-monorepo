@@ -31,6 +31,11 @@ services:
       DATABASE_URL: postgresql://admin:password123@postgres:5432/questmasters_local
       DB_SSL: "false"
       PORT: 3000
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    env_file:
+      - apps/backend/.env
     depends_on:
       postgres:
         condition: service_healthy

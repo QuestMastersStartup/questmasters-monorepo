@@ -34,6 +34,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@questmasters/dnd-rules": "workspace:^",
+        "@sentry/react": "^10.48.0",
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",
         "lodash": "^4.17.21",
@@ -462,6 +463,20 @@
     "@scalar/themes": ["@scalar/themes@0.9.86", "", { "dependencies": { "@scalar/types": "0.1.7" } }, "sha512-QUHo9g5oSWi+0Lm1vJY9TaMZRau8LHg+vte7q5BVTBnu6NuQfigCaN+ouQ73FqIVd96TwMO6Db+dilK1B+9row=="],
 
     "@scalar/types": ["@scalar/types@0.0.12", "", { "dependencies": { "@scalar/openapi-types": "0.1.1", "@unhead/schema": "^1.9.5" } }, "sha512-XYZ36lSEx87i4gDqopQlGCOkdIITHHEvgkuJFrXFATQs9zHARop0PN0g4RZYWj+ZpCUclOcaOjbCt8JGe22mnQ=="],
+
+    "@sentry-internal/browser-utils": ["@sentry-internal/browser-utils@10.48.0", "", { "dependencies": { "@sentry/core": "10.48.0" } }, "sha512-SCiTLBXzugFKxev6NoKYBIhQoDk0gUh0AVVVepCBqfCJiWBG01Zvv0R5tCVohr4cWRllkQ8mlBdNQd/I7s9tdA=="],
+
+    "@sentry-internal/feedback": ["@sentry-internal/feedback@10.48.0", "", { "dependencies": { "@sentry/core": "10.48.0" } }, "sha512-tGkEyOM1HDS9qebDphUMEnyk3qq/50AnuTBiFmMJyjNzowylVGmRRk0sr3xkmbVHCDXQCiYnDmSVlJ2x4SDMrQ=="],
+
+    "@sentry-internal/replay": ["@sentry-internal/replay@10.48.0", "", { "dependencies": { "@sentry-internal/browser-utils": "10.48.0", "@sentry/core": "10.48.0" } }, "sha512-sevRTePfuk4PNuz9KAKpmTZEomAU0aLXyIhOwA0OnUDdxPhkY8kq5lwDbuxTHv6DQUjUX3YgFbY45VH1JEqHKA=="],
+
+    "@sentry-internal/replay-canvas": ["@sentry-internal/replay-canvas@10.48.0", "", { "dependencies": { "@sentry-internal/replay": "10.48.0", "@sentry/core": "10.48.0" } }, "sha512-9nWuN2z4O+iwbTfuYV5ZmngBgJU/ZxfOo47A5RJP3Nu/kl59aJ1lUhILYOKyeNOIC/JyeERmpIcTxnlPXQzZ3Q=="],
+
+    "@sentry/browser": ["@sentry/browser@10.48.0", "", { "dependencies": { "@sentry-internal/browser-utils": "10.48.0", "@sentry-internal/feedback": "10.48.0", "@sentry-internal/replay": "10.48.0", "@sentry-internal/replay-canvas": "10.48.0", "@sentry/core": "10.48.0" } }, "sha512-4jt2zX2ExgFcNe2x+W+/k81fmDUsOrquGtt028CiGuDuma6kEsWBI4JbooT1jhj2T+eeUxe3YGbM23Zhh7Ghhw=="],
+
+    "@sentry/core": ["@sentry/core@10.48.0", "", {}, "sha512-h8F+fXVwYC9ro5ZaO8V+v3vqc0awlXHGblEAuVxSGgh4IV/oFX+QVzXeDTTrFOFS6v/Vn5vAyu240eJrJAS6/g=="],
+
+    "@sentry/react": ["@sentry/react@10.48.0", "", { "dependencies": { "@sentry/browser": "10.48.0", "@sentry/core": "10.48.0" }, "peerDependencies": { "react": "^16.14.0 || 17.x || 18.x || 19.x" } }, "sha512-uc93vKjmu6gNns+JAX4qquuxWpAMit0uGPA1TYlMjct9NG1uX3TkDPJAr9Pgd1lOXx8mKqCmj5fK33QeExMpPw=="],
 
     "@shikijs/core": ["@shikijs/core@3.21.0", "", { "dependencies": { "@shikijs/types": "3.21.0", "@shikijs/vscode-textmate": "10.0.2", "@types/hast": "3.0.4", "hast-util-to-html": "9.0.5" } }, "sha512-AXSQu/2n1UIQekY8euBJlvFYZIw0PHY63jUzGbrOma4wPxzznJXTXkri+QcHeBNaFxiiOljKxxJkVSoB3PjbyA=="],
 
