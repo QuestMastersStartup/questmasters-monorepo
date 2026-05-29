@@ -59,8 +59,8 @@ async function resolveAssetNames(
 ): Promise<Map<string, string>> {
   const assetIds = new Set<string>();
   for (const c of characters) {
-    assetIds.add(c.raceAssetId.toString());
-    assetIds.add(c.classAssetId.toString());
+    if (c.raceAssetId) assetIds.add(c.raceAssetId.toString());
+    if (c.classAssetId) assetIds.add(c.classAssetId.toString());
     if (c.backgroundAssetId) assetIds.add(c.backgroundAssetId.toString());
   }
 
@@ -147,6 +147,10 @@ export function charactersRoutes(container: Container) {
           campaignId: query.campaignId,
           type: query.type,
           query: query.query,
+          system: query.system,
+          packIds: query.packIds
+            ? query.packIds.split(',').map(id => id.trim()).filter(Boolean)
+            : undefined,
         });
 
         if (result.isFailure) {
@@ -207,8 +211,9 @@ export function charactersRoutes(container: Container) {
           ...cleaned,
           userId: user.id,
           name: cleaned.name!,
-          raceAssetId: cleaned.raceAssetId!,
-          classAssetId: cleaned.classAssetId!,
+          raceAssetId: cleaned.raceAssetId ?? null,
+          classAssetId: cleaned.classAssetId ?? null,
+          backgroundAssetId: cleaned.backgroundAssetId ?? undefined,
           stats: cleaned.stats!,
           method: cleaned.method ?? 'point-buy',
         });

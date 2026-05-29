@@ -16,14 +16,14 @@ export interface CreateCharacterDto {
   campaignId?: string;
   userId: string;
   name: string;
-  raceAssetId: string;
-  classAssetId: string;
-  backgroundAssetId?: string;
+  raceAssetId?: string | null;
+  classAssetId?: string | null;
+  backgroundAssetId?: string | null;
   stats: AbilityScores;
   portraitUrl?: string;
   backstory?: string;
   choices?: Record<string, any>;
-  method: 'point-buy' | 'free';
+  method: 'point-buy' | 'free' | 'libre';
 }
 
 export class CreateCharacterUseCase {
@@ -37,6 +37,33 @@ export class CreateCharacterUseCase {
   async execute(dto: CreateCharacterDto): Promise<Result<Character, CharacterError>> {
     try {
       const campaignUuid = dto.campaignId ? UUID.fromString(dto.campaignId) : null;
+
+      // ── Libre mode: no asset validation, free stats ───────────────────
+      if (dto.method === 'libre') {
+        for (const stat of Object.values(dto.stats)) {
+          if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
+        }
+        const character = Character.create({
+          campaignId: dto.campaignId,
+          userId: dto.userId,
+          name: dto.name,
+          raceAssetId: null,
+          classAssetId: null,
+          backgroundAssetId: undefined,
+          stats: dto.stats,
+          hitPoints: 10, // default for d10 at level 1
+          portraitUrl: dto.portraitUrl,
+          backstory: dto.backstory,
+          choices: dto.choices ?? {},
+        });
+        await this.characterRepo.save(character);
+        return Result.ok(character);
+      }
+
+      // ── Standard and Point-buy modes require asset IDs ────────────────
+      if (!dto.raceAssetId || !dto.classAssetId) {
+        return Result.fail(CharacterError.INVALID_STATS);
+      }
 
       // 1. Validation Logic
       if (campaignUuid) {
@@ -105,7 +132,7 @@ export class CreateCharacterUseCase {
         name: dto.name,
         raceAssetId: dto.raceAssetId,
         classAssetId: dto.classAssetId,
-        backgroundAssetId: dto.backgroundAssetId,
+        backgroundAssetId: dto.backgroundAssetId ?? undefined,
         stats: dto.stats,
         hitPoints: hitPointsResult.maxHp,
         portraitUrl: dto.portraitUrl,

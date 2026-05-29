@@ -1,6 +1,0 @@
-﻿$ bun x typeorm-ts-node-commonjs migration:run -d src/data-source.ts
-[30m[41mError during migration run:[49m[39m
-Error: Unable to open file: "C:\Users\bryan\OneDrive\Documentos\CODE\QUESTMASTERS\questmasters-monorepo\apps\backend\src\data-source.ts". Unknown file extension ".ts" for C:\Users\bryan\OneDrive\Documentos\CODE\QUESTMASTERS\questmasters-monorepo\apps\backend\src\data-source.ts
-    at Function.loadDataSource (C:\Users\bryan\OneDrive\Documentos\CODE\QUESTMASTERS\questmasters-monorepo\node_modules\.bun\typeorm@0.3.28+e4fee0ea3ffed9b5\node_modules\src\commands\CommandUtils.ts:21:19)
-    at async Object.handler (C:\Users\bryan\OneDrive\Documentos\CODE\QUESTMASTERS\questmasters-monorepo\node_modules\.bun\typeorm@0.3.28+e4fee0ea3ffed9b5\node_modules\src\commands\MigrationRunCommand.ts:42:26)
-error: script "migration:run" exited with code 1

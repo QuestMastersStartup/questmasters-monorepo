@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run turbo lint --filter=api
+
+      - name: Type Check
+        run: bun run turbo check-types --filter=api
+
+      - name: Test
+        run: bun run turbo test --filter=api
+
+      - name: Build
+        run: bun run turbo build --filter=api
+
+  client:
+    name: Client
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run turbo lint --filter=client
+
+      - name: Type Check
+        run: bun run turbo check-types --filter=client
+
+      - name: Build
+        run: bun run turbo build --filter=client
+
+  landing:
+    name: Landing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run turbo build --filter=landing
+
+  dnd-rules:
+    name: D&D Rules Engine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run turbo lint --filter=@questmasters/dnd-rules
+
+      - name: Test
+        run: bun run turbo test --filter=@questmasters/dnd-rules
+
+      - name: Build
+        run: bun run turbo build --filter=@questmasters/dnd-rules

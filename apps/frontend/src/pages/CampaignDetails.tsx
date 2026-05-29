@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { CharacterCreationWizard } from "../components/features/characters/CharacterCreationWizard";
 import {
   fetchCampaign,
   deleteCampaign,
@@ -51,6 +52,7 @@ export const CampaignDetails: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showPacksModal, setShowPacksModal] = useState(false);
+  const [showCharWizard, setShowCharWizard] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [confirmModal, setConfirmModal] = useState<{
@@ -393,13 +395,13 @@ export const CampaignDetails: React.FC = () => {
                     Personajes
                   </h3>
                   {currentUserId && (
-                    <Link
-                      to={`/campaigns/${campaign.id}/characters/create`}
+                    <button
+                      onClick={() => setShowCharWizard(true)}
                       className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-lg shadow-amber-600/20 text-sm"
                     >
                       <Plus size={16} />
                       Crear Personaje
-                    </Link>
+                    </button>
                   )}
                 </div>
 
@@ -602,6 +604,12 @@ export const CampaignDetails: React.FC = () => {
           isOpen={showPacksModal}
           onClose={() => setShowPacksModal(false)}
           onUpdated={handlePacksUpdated}
+        />
+      )}
+      {showCharWizard && campaign && (
+        <CharacterCreationWizard
+          campaignId={campaign.id}
+          onClose={() => setShowCharWizard(false)}
         />
       )}
       {/* Confirm Modal */}

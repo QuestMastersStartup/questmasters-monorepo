@@ -30,8 +30,8 @@ export class CharacterMapper {
     entity.campaignId = domain.campaignId?.toString() ?? null;
     entity.userId = domain.userId;
     entity.name = domain.name;
-    entity.raceAssetId = domain.raceAssetId.toString();
-    entity.classAssetId = domain.classAssetId.toString();
+    entity.raceAssetId = domain.raceAssetId?.toString() ?? null;
+    entity.classAssetId = domain.classAssetId?.toString() ?? null;
     entity.backgroundAssetId = domain.backgroundAssetId?.toString() ?? null;
     entity.level = domain.level;
     entity.stats = domain.stats;
@@ -51,8 +51,8 @@ export class CharacterMapper {
       campaignId: domain.campaignId?.toString() ?? null,
       userId: domain.userId,
       name: domain.name,
-      raceAssetId: domain.raceAssetId.toString(),
-      classAssetId: domain.classAssetId.toString(),
+      raceAssetId: domain.raceAssetId?.toString() ?? null,
+      classAssetId: domain.classAssetId?.toString() ?? null,
       backgroundAssetId: domain.backgroundAssetId?.toString() ?? null,
       level: domain.level,
       stats: domain.stats,
@@ -75,8 +75,8 @@ export class CharacterMapper {
   ) {
     return {
       ...CharacterMapper.toResponse(domain),
-      raceName: assetNames.get(domain.raceAssetId.toString()) ?? null,
-      className: assetNames.get(domain.classAssetId.toString()) ?? null,
+      raceName: domain.raceAssetId ? (assetNames.get(domain.raceAssetId.toString()) ?? null) : null,
+      className: domain.classAssetId ? (assetNames.get(domain.classAssetId.toString()) ?? null) : null,
       backgroundName: domain.backgroundAssetId
         ? assetNames.get(domain.backgroundAssetId.toString()) ?? null
         : null,

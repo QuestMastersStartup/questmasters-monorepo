@@ -15,17 +15,19 @@ const AbilityScoresSchema = t.Object({
 
 export const CreateCharacterSchema = t.Object({
   campaignId: t.Optional(t.String({ format: 'uuid' })),
-  name: t.String({ minLength: 1, maxLength: 100 }),
-  raceAssetId: t.String({ format: 'uuid' }),
-  classAssetId: t.String({ format: 'uuid' }),
-  backgroundAssetId: t.Optional(t.String({ format: 'uuid' })),
+  name: t.String({ minLength: 1, maxLength: 80 }),
+  // null when method === 'libre' (libre characters have no bound asset)
+  raceAssetId: t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
+  classAssetId: t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
+  backgroundAssetId: t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
   stats: AbilityScoresSchema,
   portraitUrl: t.Optional(t.String()),
-  backstory: t.Optional(t.String({ maxLength: 5000 })),
+  backstory: t.Optional(t.String({ maxLength: 2000 })),
   choices: t.Optional(t.Record(t.String(), t.Any())),
   method: t.Union([
     t.Literal('point-buy'),
     t.Literal('free'),
+    t.Literal('libre'),
   ], { default: 'point-buy' }),
 });
 
@@ -60,4 +62,8 @@ export const AvailableAssetsQuerySchema = t.Object({
   campaignId: t.Optional(t.String()),
   type: t.Optional(t.String()),
   query: t.Optional(t.String()),
+  // Vanilla mode: filter assets by compatible system (e.g. 'dnd-5e-2024')
+  system: t.Optional(t.String()),
+  // Personalizado mode: comma-separated pack IDs to include
+  packIds: t.Optional(t.String()),
 });

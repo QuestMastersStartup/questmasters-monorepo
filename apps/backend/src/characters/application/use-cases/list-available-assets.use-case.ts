@@ -9,6 +9,10 @@ export interface ListAvailableAssetsDto {
   campaignId?: string;
   type?: string;
   query?: string;
+  /** Vanilla mode: filter by system compatibility (e.g. 'dnd-5e-2024') */
+  system?: string;
+  /** Personalizado mode: explicit list of pack IDs to include */
+  packIds?: string[];
 }
 
 export interface AvailableAssetsResult {
@@ -25,29 +29,38 @@ export class ListAvailableAssetsUseCase {
 
   async execute(dto: ListAvailableAssetsDto): Promise<Result<AvailableAssetsResult, CharacterError>> {
     try {
-      const filters: { type?: string; name?: string; packIds?: string[] } = {
+      const baseFilters: { type?: string; name?: string; packIds?: string[] } = {
         type: dto.type,
         name: dto.query,
       };
 
-      if (dto.campaignId) {
+      // Priority: explicit packIds > campaignId > system > all
+      if (dto.packIds && dto.packIds.length > 0) {
+        // Personalizado mode: use the packs the user explicitly chose
+        baseFilters.packIds = dto.packIds;
+      } else if (dto.campaignId) {
+        // Campaign mode: use campaign's installed packs (existing behaviour)
         const campaign = await this.campaignRepo.findById(UUID.fromString(dto.campaignId));
         if (!campaign) return Result.fail(CharacterError.NOT_FOUND);
-        filters.packIds = campaign.installedPackIds.map(id => id.toString());
-      } else {
-        // For free characters, searching in all active packs is standard
-        // But the repository 'search' method handles the null packIds case by not filtering by pack.
+        baseFilters.packIds = campaign.installedPackIds.map(id => id.toString());
       }
+      // Vanilla system filter and "all packs" fall through to post-filter below
 
-      const allAssets = await this.assetRepo.search(filters);
+      const allAssets = await this.assetRepo.search(baseFilters);
 
-      const result: AvailableAssetsResult = {
-        races: allAssets.filter(a => a.type.toString() === 'race'),
-        classes: allAssets.filter(a => a.type.toString() === 'class'),
-        backgrounds: allAssets.filter(a => a.type.toString() === 'background'),
-      };
+      // Vanilla mode: filter by system compatibility in-memory
+      const assets = dto.system && !dto.packIds && !dto.campaignId
+        ? allAssets.filter(a => {
+            const compat: string[] = (a as any).compatibleWith ?? [];
+            return compat.length === 0 || compat.includes(dto.system!);
+          })
+        : allAssets;
 
-      return Result.ok(result);
+      return Result.ok({
+        races:       assets.filter(a => a.type.toString() === 'race'),
+        classes:     assets.filter(a => a.type.toString() === 'class'),
+        backgrounds: assets.filter(a => a.type.toString() === 'background'),
+      });
     } catch (e) {
       console.error(e);
       return Result.fail(CharacterError.NOT_FOUND);

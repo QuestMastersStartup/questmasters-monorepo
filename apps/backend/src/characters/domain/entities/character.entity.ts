@@ -3,11 +3,11 @@ import { AbilityScores } from '@questmasters/dnd-rules';
 import { CharacterStatus } from '../value-objects/character-status.vo';
 
 export interface CreateCharacterProps {
-  campaignId?: string; // Opcional: personajes libres
+  campaignId?: string;
   userId: string;
   name: string;
-  raceAssetId: string;
-  classAssetId: string;
+  raceAssetId?: string | null;  // null en modo libre
+  classAssetId?: string | null; // null en modo libre
   backgroundAssetId?: string;
   stats: AbilityScores;
   hitPoints: number;
@@ -21,8 +21,8 @@ export interface ReconstructCharacterProps {
   campaignId: string | null;
   userId: string;
   name: string;
-  raceAssetId: string;
-  classAssetId: string;
+  raceAssetId: string | null;
+  classAssetId: string | null;
   backgroundAssetId: string | null;
   level: number;
   stats: AbilityScores;
@@ -41,8 +41,8 @@ export class Character {
     public readonly campaignId: UUID | null,
     public readonly userId: string,
     public readonly name: string,
-    public readonly raceAssetId: UUID,
-    public readonly classAssetId: UUID,
+    public readonly raceAssetId: UUID | null,
+    public readonly classAssetId: UUID | null,
     public readonly backgroundAssetId: UUID | null,
     public readonly level: number,
     public readonly stats: AbilityScores,
@@ -61,8 +61,8 @@ export class Character {
       props.campaignId ? UUID.fromString(props.campaignId) : null,
       props.userId,
       props.name,
-      UUID.fromString(props.raceAssetId),
-      UUID.fromString(props.classAssetId),
+      props.raceAssetId ? UUID.fromString(props.raceAssetId) : null,
+      props.classAssetId ? UUID.fromString(props.classAssetId) : null,
       props.backgroundAssetId ? UUID.fromString(props.backgroundAssetId) : null,
       1,
       props.stats,
@@ -82,8 +82,8 @@ export class Character {
       props.campaignId ? UUID.fromString(props.campaignId) : null,
       props.userId,
       props.name,
-      UUID.fromString(props.raceAssetId),
-      UUID.fromString(props.classAssetId),
+      props.raceAssetId ? UUID.fromString(props.raceAssetId) : null,
+      props.classAssetId ? UUID.fromString(props.classAssetId) : null,
       props.backgroundAssetId ? UUID.fromString(props.backgroundAssetId) : null,
       props.level,
       props.stats,

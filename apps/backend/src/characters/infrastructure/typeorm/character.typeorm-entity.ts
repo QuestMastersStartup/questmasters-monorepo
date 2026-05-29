@@ -23,11 +23,11 @@ export class CharacterOrmEntity {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ name: 'race_asset_id', type: 'uuid' })
-  raceAssetId: string;
+  @Column({ name: 'race_asset_id', type: 'uuid', nullable: true })
+  raceAssetId: string | null;
 
-  @Column({ name: 'class_asset_id', type: 'uuid' })
-  classAssetId: string;
+  @Column({ name: 'class_asset_id', type: 'uuid', nullable: true })
+  classAssetId: string | null;
 
   @Column({ name: 'background_asset_id', type: 'uuid', nullable: true })
   backgroundAssetId: string | null;
@@ -74,15 +74,11 @@ export class CharacterOrmEntity {
   @JoinColumn({ name: 'user_id' })
   user: Relation<any>;
 
-  @ManyToOne('AssetOrmEntity', {
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne('AssetOrmEntity', { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'race_asset_id' })
   raceAsset: Relation<any>;
 
-  @ManyToOne('AssetOrmEntity', {
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne('AssetOrmEntity', { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'class_asset_id' })
   classAsset: Relation<any>;
 

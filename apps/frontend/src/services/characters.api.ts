@@ -143,11 +143,17 @@ export async function fetchAvailableAssets(filters: {
   campaignId?: string;
   type?: string;
   query?: string;
+  /** Vanilla mode: filter by system (e.g. 'dnd-5e-2024') */
+  system?: string;
+  /** Personalizado mode: specific pack IDs */
+  packIds?: string[];
 }): Promise<AvailableAssetsResponse> {
   const params = new URLSearchParams();
   if (filters.campaignId) params.append("campaignId", filters.campaignId);
   if (filters.type) params.append("type", filters.type);
   if (filters.query) params.append("query", filters.query);
+  if (filters.system) params.append("system", filters.system);
+  if (filters.packIds?.length) params.append("packIds", filters.packIds.join(","));
 
   const response = await fetch(`/api/characters/available-assets?${params.toString()}`, {
     headers: await getHeaders(),

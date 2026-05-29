@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Shield, Heart, Sword, Crown, Skull, Users } from "lucide-react";
+import { Shield, Heart, Sword, Crown, Skull, Users, Plus } from "lucide-react";
+import { CharacterCreationWizard } from "../components/features/characters/CharacterCreationWizard";
 import { fetchMyCharacters, type MyCharacter } from "../services/characters.api";
 
 // ─── Mini card para la vista "Mis Personajes" ────────────────────────────────
@@ -126,6 +127,7 @@ export const Characters: React.FC = () => {
   const [characters, setCharacters] = useState<MyCharacter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     fetchMyCharacters()
@@ -146,13 +148,23 @@ export const Characters: React.FC = () => {
   const inactive = characters.filter((c) => c.status !== "active");
 
   return (
+    <>
     <div className="container mx-auto p-4 md:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Mis Personajes</h1>
-        <p className="text-slate-400">
-          Todos tus héroes, sin importar la campaña.
-        </p>
+      <div className="flex items-start justify-between mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Mis Personajes</h1>
+          <p className="text-slate-400">
+            Todos tus héroes, sin importar la campaña.
+          </p>
+        </div>
+        <button
+          onClick={() => setWizardOpen(true)}
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 font-semibold text-sm shrink-0"
+        >
+          <Plus size={16} />
+          Crear Personaje
+        </button>
       </div>
 
       {error && (
@@ -171,15 +183,24 @@ export const Characters: React.FC = () => {
             Aún no tienes personajes
           </h3>
           <p className="text-slate-400 mb-6">
-            Únete a una campaña y crea tu primer héroe para comenzar la aventura.
+            Crea tu primer héroe — puedes unirlo a una campaña después.
           </p>
-          <Link
-            to="/campaigns"
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-indigo-500/20 font-medium"
-          >
-            <Crown size={18} />
-            Ver Campañas
-          </Link>
+          <div className="flex items-center gap-3 justify-center flex-wrap">
+            <button
+              onClick={() => setWizardOpen(true)}
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-indigo-500/20 font-medium"
+            >
+              <Plus size={18} />
+              Crear Personaje
+            </button>
+            <Link
+              to="/campaigns"
+              className="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 px-5 py-2.5 rounded-lg transition-colors font-medium"
+            >
+              <Crown size={18} />
+              Ver Campañas
+            </Link>
+          </div>
         </div>
       )}
 
@@ -213,5 +234,10 @@ export const Characters: React.FC = () => {
         </section>
       )}
     </div>
+
+    {wizardOpen && (
+      <CharacterCreationWizard onClose={() => setWizardOpen(false)} />
+    )}
+    </>
   );
 };

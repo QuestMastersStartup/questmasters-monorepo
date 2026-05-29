@@ -8,7 +8,7 @@ Plataforma Virtual Tabletop (VTT) de nueva generación para juegos de rol, con a
 
 **EPIC 0: Fundaciones Técnicas**
 - ✅ Arquitectura de monorepo con Turborepo + pnpm workspaces
-- ✅ Backend NestJS con arquitectura hexagonal (DDD)
+- ✅ Backend Elysia con arquitectura hexagonal (DDD)
 - ✅ Frontend React + Vite + TailwindCSS
 - ✅ Paquete compartido `@questmasters/dnd-rules` con tipos TypeScript
 - ✅ Docker Compose con PostgreSQL 17
@@ -50,7 +50,7 @@ El roadmap está organizado en épicas que desbloquean funcionalidades progresiv
 - [ ] Dashboard de campaña (miembros, personajes, sesiones, notas)
 
 **EPIC 4: Mesa Virtual - Tiempo Real** (Sprint 10-13) ⚡ *CORE MVP*
-- [ ] Infraestructura WebSockets (NestJS Gateway + Socket.IO)
+- [ ] Infraestructura WebSockets (Elysia WS + Socket.IO)
 - [ ] Chat en tiempo real con canales (general, whisper, in-character)
 - [ ] Sistema de dados virtuales con notación estándar (2d6+3, ventaja/desventaja)
 - [ ] Mapa 2D interactivo con tokens arrastrables y grid
@@ -87,8 +87,8 @@ Todo lo demás (marketplace, IA, mobile) son iteraciones sobre esta base.
 ```
 questmasters-monorepo/
 ├── apps/
-│   ├── api/          # Backend — NestJS + PostgreSQL (puerto 3000)
-│   ├── client/       # Frontend — React + Vite + TailwindCSS (puerto 3001)
+│   ├── backend/      # Backend — Elysia + PostgreSQL (puerto 3000)
+│   ├── frontend/     # Frontend — React + Vite + TailwindCSS (puerto 3001)
 │   └── landing/      # Landing page publica
 ├── packages/
 │   ├── dnd-rules/    # Tipos y logica de reglas D&D compartida
@@ -105,7 +105,7 @@ questmasters-monorepo/
 |------|------------|
 | **Monorepo** | Turborepo + pnpm workspaces |
 | **Frontend** | React 18, Vite, TailwindCSS, React Router |
-| **Backend** | NestJS, TypeORM, PostgreSQL 17 |
+| **Backend** | Elysia, TypeORM, PostgreSQL 17 |
 | **Shared** | `@questmasters/dnd-rules` — tipos TypeScript canonicos + logica de reglas |
 | **Infra** | Docker Compose (postgres + api) |
 
@@ -135,9 +135,9 @@ pnpm turbo dev --filter=api --filter=client
 
 ## Apps
 
-### `apps/api` — Backend
+### `apps/backend` — Backend
 
-API REST construida con NestJS siguiendo arquitectura hexagonal (DDD).
+API REST construida con Elysia siguiendo arquitectura hexagonal (DDD).
 
 **Modulos principales:**
 
