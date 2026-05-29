@@ -32,14 +32,15 @@ export interface MyCharacter extends Character {
 export interface CreateCharacterRequest {
   campaignId?: string;
   name: string;
-  raceAssetId: string;
-  classAssetId: string;
-  backgroundAssetId?: string;
+  raceAssetId?: string | null;
+  classAssetId?: string | null;
+  backgroundAssetId?: string | null;
   stats: AbilityScores;
   portraitUrl?: string;
   backstory?: string;
   choices?: Record<string, any>;
-  method: 'point-buy' | 'free';
+  method: 'point-buy' | 'free' | 'libre';
+  hitPoints?: number;
 }
 
 export interface UpdateCharacterRequest {
@@ -67,6 +68,7 @@ export interface Asset {
 
 export interface AvailableAssetsResponse {
   races: Asset[];
+  subraces: Asset[];
   classes: Asset[];
   backgrounds: Asset[];
 }

@@ -159,8 +159,9 @@ export function charactersRoutes(container: Container) {
         }
 
         return {
-          races: result.value.races.map(AssetMapper.toResponse),
-          classes: result.value.classes.map(AssetMapper.toResponse),
+          races:       result.value.races.map(AssetMapper.toResponse),
+          subraces:    result.value.subraces.map(AssetMapper.toResponse),
+          classes:     result.value.classes.map(AssetMapper.toResponse),
           backgrounds: result.value.backgrounds.map(AssetMapper.toResponse),
         };
       },

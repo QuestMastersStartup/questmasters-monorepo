@@ -29,6 +29,8 @@ export const CreateCharacterSchema = t.Object({
     t.Literal('free'),
     t.Literal('libre'),
   ], { default: 'point-buy' }),
+  // Optional override for HP — if omitted the backend auto-calculates max HP.
+  hitPoints: t.Optional(t.Number({ minimum: 1, maximum: 999 })),
 });
 
 // ─── Update ─────────────────────────────────────────────────────────

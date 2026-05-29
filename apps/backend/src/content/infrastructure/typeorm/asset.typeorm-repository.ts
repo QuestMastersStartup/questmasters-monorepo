@@ -120,7 +120,9 @@ export class AssetTypeormRepository implements AssetRepository {
     }
 
     queryBuilder.orderBy('asset.name', 'ASC');
-    queryBuilder.limit(50); // Hard limit for safety
+    // Per-type queries from character builder are small (<50 each);
+    // library/search contexts may have more, 500 is a safe upper bound.
+    queryBuilder.limit(500);
 
     const entities = await queryBuilder.getMany();
     return entities.map(AssetMapper.toDomain);

@@ -24,6 +24,8 @@ export interface CreateCharacterDto {
   backstory?: string;
   choices?: Record<string, any>;
   method: 'point-buy' | 'free' | 'libre';
+  /** Optional HP override from the frontend (random roll or manual entry). */
+  hitPoints?: number;
 }
 
 export class CreateCharacterUseCase {
@@ -51,7 +53,7 @@ export class CreateCharacterUseCase {
           classAssetId: null,
           backgroundAssetId: undefined,
           stats: dto.stats,
-          hitPoints: 10, // default for d10 at level 1
+          hitPoints: dto.hitPoints ?? 10, // frontend override or fallback default
           portraitUrl: dto.portraitUrl,
           backstory: dto.backstory,
           choices: dto.choices ?? {},
@@ -115,15 +117,13 @@ export class CreateCharacterUseCase {
         }
       }
 
-      // 2. Auto-calculate HP based on class asset
+      // 2. Resolve HP: use frontend override if provided, otherwise calculate max
       const classAsset = await this.assetRepo.findById(UUID.fromString(dto.classAssetId));
       const hitDie = classAsset?.data.get<number>('hit_die') ?? 10;
-      
-      const hitPointsResult = calculateHitPoints(
-        hitDie,
-        dto.stats.constitution,
-        1
-      );
+      const hitPointsResult = calculateHitPoints(hitDie, dto.stats.constitution, 1);
+      const resolvedHp = dto.hitPoints
+        ? Math.max(1, Math.min(dto.hitPoints, hitPointsResult.maxHp)) // clamp to [1, max]
+        : hitPointsResult.maxHp;
 
       // 3. Create Entity
       const character = Character.create({
@@ -134,7 +134,7 @@ export class CreateCharacterUseCase {
         classAssetId: dto.classAssetId,
         backgroundAssetId: dto.backgroundAssetId ?? undefined,
         stats: dto.stats,
-        hitPoints: hitPointsResult.maxHp,
+        hitPoints: resolvedHp,
         portraitUrl: dto.portraitUrl,
         backstory: dto.backstory,
         choices: dto.choices,

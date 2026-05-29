@@ -100,7 +100,7 @@ export function createContainer(dataSource: DataSource) {
   const listCharactersUseCase = new ListCharactersUseCase(characterRepo);
   const updateCharacterUseCase = new UpdateCharacterUseCase(characterRepo, campaignMemberRepo);
   const deleteCharacterUseCase = new DeleteCharacterUseCase(characterRepo, campaignMemberRepo);
-  const listAvailableAssetsUseCase = new ListAvailableAssetsUseCase(assetRepo, campaignRepo);
+  const listAvailableAssetsUseCase = new ListAvailableAssetsUseCase(assetRepo, campaignRepo, packRepo);
 
   const invitePlayerUseCase = new InvitePlayerUseCase(campaignRepo, campaignMemberRepo, userProfileRepo);
   const listMembersUseCase = new ListMembersUseCase(campaignMemberRepo);
