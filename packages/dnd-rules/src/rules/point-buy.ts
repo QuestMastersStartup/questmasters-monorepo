@@ -89,6 +89,29 @@ export const PROFICIENCY_BONUS_TABLE: Record<number, number> = {
   20: 6,
 } as const;
 
+/**
+ * XP required to reach each level (PHB p.15).
+ * Key = level reached, value = minimum XP needed.
+ */
+export const XP_THRESHOLDS_BY_LEVEL: Record<number, number> = {
+  1: 0,      2: 300,    3: 900,    4: 2700,   5: 6500,
+  6: 14000,  7: 23000,  8: 34000,  9: 48000,  10: 64000,
+  11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000,
+  16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000,
+} as const;
+
+/**
+ * Returns the valid XP range [min, max] for a character at the given level.
+ * min = XP floor for that level, max = one below the next level's threshold.
+ */
+export function getXpRangeForLevel(level: number): { min: number; max: number } {
+  const min = XP_THRESHOLDS_BY_LEVEL[level] ?? 0;
+  const max = level < 20
+    ? (XP_THRESHOLDS_BY_LEVEL[level + 1] ?? 355000) - 1
+    : 355000;
+  return { min, max };
+}
+
 /** Default ability scores for a new Point Buy character (all 8s) */
 export const DEFAULT_ABILITY_SCORES: AbilityScores = {
   strength: 8,

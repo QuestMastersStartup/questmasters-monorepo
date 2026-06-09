@@ -8,13 +8,14 @@ import { AbilityScores, validatePointBuy } from '@questmasters/dnd-rules';
 
 export interface UpdateCharacterDto {
   id: string;
-  requesterId: string; // userId requesting the update
-  // Owner fields
+  requesterId: string;
   name?: string;
   backstory?: string | null;
   portraitUrl?: string | null;
   choices?: Record<string, any> | null;
-  // DM fields
+  raceAssetId?: string | null;
+  classAssetId?: string | null;
+  backgroundAssetId?: string | null;
   stats?: AbilityScores;
   level?: number;
   hitPoints?: number;
@@ -47,34 +48,29 @@ export class UpdateCharacterUseCase {
         return Result.fail(CharacterError.UNAUTHORIZED);
       }
 
-      // Handle Owner Update
-      if (isOwner) {
-        character = character.update({
-          name: dto.name,
-          backstory: dto.backstory,
-          portraitUrl: dto.portraitUrl,
-          choices: dto.choices,
-        });
-      }
-
-      // Handle DM Update (or owner in free mode)
-      if (isDm) {
-        // Stats validation if changed
-        if (dto.stats) {
-          // In campaign mode, Point Buy is enforced? No, DM can override
-          // But we validate range at least
-          for (const stat of Object.values(dto.stats)) {
-            if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
-          }
+      // Validate stats range if provided
+      if (dto.stats) {
+        for (const stat of Object.values(dto.stats)) {
+          if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
         }
-
-        character = character.updateByDm({
-          stats: dto.stats,
-          level: dto.level,
-          hitPoints: dto.hitPoints,
-          status: dto.status ? (await import('../../domain/value-objects/character-status.vo')).CharacterStatus.create(dto.status) : undefined,
-        });
       }
+
+      const { CharacterStatus } = await import('../../domain/value-objects/character-status.vo');
+
+      const updateProps: Parameters<typeof character.update>[0] = {};
+      if (dto.name !== undefined)      updateProps.name        = dto.name;
+      if (dto.backstory !== undefined) updateProps.backstory   = dto.backstory;
+      if (dto.portraitUrl !== undefined) updateProps.portraitUrl = dto.portraitUrl;
+      if (dto.choices !== undefined)   updateProps.choices     = dto.choices;
+      if (dto.stats !== undefined)     updateProps.stats       = dto.stats;
+      if (dto.level !== undefined)     updateProps.level       = dto.level;
+      if (dto.hitPoints !== undefined) updateProps.hitPoints   = dto.hitPoints;
+      if (dto.status !== undefined)    updateProps.status      = CharacterStatus.create(dto.status);
+      if ('raceAssetId' in dto)       updateProps.raceAssetId       = dto.raceAssetId ? UUID.fromString(dto.raceAssetId) : null;
+      if ('classAssetId' in dto)      updateProps.classAssetId      = dto.classAssetId ? UUID.fromString(dto.classAssetId) : null;
+      if ('backgroundAssetId' in dto) updateProps.backgroundAssetId = dto.backgroundAssetId ? UUID.fromString(dto.backgroundAssetId) : null;
+
+      character = character.update(updateProps);
 
       await this.characterRepo.save(character);
 

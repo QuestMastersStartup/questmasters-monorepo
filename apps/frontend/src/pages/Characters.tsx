@@ -16,8 +16,9 @@ function MyCharacterCard({ character }: MyCharacterCardProps) {
   const isInactive = isDead || isRetired;
 
   return (
-    <div
-      className={`relative group rounded-2xl border overflow-hidden transition-all duration-300 ${
+    <Link
+      to={`/characters/${character.id}`}
+      className={`relative group rounded-2xl border overflow-hidden transition-all duration-300 block ${
         isDead
           ? "border-red-500/30 bg-slate-900/60"
           : isRetired
@@ -104,6 +105,7 @@ function MyCharacterCard({ character }: MyCharacterCardProps) {
           {character.campaignName ? (
             <Link
               to={`/campaigns/${character.campaignId}`}
+              onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-1 mt-2 text-[11px] text-slate-500 hover:text-indigo-400 transition-colors truncate"
             >
               <Crown size={10} className="shrink-0" />
@@ -117,7 +119,7 @@ function MyCharacterCard({ character }: MyCharacterCardProps) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

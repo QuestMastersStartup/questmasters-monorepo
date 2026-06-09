@@ -100,21 +100,21 @@ export class Character {
   /**
    * Update owner-controlled fields.
    */
-  update(props: Partial<Pick<Character, 'name' | 'portraitUrl' | 'backstory' | 'choices'>>): Character {
+  update(props: Partial<Pick<Character, 'name' | 'portraitUrl' | 'backstory' | 'choices' | 'raceAssetId' | 'classAssetId' | 'backgroundAssetId' | 'level' | 'hitPoints' | 'stats' | 'status'>>): Character {
     return new Character(
       this.id,
       this.campaignId,
       this.userId,
       props.name ?? this.name,
-      this.raceAssetId,
-      this.classAssetId,
-      this.backgroundAssetId,
-      this.level,
-      this.stats,
-      this.hitPoints,
+      'raceAssetId' in props       ? (props.raceAssetId ?? null)       : this.raceAssetId,
+      'classAssetId' in props      ? (props.classAssetId ?? null)      : this.classAssetId,
+      'backgroundAssetId' in props ? (props.backgroundAssetId ?? null) : this.backgroundAssetId,
+      props.level ?? this.level,
+      props.stats ?? this.stats,
+      props.hitPoints ?? this.hitPoints,
       props.portraitUrl !== undefined ? props.portraitUrl : this.portraitUrl,
-      props.backstory !== undefined ? props.backstory : this.backstory,
-      this.status,
+      props.backstory !== undefined   ? props.backstory   : this.backstory,
+      props.status ?? this.status,
       props.choices !== undefined ? props.choices : this.choices,
       this.createdAt,
       new Date(),

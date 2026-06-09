@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import {
   createCharacter,
+  fetchCharacter,
+  updateCharacter,
   fetchAvailableAssets,
   uploadCharacterPortrait,
   type Asset,
@@ -20,6 +22,8 @@ import {
   validatePointBuy,
   calculateHitPoints,
   calculateModifier,
+  calculateProficiencyBonus,
+  getXpRangeForLevel,
   POINT_BUY_MIN_SCORE,
   POINT_BUY_MAX_SCORE,
   ABILITY_SCORE_MIN,
@@ -116,15 +120,19 @@ function Section({ title, icon, optional, children }: {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export const CreateCharacter: React.FC = () => {
-  const { id: campaignId } = useParams<{ id: string }>();
+  const { id: campaignId, charId } = useParams<{ id: string; charId: string }>();
+  const isEditMode        = !!charId;
   const navigate          = useNavigate();
   const [searchParams]    = useSearchParams();
   const fileInputRef      = useRef<HTMLInputElement>(null);
+  const skipBgAutoPopulateRef = useRef(false);
 
-  const system  = searchParams.get("system") ?? "dnd-5e-2014";
-  const mode    = (searchParams.get("mode") ?? "vanilla") as CreationMode;
-  const rawIds  = searchParams.get("packIds");
-  const packIds = rawIds ? rawIds.split(",").filter(Boolean) : undefined;
+  const rawIds = searchParams.get("packIds");
+  // In create mode these come from URL params; in edit mode overridden from character.choices
+  const [system,  setSystem]  = useState(searchParams.get("system") ?? "dnd-5e-2014");
+  const [mode,    setMode]    = useState<CreationMode>((searchParams.get("mode") ?? "vanilla") as CreationMode);
+  const [packIds, setPackIds] = useState<string[] | undefined>(rawIds ? rawIds.split(",").filter(Boolean) : undefined);
+
   const isLibre = mode === "libre";
 
   // ── UI State ──────────────────────────────────────────────────────────────
@@ -143,8 +151,10 @@ export const CreateCharacter: React.FC = () => {
   const [name,       setName]       = useState("");
   const [portraitUrl,setPortraitUrl]= useState("");
   const [statMethod, setStatMethod] = useState<StatMethod>(
-    campaignId ? "point-buy" : isLibre ? "free" : "point-buy"
+    campaignId ? "point-buy" : (searchParams.get("mode") === "libre" ? "free" : "point-buy")
   );
+  const [level,   setLevel]   = useState(1);
+  const [status,  setStatus]  = useState<'active' | 'dead' | 'retired'>('active');
   const [stats, setStats] = useState({ ...DEFAULT_ABILITY_SCORES });
 
   // ── HP ────────────────────────────────────────────────────────────────────
@@ -183,15 +193,70 @@ export const CreateCharacter: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        if (campaignId) {
+        let charSystem = system;
+        let charMode: CreationMode = mode;
+        let charPackIds = packIds;
+
+        if (isEditMode) {
+          const char = await fetchCharacter(charId!);
+          const ch = char.choices ?? {};
+
+          charSystem = (ch.system as string) ?? "dnd-5e-2014";
+          charMode   = ((ch.mode as string) ?? "vanilla") as CreationMode;
+          charPackIds = ch.packIds ? (ch.packIds as string).split(",").filter(Boolean) : undefined;
+
+          setSystem(charSystem);
+          setMode(charMode);
+          setPackIds(charPackIds);
+
+          // Identity
+          setName(char.name);
+          setPortraitUrl(char.portraitUrl ?? "");
+          setHistory(char.backstory ?? "");
+          setStats(char.stats);
+          setLevel(char.level);
+          setStatus((char.status as 'active' | 'dead' | 'retired') ?? 'active');
+          setStatMethod((ch.statMethod as StatMethod) ?? 'free');
+          setCustomHp(char.hitPoints);
+
+          // Origin
+          if (charMode !== 'libre') {
+            setRaceAssetId(char.raceAssetId ?? "");
+            setSubraceAssetId((ch.subraceAssetId as string) ?? "");
+            setClassAssetId(char.classAssetId ?? "");
+            skipBgAutoPopulateRef.current = true;
+            setBackgroundAssetId(char.backgroundAssetId ?? "");
+          } else {
+            setLibreRace((ch.libreRace as string) ?? "");
+            setLibreSubrace((ch.libreSubrace as string) ?? "");
+            setLibreClass((ch.libreClass as string) ?? "");
+            setLibreBackground((ch.libreBackground as string) ?? "");
+          }
+
+          // Background narrative
+          setBgFeature((ch.bgFeature as string) ?? "");
+          setBgPersonality((ch.bgPersonality as string) ?? "");
+          setBgIdeals((ch.bgIdeals as string) ?? "");
+          setBgBonds((ch.bgBonds as string) ?? "");
+          setBgFlaws((ch.bgFlaws as string) ?? "");
+
+          // Additional info
+          setAlignment((ch.alignment as string) ?? "");
+          setAppearance((ch.appearance as string) ?? "");
+          setAge(ch.age != null ? String(ch.age) : "");
+          setLanguages((ch.languages as string) ?? "");
+          setNotes((ch.notes as string) ?? "");
+          setXp(ch.xp != null ? String(ch.xp) : "");
+        } else if (campaignId) {
           const camp = await fetchCampaign(campaignId);
           setCampaign(camp);
         }
-        if (!isLibre) {
+
+        if (charMode !== 'libre') {
           const data = await fetchAvailableAssets({
             campaignId,
-            system: campaignId ? undefined : system,
-            packIds: campaignId ? undefined : packIds,
+            system: campaignId ? undefined : charSystem,
+            packIds: campaignId ? undefined : charPackIds,
           });
           setAssets(data);
         }
@@ -206,6 +271,7 @@ export const CreateCharacter: React.FC = () => {
   // Auto-populate background narrative fields from asset data
   useEffect(() => {
     if (isLibre || !backgroundAssetId) return;
+    if (skipBgAutoPopulateRef.current) { skipBgAutoPopulateRef.current = false; return; }
     const bg = assets.backgrounds.find(b => b.id === backgroundAssetId);
     if (!bg) return;
     const d = bg.data as any;
@@ -255,9 +321,11 @@ export const CreateCharacter: React.FC = () => {
   const pbValidation   = validatePointBuy(stats);
   const selectedClass  = assets.classes.find(c => c.id === classAssetId);
   const hitDie         = (selectedClass?.data as any)?.hit_die ?? 10;
-  const hpResult       = calculateHitPoints(hitDie, stats.constitution, 1);
+  const hpResult       = calculateHitPoints(hitDie, stats.constitution, isEditMode ? level : 1);
   const conMod         = calculateModifier(stats.constitution);
-  const maxHpDisplay   = isLibre ? null : Math.max(1, hitDie + conMod);
+  const maxHpDisplay   = isLibre ? null : hpResult.maxHp;
+  const profBonus      = calculateProficiencyBonus(isEditMode ? level : 1);
+  const xpRange        = getXpRangeForLevel(isEditMode ? level : 1);
 
   // Final HP: user value if set, otherwise max
   const finalHp = isLibre
@@ -327,6 +395,7 @@ export const CreateCharacter: React.FC = () => {
     try {
       const choices: Record<string, any> = {
         system, mode,
+        statMethod: isLibre ? 'libre' : statMethod,
         // Origin (libre)
         ...(isLibre && { libreRace: libreRace.trim(), libreClass: libreClass.trim() }),
         ...(isLibre && libreSubrace.trim() && { libreSubrace: libreSubrace.trim() }),
@@ -348,21 +417,37 @@ export const CreateCharacter: React.FC = () => {
         ...(xp                   && { xp:            Number(xp) }),
       };
 
-      await createCharacter({
-        campaignId,
-        name: name.trim(),
-        raceAssetId:       isLibre ? undefined : raceAssetId || undefined,
-        classAssetId:      isLibre ? undefined : classAssetId || undefined,
-        backgroundAssetId: isLibre ? undefined : backgroundAssetId || undefined,
-        stats,
-        portraitUrl:  portraitUrl || undefined,
-        backstory:    history.trim() || undefined,
-        choices,
-        method:     isLibre ? "libre" : statMethod === "point-buy" ? "point-buy" : "free",
-        hitPoints:  finalHp,
-      });
-
-      navigate(campaignId ? `/campaigns/${campaignId}` : "/characters");
+      if (isEditMode) {
+        await updateCharacter(charId!, {
+          name:              name.trim(),
+          raceAssetId:       isLibre ? null : raceAssetId || null,
+          classAssetId:      isLibre ? null : classAssetId || null,
+          backgroundAssetId: isLibre ? null : backgroundAssetId || null,
+          stats,
+          portraitUrl:  portraitUrl || null,
+          backstory:    history.trim() || null,
+          level,
+          hitPoints:    finalHp,
+          status,
+          choices,
+        });
+        navigate(campaignId ? `/campaigns/${campaignId}` : `/characters/${charId}`);
+      } else {
+        await createCharacter({
+          campaignId,
+          name: name.trim(),
+          raceAssetId:       isLibre ? undefined : raceAssetId || undefined,
+          classAssetId:      isLibre ? undefined : classAssetId || undefined,
+          backgroundAssetId: isLibre ? undefined : backgroundAssetId || undefined,
+          stats,
+          portraitUrl:  portraitUrl || undefined,
+          backstory:    history.trim() || undefined,
+          choices,
+          method:     isLibre ? "libre" : statMethod === "point-buy" ? "point-buy" : "free",
+          hitPoints:  finalHp,
+        });
+        navigate(campaignId ? `/campaigns/${campaignId}` : "/characters");
+      }
     } catch (err: any) {
       setError(err.message ?? "Error al crear personaje");
     } finally {
@@ -375,7 +460,7 @@ export const CreateCharacter: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
-        <p className="text-slate-400 font-medium">Preparando forja de héroes...</p>
+        <p className="text-slate-400 font-medium">{isEditMode ? "Cargando personaje..." : "Preparando forja de héroes..."}</p>
       </div>
     );
   }
@@ -390,15 +475,17 @@ export const CreateCharacter: React.FC = () => {
     <div className="container mx-auto p-4 md:p-8 max-w-6xl">
       {/* Nav */}
       <Link
-        to={campaignId ? `/campaigns/${campaignId}` : "/characters"}
+        to={isEditMode
+          ? (campaignId ? `/campaigns/${campaignId}` : `/characters/${charId}`)
+          : (campaignId ? `/campaigns/${campaignId}` : "/characters")}
         className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors group"
       >
         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-        Volver a {campaignId ? "la campaña" : "mis personajes"}
+        Volver a {isEditMode ? "el personaje" : (campaignId ? "la campaña" : "mis personajes")}
       </Link>
 
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-black text-white">Forjar Personaje</h1>
+        <h1 className="text-2xl font-black text-white">{isEditMode ? "Editar Personaje" : "Forjar Personaje"}</h1>
         <span className={`text-[10px] font-black px-2.5 py-1 rounded-full border uppercase tracking-widest ${modeBadge.color}`}>
           {modeBadge.label}
         </span>
@@ -458,10 +545,40 @@ export const CreateCharacter: React.FC = () => {
                 </div>
 
                 <div className="flex items-start gap-3 flex-wrap">
+                  {/* Nivel + Estado — solo en edición */}
+                  {isEditMode && (
+                    <>
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nivel</p>
+                        <input
+                          type="number" min={1} max={20} value={level}
+                          onChange={e => {
+                            const newLevel = Math.max(1, Math.min(20, Number(e.target.value)));
+                            setLevel(newLevel);
+                            const range = getXpRangeForLevel(newLevel);
+                            const cur = Number(xp) || 0;
+                            if (cur < range.min) setXp(String(range.min));
+                            else if (cur > range.max) setXp(String(range.max));
+                            setCustomHp(null);
+                          }}
+                          className="w-20 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-lg font-black text-indigo-400 text-center focus:outline-none focus:border-indigo-500/60 transition-colors"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado</p>
+                        <select value={status} onChange={e => setStatus(e.target.value as 'active' | 'dead' | 'retired')}
+                          className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer h-[42px]">
+                          <option value="active">Activo</option>
+                          <option value="dead">Muerto</option>
+                          <option value="retired">Retirado</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
                   {/* HP Block */}
                   <div className="space-y-1.5">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                      HP Iniciales
+                      {isEditMode ? "HP Máximos" : "HP Iniciales"}
                     </p>
 
                     {isLibre ? (
@@ -532,12 +649,21 @@ export const CreateCharacter: React.FC = () => {
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Experiencia</p>
                     <input
                       type="number"
-                      min={0} max={355000}
+                      min={xpRange.min} max={xpRange.max}
                       value={xp}
                       onChange={e => setXp(e.target.value)}
-                      placeholder="0"
+                      placeholder={String(xpRange.min)}
                       className="w-24 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors text-center"
                     />
+                    <p className="text-[10px] text-slate-700 font-mono mt-0.5">
+                      {xpRange.min.toLocaleString()}–{xpRange.max.toLocaleString()} XP
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Bon. Comp.</p>
+                    <div className="w-24 bg-slate-900/60 border border-slate-700/50 rounded-xl px-3 py-2 text-xs font-black text-violet-400 text-center select-none">
+                      +{profBonus}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -949,11 +1075,10 @@ export const CreateCharacter: React.FC = () => {
           >
             {submitting ? (
               <Loader2 className="animate-spin" size={24} />
+            ) : isEditMode ? (
+              <><Save className="group-hover:translate-y-[-2px] transition-transform" size={22} /> Guardar Cambios</>
             ) : (
-              <>
-                Forjar Héroe
-                <Save className="group-hover:translate-y-[-2px] transition-transform" size={22} />
-              </>
+              <>Forjar Héroe <Save className="group-hover:translate-y-[-2px] transition-transform" size={22} /></>
             )}
           </button>
 

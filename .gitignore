@@ -29,9 +29,10 @@ graphify-out/
 .codegraph/
 testsprite_tests/tmp/
 
-# Claude Code / AI agent artifacts
+# Claude Code artifacts (personal, not project)
 skills-lock.json
-skills/
+.claude/skills/
+.claude/settings.local.json
 
 # Package manager lock conflicts (pnpm workspace)
 apps/landing/package-lock.json
@@ -53,10 +54,9 @@ dist
 *.pem
 nul
 
-# AI agent / IDE config (personal, not project)
+# Other AI agent / IDE configs (personal, not project)
 .agent/
 .agents/
-.claude/
 .cline/
 .codebuddy/
 .codex/
@@ -79,8 +79,5 @@ nul
 .qwen/
 .roo/
 .trae/
-.vscode/
 .windsurf/
 .zencoder/
-
-context/

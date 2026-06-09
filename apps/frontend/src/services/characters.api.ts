@@ -44,12 +44,13 @@ export interface CreateCharacterRequest {
 }
 
 export interface UpdateCharacterRequest {
-  // Owner fields
   name?: string;
   backstory?: string | null;
   portraitUrl?: string | null;
   choices?: Record<string, any> | null;
-  // DM fields
+  raceAssetId?: string | null;
+  classAssetId?: string | null;
+  backgroundAssetId?: string | null;
   stats?: AbilityScores;
   level?: number;
   hitPoints?: number;

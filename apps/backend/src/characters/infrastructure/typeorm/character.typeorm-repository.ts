@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { Character } from '../../domain/entities/character.entity';
 import { CharacterRepository } from '../../domain/repositories/character.repository';
@@ -15,14 +15,14 @@ export class CharacterTypeormRepository implements CharacterRepository {
 
   async findById(id: UUID): Promise<Character | null> {
     const entity = await this.repository.findOne({
-      where: { id: id.toString() },
+      where: { id: id.toString(), status: Not('deleted') },
     });
     return entity ? CharacterMapper.toDomain(entity) : null;
   }
 
   async findByCampaignId(campaignId: UUID): Promise<Character[]> {
     const entities = await this.repository.find({
-      where: { campaignId: campaignId.toString() },
+      where: { campaignId: campaignId.toString(), status: Not('deleted') },
       order: { createdAt: 'ASC' },
     });
     return entities.map(CharacterMapper.toDomain);
@@ -30,7 +30,7 @@ export class CharacterTypeormRepository implements CharacterRepository {
 
   async findByUserId(userId: string): Promise<Character[]> {
     const entities = await this.repository.find({
-      where: { userId },
+      where: { userId, status: Not('deleted') },
       order: { updatedAt: 'DESC' },
     });
     return entities.map(CharacterMapper.toDomain);
@@ -41,6 +41,7 @@ export class CharacterTypeormRepository implements CharacterRepository {
       where: {
         userId,
         campaignId: campaignId.toString(),
+        status: Not('deleted'),
       },
       order: { createdAt: 'ASC' },
     });
@@ -59,6 +60,6 @@ export class CharacterTypeormRepository implements CharacterRepository {
   }
 
   async delete(id: UUID): Promise<void> {
-    await this.repository.delete({ id: id.toString() });
+    await this.repository.update({ id: id.toString() }, { status: 'deleted' });
   }
 }

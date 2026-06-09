@@ -36,22 +36,19 @@ export const CreateCharacterSchema = t.Object({
 // ─── Update ─────────────────────────────────────────────────────────
 
 export const UpdateCharacterSchema = t.Object({
-  // Owner fields
-  name: t.Optional(t.String({ minLength: 1, maxLength: 100 })),
-  backstory: t.Optional(t.Union([t.String({ maxLength: 5000 }), t.Null()])),
-  portraitUrl: t.Optional(t.Union([t.String(), t.Null()])),
-  choices: t.Optional(t.Union([t.Record(t.String(), t.Any()), t.Null()])),
-  // DM fields
-  stats: t.Optional(AbilityScoresSchema),
-  level: t.Optional(t.Number({ minimum: 1, maximum: 20 })),
-  hitPoints: t.Optional(t.Number({ minimum: 0 })),
-  status: t.Optional(
-    t.Union([
-      t.Literal('active'),
-      t.Literal('dead'),
-      t.Literal('retired'),
-    ], { error: 'Status must be one of: active, dead, retired' }),
-  ),
+  name:              t.Optional(t.String({ minLength: 1, maxLength: 100 })),
+  backstory:         t.Optional(t.Union([t.String({ maxLength: 5000 }), t.Null()])),
+  portraitUrl:       t.Optional(t.Union([t.String(), t.Null()])),
+  choices:           t.Optional(t.Union([t.Record(t.String(), t.Any()), t.Null()])),
+  raceAssetId:       t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
+  classAssetId:      t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
+  backgroundAssetId: t.Optional(t.Union([t.String({ format: 'uuid' }), t.Null()])),
+  stats:             t.Optional(AbilityScoresSchema),
+  level:             t.Optional(t.Number({ minimum: 1, maximum: 20 })),
+  hitPoints:         t.Optional(t.Number({ minimum: 0 })),
+  status:            t.Optional(t.Union([
+    t.Literal('active'), t.Literal('dead'), t.Literal('retired'),
+  ], { error: 'Status must be one of: active, dead, retired' })),
 });
 
 // ─── Query ──────────────────────────────────────────────────────────
