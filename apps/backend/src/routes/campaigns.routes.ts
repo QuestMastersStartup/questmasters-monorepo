@@ -1,17 +1,8 @@
-import { Elysia, t } from 'elysia';
+import { Hono } from 'hono';
 import { createClient } from '@supabase/supabase-js';
+import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import {
-  requireUser,
-  requireOwnerOrAdmin,
-} from '../infrastructure/auth/supabase';
-import {
-  CreateCampaignSchema,
-  UpdateCampaignSchema,
-  ChangeCampaignStatusSchema,
-  CampaignQuerySchema,
-  InstallPacksSchema,
-} from '../schemas/campaign.schema';
+import { requireUser, requireOwnerOrAdmin } from '../infrastructure/auth/supabase';
 import { CampaignMapper } from '../campaigns/infrastructure/mappers/campaign.mapper';
 import { CampaignMemberMapper } from '../campaigns/infrastructure/mappers/campaign-member.mapper';
 import { CampaignError } from '../campaigns/application/errors';
@@ -19,426 +10,211 @@ import { CampaignStatus } from '../campaigns/domain/value-objects/campaign-statu
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 
 export function campaignsRoutes(container: Container) {
-  return (
-    new Elysia({ prefix: '/campaigns' })
-      // POST /campaigns/portrait — Upload a campaign portrait
-      .post(
-        '/portrait',
-        async ({ request, set, body }) => {
-          const user = await requireUser(request, set);
-          const { file } = body;
+  const app = new Hono<{ Bindings: CloudflareBindings }>();
 
-          // 1. Validation (5MB limit)
-          const MAX_SIZE = 5 * 1024 * 1024;
-          if (file.size > MAX_SIZE) {
-            set.status = 413;
-            return { message: 'File too large (max 5MB)' };
-          }
+  app.post('/portrait', async (c) => {
+    const user = await requireUser(c);
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
 
-          const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-          if (!ALLOWED_TYPES.includes(file.type)) {
-            set.status = 400;
-            return { message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' };
-          }
+    if (!file) return c.json({ message: 'Missing file' }, 400);
 
-          // 2. Prepare Auth-aware Supabase Client
-          const authHeader = request.headers.get('authorization');
-          const token = authHeader?.split(' ')[1];
-          if (!token) {
-            set.status = 401;
-            return { message: 'Missing authentication token' };
-          }
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) return c.json({ message: 'File too large (max 5MB)' }, 413);
 
-          const userSupabase = createClient(
-            process.env.SUPABASE_URL || '',
-            process.env.SUPABASE_KEY || '', // Anon key
-            { global: { headers: { Authorization: `Bearer ${token}` } } }
-          );
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
+    }
 
-          // 3. Upload to Supabase Storage
-          const fileExt = file.type.split('/')[1] || 'webp';
-          const fileName = `${user.id}/portrait-${Date.now()}.${fileExt}`;
+    const token = c.req.header('authorization')?.split(' ')[1];
+    if (!token) return c.json({ message: 'Missing authentication token' }, 401);
 
-          try {
-            const { error: uploadError } = await userSupabase
-              .storage
-              .from('campaign-portrait')
-              .upload(fileName, file, {
-                upsert: true,
-                contentType: file.type
-              });
+    const userSupabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
 
-            if (uploadError) {
-              set.status = 500;
-              return { message: uploadError.message || 'Failed to upload image' };
-            }
+    const fileExt = file.type.split('/')[1] || 'webp';
+    const fileName = `${user.id}/portrait-${Date.now()}.${fileExt}`;
 
-            // 4. Get Public URL
-            const { data: { publicUrl } } = userSupabase
-              .storage
-              .from('campaign-portrait')
-              .getPublicUrl(fileName);
+    try {
+      const { error: uploadError } = await userSupabase.storage
+        .from('campaign-portrait')
+        .upload(fileName, file, { upsert: true, contentType: file.type });
 
-            return { 
-              message: 'Portrait uploaded successfully',
-              portraitUrl: publicUrl
-            };
-          } catch (e: any) {
-            set.status = 500;
-            return { message: e.message || 'Internal server error' };
-          }
-        },
-        {
-          body: t.Object({
-            file: t.File(),
-          }),
-        }
-      )
-      // GET /campaigns
-      .get(
-        '/',
-        async ({ query, request, set }) => {
-          const user = await requireUser(request, set);
-          
-          // default search for DM's campaigns only
-          const campaigns = await container.listCampaignsUseCase.execute({
-            dmId: user.id,
-            status: query.status,
-            system: query.system
-          });
-          
-          return campaigns.map((c) => CampaignMapper.toResponse(c));
-        },
-        {
-          query: CampaignQuerySchema,
-          detail: {
-            summary: 'List my campaigns',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+      if (uploadError) {
+        return c.json({ message: uploadError.message || 'Failed to upload image' }, 500);
+      }
 
-      // GET /campaigns/:id
-      .get(
-        '/:id',
-        async ({ params, request, set }) => {
-          await requireUser(request, set);
-          const result = await container.getCampaignUseCase.execute(params.id);
+      const { data: { publicUrl } } = userSupabase.storage
+        .from('campaign-portrait')
+        .getPublicUrl(fileName);
 
-          if (result.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+      return c.json({ message: 'Portrait uploaded successfully', portraitUrl: publicUrl });
+    } catch (e: any) {
+      return c.json({ message: e.message || 'Internal server error' }, 500);
+    }
+  });
 
-          return CampaignMapper.toResponse(result.value);
-        },
-        {
-          params: t.Object({
-            id: t.String({ description: 'The unique ID of the campaign' }),
-          }),
-          detail: {
-            summary: 'Get a campaign by its ID',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+  app.get('/', async (c) => {
+    const user = await requireUser(c);
+    const { status, system } = c.req.query();
 
-      // POST /campaigns
-      .post(
-        '/',
-        async ({ body, request, set }) => {
-          const user = await requireUser(request, set);
-          (body as any).dmId = user.id;
+    const campaigns = await container.listCampaignsUseCase.execute({
+      dmId: user.id,
+      status,
+      system,
+    });
 
-          const result = await container.createCampaignUseCase.execute(body as any);
+    return c.json(campaigns.map((camp) => CampaignMapper.toResponse(camp)));
+  });
 
-          if (result.isFailure) {
-            set.status = 400;
-            return { message: result.error };
-          }
+  app.get('/:id', async (c) => {
+    await requireUser(c);
+    const id = c.req.param('id');
+    const result = await container.getCampaignUseCase.execute(id);
 
-          set.status = 201;
-          return CampaignMapper.toResponse(result.value);
-        },
-        {
-          body: CreateCampaignSchema,
-          detail: {
-            summary: 'Create a new campaign',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+    if (result.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-      // PUT /campaigns/:id
-      .put(
-        '/:id',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+    return c.json(CampaignMapper.toResponse(result.value));
+  });
 
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+  app.post('/', async (c) => {
+    const user = await requireUser(c);
+    const body = await c.req.json();
+    body.dmId = user.id;
 
-          const result = await container.updateCampaignUseCase.execute(params.id, body);
-          if (result.isFailure) {
-            set.status = 400;
-            return { message: result.error };
-          }
+    const result = await container.createCampaignUseCase.execute(body);
 
-          return CampaignMapper.toResponse(result.value);
-        },
-        {
-          body: UpdateCampaignSchema,
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'Update campaign metadata',
-            tags: ['Campaigns'],
-          },
-        },
-      )
- 
-      // POST /campaigns/:id/packs — Install packs
-      .post(
-        '/:id/packs',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+    if (result.isFailure) return c.json({ message: result.error }, 400);
 
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    return c.json(CampaignMapper.toResponse(result.value), 201);
+  });
 
-          try {
-            const uuids = body.packIds.map((id) => UUID.fromString(id));
-            const campaign = getResult.value.installPacks(uuids);
-            await container.campaignRepo.save(campaign);
-            return CampaignMapper.toResponse(campaign);
-          } catch (e: any) {
-            set.status = 400;
-            return { message: e.message };
-          }
-        },
-        {
-          body: InstallPacksSchema,
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'Install content packs in campaign',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+  app.put('/:id', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-      // POST /campaigns/:id/packs/uninstall — Uninstall packs
-      .post(
-        '/:id/packs/uninstall',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    const body = await c.req.json();
+    const result = await container.updateCampaignUseCase.execute(id, body);
+    if (result.isFailure) return c.json({ message: result.error }, 400);
 
-          try {
-            const uuids = body.packIds.map((id) => UUID.fromString(id));
-            const campaign = getResult.value.uninstallPacks(uuids);
-            await container.campaignRepo.save(campaign);
-            return CampaignMapper.toResponse(campaign);
-          } catch (e: any) {
-            set.status = 400;
-            return { message: e.message };
-          }
-        },
-        {
-          body: InstallPacksSchema,
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'Uninstall content packs from campaign',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+    return c.json(CampaignMapper.toResponse(result.value));
+  });
 
-      // PATCH /campaigns/:id/status
-      .patch(
-        '/:id/status',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+  app.post('/:id/packs', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-          try {
-            const campaign = getResult.value.changeStatus(CampaignStatus.create(body.status));
-            await container.campaignRepo.save(campaign);
-            return CampaignMapper.toResponse(campaign);
-          } catch (e: any) {
-            set.status = 400;
-            return { message: e.message };
-          }
-        },
-        {
-          body: ChangeCampaignStatusSchema,
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'Change campaign status',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+    try {
+      const { packIds } = await c.req.json();
+      const uuids = packIds.map((pid: string) => UUID.fromString(pid));
+      const campaign = getResult.value.installPacks(uuids);
+      await container.campaignRepo.save(campaign);
+      return c.json(CampaignMapper.toResponse(campaign));
+    } catch (e: any) {
+      return c.json({ message: e.message }, 400);
+    }
+  });
 
-      // DELETE /campaigns/:id
-      .delete(
-        '/:id',
-        async ({ params, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+  app.post('/:id/packs/uninstall', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-          const result = await container.deleteCampaignUseCase.execute(params.id);
-          if (result.isFailure) {
-            set.status = 400;
-            return { message: result.error };
-          }
+    try {
+      const { packIds } = await c.req.json();
+      const uuids = packIds.map((pid: string) => UUID.fromString(pid));
+      const campaign = getResult.value.uninstallPacks(uuids);
+      await container.campaignRepo.save(campaign);
+      return c.json(CampaignMapper.toResponse(campaign));
+    } catch (e: any) {
+      return c.json({ message: e.message }, 400);
+    }
+  });
 
-          set.status = 204;
-        },
-        {
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'Delete a campaign',
-            tags: ['Campaigns'],
-          },
-        },
-      )
+  app.patch('/:id/status', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-      // --- Members Management ---
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-      // GET /campaigns/:id/members — List all members
-      .get(
-        '/:id/members',
-        async ({ params, request, set }) => {
-          await requireUser(request, set);
-          const result = await container.listMembersUseCase.execute(params.id);
+    try {
+      const { status } = await c.req.json();
+      const campaign = getResult.value.changeStatus(CampaignStatus.create(status));
+      await container.campaignRepo.save(campaign);
+      return c.json(CampaignMapper.toResponse(campaign));
+    } catch (e: any) {
+      return c.json({ message: e.message }, 400);
+    }
+  });
 
-          if (result.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+  app.delete('/:id', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-          return result.value.map(CampaignMemberMapper.toResponse);
-        },
-        {
-          params: t.Object({
-            id: t.String(),
-          }),
-          detail: {
-            summary: 'List campaign members',
-            tags: ['Campaigns', 'Members'],
-          },
-        }
-      )
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-      // POST /campaigns/:id/members — Invite a player
-      .post(
-        '/:id/members',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+    const result = await container.deleteCampaignUseCase.execute(id);
+    if (result.isFailure) return c.json({ message: result.error }, 400);
 
-          // Only DM/Admin can invite
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    return new Response(null, { status: 204 });
+  });
 
-          const result = await container.invitePlayerUseCase.execute({
-            campaignId: params.id,
-            userId: (body as any).userId,
-          });
+  app.get('/:id/members', async (c) => {
+    await requireUser(c);
+    const id = c.req.param('id');
+    const result = await container.listMembersUseCase.execute(id);
 
-          if (result.isFailure) {
-            if (result.error === CampaignError.ALREADY_EXISTS) {
-              set.status = 409;
-              return { message: 'User is already a member of this campaign' };
-            }
-            set.status = 400;
-            return { message: result.error };
-          }
+    if (result.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-          set.status = 201;
-          return CampaignMemberMapper.toResponse(result.value);
-        },
-        {
-          params: t.Object({
-            id: t.String(),
-          }),
-          body: t.Object({
-            userId: t.String(),
-          }),
-          detail: {
-            summary: 'Invite a player to campaign',
-            tags: ['Campaigns', 'Members'],
-          },
-        }
-      )
+    return c.json(result.value.map(CampaignMemberMapper.toResponse));
+  });
 
-      // DELETE /campaigns/:id/members/:userId — Remove a player
-      .delete(
-        '/:id/members/:userId',
-        async ({ params, request, set }) => {
-          const getResult = await container.getCampaignUseCase.execute(params.id);
-          if (getResult.isFailure) {
-            set.status = 404;
-            return { message: 'Campaign not found' };
-          }
+  app.post('/:id/members', async (c) => {
+    const id = c.req.param('id');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
 
-          // Only DM/Admin can kick players
-          await requireOwnerOrAdmin(request, set, getResult.value.dmId, container);
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
 
-          const result = await container.removeMemberUseCase.execute({
-            campaignId: params.id,
-            userId: params.userId,
-          });
+    const { userId } = await c.req.json();
+    const result = await container.invitePlayerUseCase.execute({ campaignId: id, userId });
 
-          if (result.isFailure) {
-            set.status = 400;
-            return { message: result.error };
-          }
+    if (result.isFailure) {
+      if (result.error === CampaignError.ALREADY_EXISTS) {
+        return c.json({ message: 'User is already a member of this campaign' }, 409);
+      }
+      return c.json({ message: result.error }, 400);
+    }
 
-          set.status = 204;
-        },
-        {
-          params: t.Object({
-            id: t.String(),
-            userId: t.String(),
-          }),
-          detail: {
-            summary: 'Remove a player from campaign',
-            tags: ['Campaigns', 'Members'],
-          },
-        }
-      )
-  );
+    return c.json(CampaignMemberMapper.toResponse(result.value), 201);
+  });
+
+  app.delete('/:id/members/:userId', async (c) => {
+    const id = c.req.param('id');
+    const userId = c.req.param('userId');
+    const getResult = await container.getCampaignUseCase.execute(id);
+    if (getResult.isFailure) return c.json({ message: 'Campaign not found' }, 404);
+
+    await requireOwnerOrAdmin(c, getResult.value.dmId, container);
+
+    const result = await container.removeMemberUseCase.execute({ campaignId: id, userId });
+
+    if (result.isFailure) return c.json({ message: result.error }, 400);
+
+    return new Response(null, { status: 204 });
+  });
+
+  return app;
 }

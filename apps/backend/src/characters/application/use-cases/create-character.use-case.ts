@@ -42,7 +42,7 @@ export class CreateCharacterUseCase {
 
       // ── Libre mode: no asset validation, free stats ───────────────────
       if (dto.method === 'libre') {
-        for (const stat of Object.values(dto.stats)) {
+        for (const stat of Object.values(dto.stats as Record<string, number>)) {
           if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
         }
         const character = Character.create({
@@ -102,7 +102,7 @@ export class CreateCharacterUseCase {
           if (!validation.valid) return Result.fail(CharacterError.INVALID_STATS);
         } else {
           // 'free' method: just basic range check (1-30 as per user "liber de crearlo como quiera")
-          for (const stat of Object.values(dto.stats)) {
+          for (const stat of Object.values(dto.stats as Record<string, number>)) {
             if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
           }
         }

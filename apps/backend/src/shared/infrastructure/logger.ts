@@ -13,7 +13,8 @@ interface LogEntry {
   [key: string]: unknown;
 }
 
-const isProd = (Bun.env.NODE_ENV ?? process.env.NODE_ENV) === 'production';
+declare const process: { env: Record<string, string | undefined> } | undefined;
+const isProd = (typeof process !== 'undefined' ? process?.env?.NODE_ENV : undefined) === 'production';
 
 function formatEntry(entry: LogEntry): string {
   if (isProd) {

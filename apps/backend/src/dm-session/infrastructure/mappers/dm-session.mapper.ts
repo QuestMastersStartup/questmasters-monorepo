@@ -1,53 +1,6 @@
-import {
-  ArchitectureType,
-  DmSession,
-  DmSessionStatus,
-} from '../../domain/entities/dm-session.entity';
-import { DmSessionOrmEntity } from '../typeorm/dm-session.typeorm-entity';
+import { DmSession } from '../../domain/entities/dm-session.entity';
 
 export class DmSessionMapper {
-  static toDomain(entity: DmSessionOrmEntity): DmSession {
-    return DmSession.reconstruct({
-      id: entity.id,
-      userId: entity.userId,
-      title: entity.title,
-      campaignPrompt: entity.campaignPrompt,
-      characters: entity.characters ?? [],
-      architectureType: entity.architectureType as ArchitectureType,
-      status: entity.status as DmSessionStatus,
-      modelId: entity.modelId,
-      memorySnapshot: entity.memorySnapshot ?? {},
-      narrativeNotes: entity.narrativeNotes ?? [],
-      turnCount: entity.turnCount,
-      totalInputTokens: entity.totalInputTokens,
-      totalOutputTokens: entity.totalOutputTokens,
-      totalLatencyMs: entity.totalLatencyMs,
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-    });
-  }
-
-  static toPersistence(domain: DmSession): DmSessionOrmEntity {
-    const entity = new DmSessionOrmEntity();
-    entity.id = domain.id.toString();
-    entity.userId = domain.userId;
-    entity.title = domain.title;
-    entity.campaignPrompt = domain.campaignPrompt;
-    entity.characters = domain.characters;
-    entity.architectureType = domain.architectureType;
-    entity.status = domain.status;
-    entity.modelId = domain.modelId;
-    entity.memorySnapshot = domain.memorySnapshot;
-    entity.narrativeNotes = domain.narrativeNotes;
-    entity.turnCount = domain.turnCount;
-    entity.totalInputTokens = domain.totalInputTokens;
-    entity.totalOutputTokens = domain.totalOutputTokens;
-    entity.totalLatencyMs = domain.totalLatencyMs;
-    entity.createdAt = domain.createdAt;
-    entity.updatedAt = domain.updatedAt;
-    return entity;
-  }
-
   static toResponse(domain: DmSession) {
     return {
       id: domain.id.toString(),

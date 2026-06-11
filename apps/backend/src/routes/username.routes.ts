@@ -1,24 +1,15 @@
-import { Elysia, t } from 'elysia';
-import { Container } from '../infrastructure/container';
+import { Hono } from 'hono';
+import type { CloudflareBindings } from '../types/bindings';
+import type { Container } from '../infrastructure/container';
 
-export const usernameRoutes = (container: Container) =>
-  new Elysia({ prefix: '/users' })
-    .get(
-      '/check-username/:username',
-      async ({ params }) => {
-        const { username } = params;
-        
-        // We can use the profile repository indirectly or the use case if exists.
-        // Let's check if there's a simple way via the use cases or repository.
-        const profile = await container.userProfileRepo.findByUsername(username);
-        
-        return {
-          available: !profile,
-        };
-      },
-      {
-        params: t.Object({
-          username: t.String(),
-        }),
-      }
-    );
+export function usernameRoutes(container: Container) {
+  const app = new Hono<{ Bindings: CloudflareBindings }>();
+
+  app.get('/check-username/:username', async (c) => {
+    const username = c.req.param('username');
+    const profile = await container.userProfileRepo.findByUsername(username);
+    return c.json({ available: !profile });
+  });
+
+  return app;
+}

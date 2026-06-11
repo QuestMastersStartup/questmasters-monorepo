@@ -1,269 +1,136 @@
-import { Elysia, t } from 'elysia';
+import { Hono } from 'hono';
+import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
 import { requireOwnerOrAdmin } from '../infrastructure/auth/supabase';
-import { CreateAssetSchema, UpdateAssetSchema } from '../schemas/asset.schema';
 import { AssetMapper } from '../content/infrastructure/mappers/asset.mapper';
-import { AssetError } from '../content/application/errors';
-import { PackError } from '../content/application/errors';
+import { AssetError, PackError } from '../content/application/errors';
 
 export function assetsRoutes(container: Container) {
-  return (
-    new Elysia({ prefix: '/packs/:slug/assets' })
-      // --- PUBLIC ROUTES ---
-      // GET /packs/:slug/assets — List assets
-      .get(
-        '/',
-        async ({ params, query, set }) => {
-          const result = await container.listAssetsUseCase.execute(
-            params.slug,
-            { type: query.type },
-          );
+  const app = new Hono<{ Bindings: CloudflareBindings }>();
 
-          if (result.isFailure) {
-            if (result.error === AssetError.PACK_NOT_FOUND) {
-              set.status = 404;
-              return { message: `Pack '${params.slug}' not found` };
-            }
-            set.status = 400;
-            return { message: result.error };
-          }
+  app.get('/', async (c) => {
+    const slug = c.req.param('slug')!;
+    const { type } = c.req.query();
+    const result = await container.listAssetsUseCase.execute(slug, { type });
 
-          return result.value.map(AssetMapper.toResponse);
-        },
-        {
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-          }),
-          query: t.Object({
-            type: t.Optional(
-              t.String({
-                description: 'Filter assets by type (e.g., class, item)',
-              }),
-            ),
-          }),
-          detail: {
-            summary: 'List assets within a pack',
-            tags: ['Assets'],
-          },
-        },
-      )
+    if (result.isFailure) {
+      if (result.error === AssetError.PACK_NOT_FOUND) {
+        return c.json({ message: `Pack '${slug}' not found` }, 404);
+      }
+      return c.json({ message: result.error }, 400);
+    }
 
-      // GET /packs/:slug/assets/:type/:index — Get single asset
-      .get(
-        '/:type/:index',
-        async ({ params, set }) => {
-          const result = await container.getAssetUseCase.execute(
-            params.slug,
-            params.type,
-            params.index,
-          );
+    return c.json(result.value.map(AssetMapper.toResponse));
+  });
 
-          if (result.isFailure) {
-            switch (result.error) {
-              case AssetError.PACK_NOT_FOUND:
-                set.status = 404;
-                return { message: `Pack '${params.slug}' not found` };
-              case AssetError.NOT_FOUND:
-                set.status = 404;
-                return {
-                  message: `Asset '${params.type}/${params.index}' not found in pack '${params.slug}'`,
-                };
-              case AssetError.INVALID_TYPE:
-                set.status = 400;
-                return { message: `Invalid asset type: ${params.type}` };
-              default:
-                set.status = 400;
-                return { message: result.error };
-            }
-          }
+  app.get('/:type/:index', async (c) => {
+    const slug = c.req.param('slug')!;
+    const type = c.req.param('type')!;
+    const index = c.req.param('index')!;
+    const result = await container.getAssetUseCase.execute(slug, type, index);
 
-          return AssetMapper.toResponse(result.value);
-        },
-        {
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-            type: t.String({ description: 'The asset type' }),
-            index: t.String({ description: 'The asset unique index' }),
-          }),
-          detail: {
-            summary: 'Get a single asset from a pack',
-            tags: ['Assets'],
-          },
-        },
-      )
+    if (result.isFailure) {
+      switch (result.error) {
+        case AssetError.PACK_NOT_FOUND:
+          return c.json({ message: `Pack '${slug}' not found` }, 404);
+        case AssetError.NOT_FOUND:
+          return c.json({ message: `Asset '${type}/${index}' not found in pack '${slug}'` }, 404);
+        case AssetError.INVALID_TYPE:
+          return c.json({ message: `Invalid asset type: ${type}` }, 400);
+        default:
+          return c.json({ message: result.error }, 400);
+      }
+    }
 
-      // --- PROTECTED ROUTES ---
+    return c.json(AssetMapper.toResponse(result.value));
+  });
 
-      // POST /packs/:slug/assets — Create asset
-      .post(
-        '/',
-        async ({ params, body, request, set }) => {
-          // 1. Fetch pack to get creatorId
-          const getResult = await container.getPackUseCase.execute(params.slug);
-          if (getResult.isFailure) {
-            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
-            return { message: getResult.error };
-          }
+  app.post('/', async (c) => {
+    const slug = c.req.param('slug')!;
+    const getResult = await container.getPackUseCase.execute(slug);
+    if (getResult.isFailure) {
+      return c.json({ message: getResult.error }, getResult.error === PackError.NOT_FOUND ? 404 : 400);
+    }
 
-          // 2. Authorize
-          await requireOwnerOrAdmin(
-            request,
-            set,
-            getResult.value.pack.creatorId,
-            container,
-          );
+    await requireOwnerOrAdmin(c, getResult.value.pack.creatorId, container);
 
-          // 3. Execute
-          const result = await container.createAssetUseCase.execute(
-            params.slug,
-            body,
-          );
+    const body = await c.req.json();
+    const result = await container.createAssetUseCase.execute(slug, body);
 
-          if (result.isFailure) {
-            switch (result.error) {
-              case AssetError.PACK_NOT_FOUND:
-                set.status = 404;
-                return { message: `Pack '${params.slug}' not found` };
-              case AssetError.ALREADY_EXISTS:
-                set.status = 400;
-                return {
-                  message: `Asset '${body.type}/${body.index}' already exists in this pack`,
-                };
-              default:
-                set.status = 400;
-                return { message: result.error };
-            }
-          }
+    if (result.isFailure) {
+      switch (result.error) {
+        case AssetError.PACK_NOT_FOUND:
+          return c.json({ message: `Pack '${slug}' not found` }, 404);
+        case AssetError.ALREADY_EXISTS:
+          return c.json({ message: `Asset '${body.type}/${body.index}' already exists in this pack` }, 400);
+        default:
+          return c.json({ message: result.error }, 400);
+      }
+    }
 
-          set.status = 201;
-          return AssetMapper.toResponse(result.value);
-        },
-        {
-          body: CreateAssetSchema,
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-          }),
-          detail: {
-            summary: 'Create a new asset in a pack',
-            tags: ['Assets'],
-          },
-        },
-      )
+    return c.json(AssetMapper.toResponse(result.value), 201);
+  });
 
-      // PUT /packs/:slug/assets/:type/:index — Update asset
-      .put(
-        '/:type/:index',
-        async ({ params, body, request, set }) => {
-          const getResult = await container.getPackUseCase.execute(params.slug);
-          if (getResult.isFailure) {
-            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
-            return { message: getResult.error };
-          }
+  app.put('/:type/:index', async (c) => {
+    const slug = c.req.param('slug')!;
+    const type = c.req.param('type')!;
+    const index = c.req.param('index')!;
 
-          await requireOwnerOrAdmin(
-            request,
-            set,
-            getResult.value.pack.creatorId,
-            container,
-          );
+    const getResult = await container.getPackUseCase.execute(slug);
+    if (getResult.isFailure) {
+      return c.json({ message: getResult.error }, getResult.error === PackError.NOT_FOUND ? 404 : 400);
+    }
 
-          const result = await container.updateAssetUseCase.execute(
-            params.slug,
-            params.type,
-            params.index,
-            body,
-          );
+    await requireOwnerOrAdmin(c, getResult.value.pack.creatorId, container);
 
-          if (result.isFailure) {
-            switch (result.error) {
-              case AssetError.PACK_NOT_FOUND:
-                set.status = 404;
-                return { message: `Pack '${params.slug}' not found` };
-              case AssetError.NOT_FOUND:
-                set.status = 404;
-                return {
-                  message: `Asset '${params.type}/${params.index}' not found in pack '${params.slug}'`,
-                };
-              case AssetError.INVALID_TYPE:
-                set.status = 400;
-                return { message: `Invalid asset type: ${params.type}` };
-              default:
-                set.status = 400;
-                return { message: result.error };
-            }
-          }
+    const body = await c.req.json();
+    const result = await container.updateAssetUseCase.execute(slug, type, index, body);
 
-          return AssetMapper.toResponse(result.value);
-        },
-        {
-          body: UpdateAssetSchema,
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-            type: t.String({ description: 'The asset type' }),
-            index: t.String({ description: 'The asset unique index' }),
-          }),
-          detail: {
-            summary: 'Update asset metadata',
-            tags: ['Assets'],
-          },
-        },
-      )
+    if (result.isFailure) {
+      switch (result.error) {
+        case AssetError.PACK_NOT_FOUND:
+          return c.json({ message: `Pack '${slug}' not found` }, 404);
+        case AssetError.NOT_FOUND:
+          return c.json({ message: `Asset '${type}/${index}' not found in pack '${slug}'` }, 404);
+        case AssetError.INVALID_TYPE:
+          return c.json({ message: `Invalid asset type: ${type}` }, 400);
+        default:
+          return c.json({ message: result.error }, 400);
+      }
+    }
 
-      // DELETE /packs/:slug/assets/:type/:index — Delete asset
-      .delete(
-        '/:type/:index',
-        async ({ params, request, set }) => {
-          const getResult = await container.getPackUseCase.execute(params.slug);
-          if (getResult.isFailure) {
-            set.status = getResult.error === PackError.NOT_FOUND ? 404 : 400;
-            return { message: getResult.error };
-          }
+    return c.json(AssetMapper.toResponse(result.value));
+  });
 
-          await requireOwnerOrAdmin(
-            request,
-            set,
-            getResult.value.pack.creatorId,
-            container,
-          );
+  app.delete('/:type/:index', async (c) => {
+    const slug = c.req.param('slug')!;
+    const type = c.req.param('type')!;
+    const index = c.req.param('index')!;
 
-          const result = await container.deleteAssetUseCase.execute(
-            params.slug,
-            params.type,
-            params.index,
-          );
+    const getResult = await container.getPackUseCase.execute(slug);
+    if (getResult.isFailure) {
+      return c.json({ message: getResult.error }, getResult.error === PackError.NOT_FOUND ? 404 : 400);
+    }
 
-          if (result.isFailure) {
-            switch (result.error) {
-              case AssetError.PACK_NOT_FOUND:
-                set.status = 404;
-                return { message: `Pack '${params.slug}' not found` };
-              case AssetError.NOT_FOUND:
-                set.status = 404;
-                return {
-                  message: `Asset '${params.type}/${params.index}' not found in pack '${params.slug}'`,
-                };
-              case AssetError.INVALID_TYPE:
-                set.status = 400;
-                return { message: `Invalid asset type: ${params.type}` };
-              default:
-                set.status = 400;
-                return { message: result.error };
-            }
-          }
+    await requireOwnerOrAdmin(c, getResult.value.pack.creatorId, container);
 
-          set.status = 204;
-        },
-        {
-          params: t.Object({
-            slug: t.String({ description: 'The unique slug of the pack' }),
-            type: t.String({ description: 'The asset type' }),
-            index: t.String({ description: 'The asset unique index' }),
-          }),
-          detail: {
-            summary: 'Delete an asset from a pack',
-            tags: ['Assets'],
-          },
-        },
-      )
-  );
+    const result = await container.deleteAssetUseCase.execute(slug, type, index);
+
+    if (result.isFailure) {
+      switch (result.error) {
+        case AssetError.PACK_NOT_FOUND:
+          return c.json({ message: `Pack '${slug}' not found` }, 404);
+        case AssetError.NOT_FOUND:
+          return c.json({ message: `Asset '${type}/${index}' not found in pack '${slug}'` }, 404);
+        case AssetError.INVALID_TYPE:
+          return c.json({ message: `Invalid asset type: ${type}` }, 400);
+        default:
+          return c.json({ message: result.error }, 400);
+      }
+    }
+
+    return new Response(null, { status: 204 });
+  });
+
+  return app;
 }

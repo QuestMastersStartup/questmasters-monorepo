@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto';
-
 export class UUID {
   private constructor(private readonly value: string) {
     if (!UUID.isValid(value)) {
@@ -8,7 +6,7 @@ export class UUID {
   }
 
   static generate(): UUID {
-    return new UUID(randomUUID());
+    return new UUID(globalThis.crypto.randomUUID());
   }
 
   static fromString(value: string): UUID {

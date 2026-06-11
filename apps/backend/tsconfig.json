@@ -4,21 +4,19 @@
     "moduleResolution": "Bundler",
     "target": "ESNext",
     "strict": true,
-    "strictPropertyInitialization": false,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "declaration": true,
+    "declaration": false,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
+    "types": ["@cloudflare/workers-types"],
     "paths": {
       "@shared/*": ["src/shared/*"],
       "@content/*": ["src/content/*"]
     }
-
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "src/content/infrastructure/seeding/**", "node_modules"]
 }

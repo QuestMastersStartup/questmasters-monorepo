@@ -50,14 +50,15 @@ export class UpdateCharacterUseCase {
 
       // Validate stats range if provided
       if (dto.stats) {
-        for (const stat of Object.values(dto.stats)) {
+        for (const stat of Object.values(dto.stats as Record<string, number>)) {
           if (stat < 1 || stat > 30) return Result.fail(CharacterError.INVALID_STATS);
         }
       }
 
       const { CharacterStatus } = await import('../../domain/value-objects/character-status.vo');
 
-      const updateProps: Parameters<typeof character.update>[0] = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updateProps: any = {};
       if (dto.name !== undefined)      updateProps.name        = dto.name;
       if (dto.backstory !== undefined) updateProps.backstory   = dto.backstory;
       if (dto.portraitUrl !== undefined) updateProps.portraitUrl = dto.portraitUrl;
