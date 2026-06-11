@@ -54,7 +54,7 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 - `*.log`, `out.txt`, `error.log` — artefactos de runtime, nunca en git
 - Scripts de debug ad-hoc (`check_schema.js`, `test-db.js`) en raíz de apps — si son necesarios, van en `scripts/`
 - Directorios `tmp/` dentro de apps — usar `/tmp` del sistema o añadir al `.gitignore`
-- `package-lock.json` dentro de workspaces pnpm — solo usar `pnpm install`
+- `package-lock.json` o `pnpm-lock.yaml` dentro de workspaces — solo usar `bun install`
 - Archivos de herramientas externas (TestSprite, Warp, etc.) — no pertenecen al repo
 - Documentos de análisis o reportes como `.md` en la raíz — usar `context/` o no crearlos
 - Skills de Claude Code (`.agents/`, `.claude/skills/`) — van en `~/.claude/`, no en el repo

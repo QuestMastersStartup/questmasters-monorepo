@@ -7,7 +7,7 @@ Plataforma Virtual Tabletop (VTT) de nueva generación para juegos de rol, con a
 ### ✅ Completado (v0.5)
 
 **EPIC 0: Fundaciones Técnicas**
-- ✅ Arquitectura de monorepo con Turborepo + pnpm workspaces
+- ✅ Arquitectura de monorepo con Turborepo + Bun workspaces
 - ✅ Backend Elysia con arquitectura hexagonal (DDD)
 - ✅ Frontend React + Vite + TailwindCSS
 - ✅ Paquete compartido `@questmasters/dnd-rules` con tipos TypeScript
@@ -103,7 +103,7 @@ questmasters-monorepo/
 
 | Capa | Tecnologia |
 |------|------------|
-| **Monorepo** | Turborepo + pnpm workspaces |
+| **Monorepo** | Turborepo + Bun workspaces |
 | **Frontend** | React 18, Vite, TailwindCSS, React Router |
 | **Backend** | Elysia, TypeORM, PostgreSQL 17 |
 | **Shared** | `@questmasters/dnd-rules` — tipos TypeScript canonicos + logica de reglas |
@@ -113,21 +113,20 @@ questmasters-monorepo/
 
 ### Requisitos
 
-- Node.js >= 18
-- pnpm >= 8
+- Bun >= 1.1 (o la versión indicada en package.json)
 - Docker (para PostgreSQL)
 
 ### Setup
 
 ```bash
 # Instalar dependencias
-pnpm install
+bun install
 
 # Levantar base de datos
 docker compose up -d postgres
 
 # Desarrollo (api + client en paralelo)
-pnpm turbo dev --filter=api --filter=client
+bun run dev:local
 ```
 
 - API: http://localhost:3000
