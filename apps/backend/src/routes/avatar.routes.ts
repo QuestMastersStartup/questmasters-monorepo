@@ -1,92 +1,55 @@
-import { Elysia, t } from 'elysia';
+import { Hono } from 'hono';
 import { createClient } from '@supabase/supabase-js';
+import type { CloudflareBindings } from '../types/bindings';
+import type { Container } from '../infrastructure/container';
 import { requireUser } from '../infrastructure/auth/supabase';
-import { Container } from '../infrastructure/container';
 
-export const avatarRoutes = (container: Container) =>
-  new Elysia({ prefix: '/users' })
-    .post(
-      '/me/avatar',
-      async ({ request, set, body }) => {
-        const user = await requireUser(request, set);
-        const { file } = body;
+export function avatarRoutes(container: Container) {
+  const app = new Hono<{ Bindings: CloudflareBindings }>();
 
-        // 1. Validation (5MB limit)
-        const MAX_SIZE = 5 * 1024 * 1024;
-        if (file.size > MAX_SIZE) {
-          set.status = 413;
-          return { message: 'File too large (max 5MB)' };
-        }
+  app.post('/me/avatar', async (c) => {
+    const user = await requireUser(c);
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
 
-        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        if (!ALLOWED_TYPES.includes(file.type)) {
-          set.status = 400;
-          return { message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' };
-        }
+    if (!file) return c.json({ message: 'Missing file' }, 400);
 
-        // 2. Prepare Auth-aware Supabase Client
-        // We use the user's token to satisfy RLS policies in Storage
-        const authHeader = request.headers.get('authorization');
-        const token = authHeader?.split(' ')[1];
-        
-        if (!token) {
-          set.status = 401;
-          return { message: 'Missing authentication token' };
-        }
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) return c.json({ message: 'File too large (max 5MB)' }, 413);
 
-        const userSupabase = createClient(
-          process.env.SUPABASE_URL || '',
-          process.env.SUPABASE_KEY || '', // Anon key
-          { global: { headers: { Authorization: `Bearer ${token}` } } }
-        );
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
+    }
 
-        // 3. Upload to Supabase Storage
-        const fileExt = file.type.split('/')[1] || 'webp';
-        const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
-        
-        try {
-          const { data: uploadData, error: uploadError } = await userSupabase
-            .storage
-            .from('avatars')
-            .upload(fileName, file, {
-              upsert: true,
-              contentType: file.type
-            });
+    const token = c.req.header('authorization')?.split(' ')[1];
+    if (!token) return c.json({ message: 'Missing authentication token' }, 401);
 
-          if (uploadError) {
-            console.error('Storage Upload Error Detail:', uploadError);
-            set.status = 500;
-            return { message: uploadError.message || 'Failed to upload image to storage' };
-          }
+    const userSupabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
 
-          // 4. Get Public URL (use the default client for public URL)
-          const { data: { publicUrl } } = userSupabase
-            .storage
-            .from('avatars')
-            .getPublicUrl(fileName);
+    const fileExt = file.type.split('/')[1] || 'webp';
+    const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
 
-          console.log('Generated Public URL:', publicUrl);
+    try {
+      const { error: uploadError } = await userSupabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true, contentType: file.type });
 
-          // 5. Update Profile
-          await container.updateUserProfileUseCase.execute({
-            userId: user.id,
-            avatarUrl: publicUrl
-          });
-
-          return { 
-            message: 'Avatar updated successfully',
-            avatarUrl: publicUrl
-          };
-
-        } catch (e: any) {
-          console.error('Avatar Request Error:', e);
-          set.status = 500;
-          return { message: e.message || 'Internal server error' };
-        }
-      },
-      {
-        body: t.Object({
-          file: t.File(),
-        }),
+      if (uploadError) {
+        return c.json({ message: uploadError.message || 'Failed to upload image to storage' }, 500);
       }
-    );
+
+      const { data: { publicUrl } } = userSupabase.storage.from('avatars').getPublicUrl(fileName);
+
+      await container.updateUserProfileUseCase.execute({ userId: user.id, avatarUrl: publicUrl });
+
+      return c.json({ message: 'Avatar updated successfully', avatarUrl: publicUrl });
+    } catch (e: any) {
+      return c.json({ message: e.message || 'Internal server error' }, 500);
+    }
+  });
+
+  return app;
+}
