@@ -15,6 +15,7 @@ import { usernameRoutes } from './routes/username.routes';
 import { avatarRoutes } from './routes/avatar.routes';
 import { campaignsRoutes } from './routes/campaigns.routes';
 import { charactersRoutes } from './routes/characters.routes';
+import { dmSessionsRoutes } from './routes/dm-sessions.routes';
 import { checkEmailRoutes } from './routes/check-email.routes';
 import { seedAdminUser } from './infrastructure/seed-admin';
 
@@ -90,6 +91,7 @@ const app = new Elysia()
           { name: 'Rules', description: 'D&D rules engine operations' },
           { name: 'Campaigns', description: 'Campaign and session management' },
           { name: 'Characters', description: 'Character management and builder' },
+          { name: 'DM Sessions', description: 'AI DM research sessions (MAS vs monolithic orchestration)' },
         ],
       },
     }),
@@ -103,6 +105,7 @@ const app = new Elysia()
       .use(avatarRoutes(container))
       .use(campaignsRoutes(container))
       .use(charactersRoutes(container))
+      .use(dmSessionsRoutes(container))
       .use(packsRoutes(container))
       .use(assetsRoutes(container))
       .use(rulesRoutes(container)),

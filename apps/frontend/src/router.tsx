@@ -16,6 +16,8 @@ import { EditCampaign } from "./pages/EditCampaign";
 import { CreateCharacter } from "./pages/CreateCharacter";
 import { CharacterDetail } from "./pages/CharacterDetail";
 import { Characters } from "./pages/Characters";
+import { DmSessions } from "./pages/DmSessions";
+import { DmSession } from "./pages/DmSession";
 
 export const router = createBrowserRouter([
   {
@@ -83,6 +85,19 @@ export const router = createBrowserRouter([
             element: <ProtectedRoute><CreateCharacter /></ProtectedRoute>,
           },
         ]
+      },
+      {
+        path: "dm-sessions",
+        children: [
+          {
+            index: true,
+            element: <ProtectedRoute><DmSessions /></ProtectedRoute>,
+          },
+          {
+            path: ":id",
+            element: <ProtectedRoute><DmSession /></ProtectedRoute>,
+          },
+        ],
       },
       {
         path: "library",

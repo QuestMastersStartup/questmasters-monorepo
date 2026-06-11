@@ -6,6 +6,8 @@ import { CampaignOrmEntity } from '../campaigns/infrastructure/typeorm/campaign.
 import { CampaignInstalledPackOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-installed-pack.typeorm-entity';
 import { CampaignMemberOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-entity';
 import { CharacterOrmEntity } from '../characters/infrastructure/typeorm/character.typeorm-entity';
+import { DmSessionOrmEntity } from '../dm-session/infrastructure/typeorm/dm-session.typeorm-entity';
+import { DmTurnOrmEntity } from '../dm-session/infrastructure/typeorm/dm-turn.typeorm-entity';
 
 export async function createDataSource(): Promise<DataSource> {
   const ds = new DataSource({
@@ -19,6 +21,8 @@ export async function createDataSource(): Promise<DataSource> {
       CampaignInstalledPackOrmEntity,
       CampaignMemberOrmEntity,
       CharacterOrmEntity,
+      DmSessionOrmEntity,
+      DmTurnOrmEntity,
     ],
     // Migrations run explicitly via `bun run migration:run` — never at startup.
     // Do NOT enable migrationsRun or synchronize: they conflict with each other

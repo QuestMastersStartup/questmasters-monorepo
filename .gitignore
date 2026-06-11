@@ -26,6 +26,7 @@ pnpm-debug.log*
 
 # Generated / external tool output
 graphify-out/
+.superpowers
 .codegraph/
 testsprite_tests/tmp/
 

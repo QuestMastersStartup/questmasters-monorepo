@@ -6,6 +6,8 @@ import { AssetOrmEntity } from '../content/infrastructure/typeorm/asset.typeorm-
 import { CampaignOrmEntity } from '../campaigns/infrastructure/typeorm/campaign.typeorm-entity';
 import { CampaignMemberOrmEntity } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-entity';
 import { CharacterOrmEntity } from '../characters/infrastructure/typeorm/character.typeorm-entity';
+import { DmSessionOrmEntity } from '../dm-session/infrastructure/typeorm/dm-session.typeorm-entity';
+import { DmTurnOrmEntity } from '../dm-session/infrastructure/typeorm/dm-turn.typeorm-entity';
 
 // Repository Implementations
 import { ContentPackTypeormRepository } from '../content/infrastructure/typeorm/content-pack.typeorm-repository';
@@ -15,6 +17,8 @@ import { UserProfileOrmEntity } from '../users/infrastructure/adapters/out/persi
 import { CampaignTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign.typeorm-repository';
 import { CampaignMemberTypeormRepository } from '../campaigns/infrastructure/typeorm/campaign-member.typeorm-repository';
 import { CharacterTypeormRepository } from '../characters/infrastructure/typeorm/character.typeorm-repository';
+import { DmSessionTypeormRepository } from '../dm-session/infrastructure/typeorm/dm-session.typeorm-repository';
+import { DmTurnTypeormRepository } from '../dm-session/infrastructure/typeorm/dm-turn.typeorm-repository';
 
 // Use Cases
 import { CreatePackUseCase } from '../content/application/use-cases/create-pack.use-case';
@@ -52,6 +56,20 @@ import { UpdateCharacterUseCase } from '../characters/application/use-cases/upda
 import { DeleteCharacterUseCase } from '../characters/application/use-cases/delete-character.use-case';
 import { ListAvailableAssetsUseCase } from '../characters/application/use-cases/list-available-assets.use-case';
 
+import { CreateDmSessionUseCase } from '../dm-session/application/use-cases/create-dm-session.use-case';
+import { InitializeDmSessionUseCase } from '../dm-session/application/use-cases/initialize-dm-session.use-case';
+import { SendPlayerTurnUseCase } from '../dm-session/application/use-cases/send-player-turn.use-case';
+import { GetDmSessionUseCase } from '../dm-session/application/use-cases/get-dm-session.use-case';
+import { ListDmSessionsUseCase } from '../dm-session/application/use-cases/list-dm-sessions.use-case';
+import { GetSessionMetricsUseCase } from '../dm-session/application/use-cases/get-session-metrics.use-case';
+import { EndDmSessionUseCase } from '../dm-session/application/use-cases/end-dm-session.use-case';
+
+// DM Model Providers
+import { StubDmModelAdapter } from '../dm-session/infrastructure/adapters/stub-dm-model.adapter';
+import type { DmModelProvider } from '../dm-session/domain/ports/dm-model.provider';
+import type { ArchitectureType } from '../dm-session/domain/entities/dm-session.entity';
+import { env } from './env';
+
 // Seeder
 import { SrdSeederService } from '../content/infrastructure/seeding/srd-seeder.service';
 
@@ -75,6 +93,20 @@ export function createContainer(dataSource: DataSource) {
   const characterRepo = new CharacterTypeormRepository(
     dataSource.getRepository(CharacterOrmEntity),
   );
+  const dmSessionRepo = new DmSessionTypeormRepository(
+    dataSource.getRepository(DmSessionOrmEntity),
+  );
+  const dmTurnRepo = new DmTurnTypeormRepository(
+    dataSource.getRepository(DmTurnOrmEntity),
+  );
+
+  // DM Model Providers — un adapter por arquitectura de orquestación.
+  // Hoy ambos son stubs; cuando lleguen las orquestaciones reales, reemplazar
+  // por MasOrchestrationAdapter / MonolithicOrchestrationAdapter aquí.
+  const dmModelProviders: Record<ArchitectureType, DmModelProvider> = {
+    mas: new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MAS),
+    monolithic: new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MONOLITHIC),
+  };
 
   // Use Cases — manually wired (order matters for dependencies)
   const createAssetUseCase = new CreateAssetUseCase(assetRepo, packRepo);
@@ -101,6 +133,14 @@ export function createContainer(dataSource: DataSource) {
   const updateCharacterUseCase = new UpdateCharacterUseCase(characterRepo, campaignMemberRepo);
   const deleteCharacterUseCase = new DeleteCharacterUseCase(characterRepo, campaignMemberRepo);
   const listAvailableAssetsUseCase = new ListAvailableAssetsUseCase(assetRepo, campaignRepo, packRepo);
+
+  const createDmSessionUseCase = new CreateDmSessionUseCase(dmSessionRepo);
+  const initializeDmSessionUseCase = new InitializeDmSessionUseCase(dmSessionRepo, dmTurnRepo, dmModelProviders);
+  const sendPlayerTurnUseCase = new SendPlayerTurnUseCase(dmSessionRepo, dmTurnRepo, dmModelProviders);
+  const getDmSessionUseCase = new GetDmSessionUseCase(dmSessionRepo, dmTurnRepo);
+  const listDmSessionsUseCase = new ListDmSessionsUseCase(dmSessionRepo);
+  const getSessionMetricsUseCase = new GetSessionMetricsUseCase(dmSessionRepo, dmTurnRepo);
+  const endDmSessionUseCase = new EndDmSessionUseCase(dmSessionRepo);
 
   const invitePlayerUseCase = new InvitePlayerUseCase(campaignRepo, campaignMemberRepo, userProfileRepo);
   const listMembersUseCase = new ListMembersUseCase(campaignMemberRepo);
@@ -132,6 +172,10 @@ export function createContainer(dataSource: DataSource) {
     campaignRepo,
     campaignMemberRepo,
     characterRepo,
+    dmSessionRepo,
+    dmTurnRepo,
+    // DM Model Providers
+    dmModelProviders,
     // Pack Use Cases
     createPackUseCase,
     getPackUseCase,
@@ -169,6 +213,14 @@ export function createContainer(dataSource: DataSource) {
     updateCharacterUseCase,
     deleteCharacterUseCase,
     listAvailableAssetsUseCase,
+    // DM Sessions
+    createDmSessionUseCase,
+    initializeDmSessionUseCase,
+    sendPlayerTurnUseCase,
+    getDmSessionUseCase,
+    listDmSessionsUseCase,
+    getSessionMetricsUseCase,
+    endDmSessionUseCase,
     // Members
     invitePlayerUseCase,
     listMembersUseCase,

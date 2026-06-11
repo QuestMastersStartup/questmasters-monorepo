@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Book, ShoppingBag, Crown, LogOut, LogIn, Swords } from "lucide-react";
+import { Book, ShoppingBag, Crown, LogOut, LogIn, Swords, Sparkles } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -61,6 +61,7 @@ export default function Sidebar() {
             <>
               <NavItem to="/campaigns" icon={Crown} label="Campaigns" />
               <NavItem to="/characters" icon={Swords} label="My Characters" />
+              <NavItem to="/dm-sessions" icon={Sparkles} label="DM IA" />
               <NavItem to="/library" icon={Book} label="Library" />
               <NavItem to="/marketplace" icon={ShoppingBag} label="Marketplace" />
             </>

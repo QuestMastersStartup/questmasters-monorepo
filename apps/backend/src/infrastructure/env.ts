@@ -13,6 +13,10 @@ interface Env {
   PORT: string;
   ALLOWED_ORIGINS: string | undefined;
   DB_SSL: string | undefined;
+  /** Endpoint de la orquestación MAS del módulo dm-session. Vacío → stub en modo simulación. */
+  DM_MODEL_ENDPOINT_MAS: string | undefined;
+  /** Endpoint de la orquestación monolítica del módulo dm-session. Vacío → stub en modo simulación. */
+  DM_MODEL_ENDPOINT_MONOLITHIC: string | undefined;
 }
 
 const REQUIRED_VARS = [
@@ -54,6 +58,10 @@ export function validateEnv(): Env {
     PORT: Bun.env.PORT ?? process.env.PORT ?? '3000',
     ALLOWED_ORIGINS: Bun.env.ALLOWED_ORIGINS ?? process.env.ALLOWED_ORIGINS,
     DB_SSL: Bun.env.DB_SSL ?? process.env.DB_SSL,
+    DM_MODEL_ENDPOINT_MAS:
+      Bun.env.DM_MODEL_ENDPOINT_MAS ?? process.env.DM_MODEL_ENDPOINT_MAS,
+    DM_MODEL_ENDPOINT_MONOLITHIC:
+      Bun.env.DM_MODEL_ENDPOINT_MONOLITHIC ?? process.env.DM_MODEL_ENDPOINT_MONOLITHIC,
   };
 }
 
