@@ -1,0 +1,24 @@
+name = "questmasters-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "questmasters"
+database_id = "PLACEHOLDER_REPLACE_WITH_REAL_ID"
+
+[vars]
+NODE_ENV = "production"
+ALLOWED_ORIGINS = "https://questmasters.app"
+
+# Secretos via: wrangler secret put SUPABASE_URL, etc.
+# wrangler secret put SUPABASE_URL
+# wrangler secret put SUPABASE_KEY
+# wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+# wrangler secret put DM_MODEL_ENDPOINT_MAS
+# wrangler secret put DM_MODEL_ENDPOINT_MONOLITHIC
+
+[env.preview]
+name = "questmasters-api-preview"
+vars = { NODE_ENV = "development", ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000" }
