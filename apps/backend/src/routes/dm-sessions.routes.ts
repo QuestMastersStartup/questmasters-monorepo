@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import { requireUser } from '../infrastructure/auth/supabase';
+import { requireUser } from '../infrastructure/auth/guards';
 import { DmSessionMapper } from '../dm-session/infrastructure/mappers/dm-session.mapper';
 import { DmTurnMapper } from '../dm-session/infrastructure/mappers/dm-turn.mapper';
 import { DmSessionError } from '../dm-session/application/errors';

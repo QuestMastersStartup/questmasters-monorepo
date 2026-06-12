@@ -136,3 +136,10 @@ export const dmTurns = sqliteTable('dm_turns', {
   index('IDX_dm_turns_session_id').on(t.sessionId),
   uniqueIndex('IDX_dm_turns_session_turn').on(t.sessionId, t.turnNumber),
 ]);
+
+export const userCredentials = sqliteTable('user_credentials', {
+  userId:       text('user_id').primaryKey().references(() => userProfiles.id, { onDelete: 'cascade' }),
+  email:        text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt:    integer('created_at', { mode: 'timestamp_ms' }).notNull().default(nowMs),
+});

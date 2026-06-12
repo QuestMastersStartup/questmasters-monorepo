@@ -6,19 +6,27 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "questmasters"
-database_id = "PLACEHOLDER_REPLACE_WITH_REAL_ID"
+database_id = "56aefb70-953d-49c1-b303-7d0c390ea896"
+
+[[r2_buckets]]
+binding = "AVATARS_BUCKET"
+bucket_name = "questmasters-avatars"
 
 [vars]
 NODE_ENV = "production"
+TESIS = "true"
 ALLOWED_ORIGINS = "https://questmasters.app"
+R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"
 
-# Secretos via: wrangler secret put SUPABASE_URL, etc.
-# wrangler secret put SUPABASE_URL
-# wrangler secret put SUPABASE_KEY
-# wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-# wrangler secret put DM_MODEL_ENDPOINT_MAS
-# wrangler secret put DM_MODEL_ENDPOINT_MONOLITHIC
+# Secrets (set via: wrangler secret put <NAME>)
+# JWT_SECRET
+# DM_MODEL_ENDPOINT_MAS
+# DM_MODEL_ENDPOINT_MONOLITHIC
 
 [env.preview]
 name = "questmasters-api-preview"
-vars = { NODE_ENV = "development", ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000" }
+[env.preview.vars]
+NODE_ENV = "development"
+TESIS = "true"
+ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000"
+R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"

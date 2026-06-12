@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { createClient } from '@supabase/supabase-js';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import { requireUser, requireOwnerOrAdmin } from '../infrastructure/auth/supabase';
+import { requireUser, requireOwnerOrAdmin } from '../infrastructure/auth/guards';
 import { CampaignMapper } from '../campaigns/infrastructure/mappers/campaign.mapper';
 import { CampaignMemberMapper } from '../campaigns/infrastructure/mappers/campaign-member.mapper';
 import { CampaignError } from '../campaigns/application/errors';

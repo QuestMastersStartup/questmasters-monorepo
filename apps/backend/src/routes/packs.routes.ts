@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import { requireUser, requireRole, requireOwnerOrAdmin } from '../infrastructure/auth/supabase';
+import { requireUser, requireRole, requireOwnerOrAdmin } from '../infrastructure/auth/guards';
 import { ContentPackMapper } from '../content/infrastructure/mappers/content-pack.mapper';
 import { AssetMapper } from '../content/infrastructure/mappers/asset.mapper';
 import { PackError } from '../content/application/errors';

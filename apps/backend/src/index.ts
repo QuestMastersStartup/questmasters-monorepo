@@ -13,6 +13,7 @@ import { assetsRoutes } from './routes/assets.routes';
 import { charactersRoutes } from './routes/characters.routes';
 import { campaignsRoutes } from './routes/campaigns.routes';
 import { dmSessionsRoutes } from './routes/dm-sessions.routes';
+import { authRoutes } from './routes/auth.routes';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -44,6 +45,7 @@ app.all('/api/*', async (c) => {
   api.route('/users', usersRoutes(container));
   api.route('/users', usernameRoutes(container));
   api.route('/auth', checkEmailRoutes());
+  api.route('/auth', authRoutes());
   api.route('/users', avatarRoutes(container));
   api.route('/campaigns', campaignsRoutes(container));
   api.route('/characters', charactersRoutes(container));

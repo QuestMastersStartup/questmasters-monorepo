@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { createClient } from '@supabase/supabase-js';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import { requireUser } from '../infrastructure/auth/supabase';
+import { requireUser } from '../infrastructure/auth/guards';
+import { uploadAvatar } from '../infrastructure/storage';
 
 export function avatarRoutes(container: Container) {
   const app = new Hono<{ Bindings: CloudflareBindings }>();
@@ -22,30 +22,12 @@ export function avatarRoutes(container: Container) {
       return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
     }
 
-    const token = c.req.header('authorization')?.split(' ')[1];
-    if (!token) return c.json({ message: 'Missing authentication token' }, 401);
-
-    const userSupabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-
-    const fileExt = file.type.split('/')[1] || 'webp';
-    const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
+    const token = c.req.header('authorization')?.split(' ')[1] ?? '';
 
     try {
-      const { error: uploadError } = await userSupabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true, contentType: file.type });
-
-      if (uploadError) {
-        return c.json({ message: uploadError.message || 'Failed to upload image to storage' }, 500);
-      }
-
-      const { data: { publicUrl } } = userSupabase.storage.from('avatars').getPublicUrl(fileName);
-
-      await container.updateUserProfileUseCase.execute({ userId: user.id, avatarUrl: publicUrl });
-
-      return c.json({ message: 'Avatar updated successfully', avatarUrl: publicUrl });
+      const avatarUrl = await uploadAvatar(c.env, user.id, file, token);
+      await container.updateUserProfileUseCase.execute({ userId: user.id, avatarUrl });
+      return c.json({ message: 'Avatar updated successfully', avatarUrl });
     } catch (e: any) {
       return c.json({ message: e.message || 'Internal server error' }, 500);
     }

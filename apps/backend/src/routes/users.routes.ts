@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
-import { requireUser, requireRole } from '../infrastructure/auth/supabase';
+import { requireUser, requireRole } from '../infrastructure/auth/guards';
 
 function sanitizeProfile(profile: any) {
   const { id, username, avatarUrl, bio, role, isAdmin, createdAt } = profile;
@@ -28,7 +28,7 @@ export function usersRoutes(container: Container) {
 
   app.get('/me', async (c) => {
     const user = await requireUser(c);
-    const metadataUsername = user.user_metadata?.username;
+    const metadataUsername = user.username;
     const profile = await container.getUserProfileUseCase.execute(user.id, metadataUsername);
     return c.json(sanitizeProfile(profile));
   });
