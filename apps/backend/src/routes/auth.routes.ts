@@ -94,8 +94,13 @@ export function authRoutes() {
     const valid = await verifyPassword(password, cred.passwordHash);
     if (!valid) return c.json({ message: 'Invalid credentials' }, 401);
 
+    const profile = await db.select({ username: userProfiles.username })
+      .from(userProfiles)
+      .where(eq(userProfiles.id, cred.userId))
+      .get();
+
     const token = await signToken({ id: cred.userId, email }, c.env.JWT_SECRET);
-    return c.json({ token, userId: cred.userId });
+    return c.json({ token, userId: cred.userId, username: profile?.username ?? '' });
   });
 
   return app;

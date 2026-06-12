@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Book, ShoppingBag, Crown, LogOut, LogIn, Swords, Sparkles } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
+import { isTesisMode, getTesisUser } from "../../lib/tesis-auth";
 
 interface NavItemProps {
   to: string;
@@ -40,7 +41,9 @@ function NavItem({ to, icon: Icon, label }: NavItemProps) {
 }
 
 export default function Sidebar() {
-  const { session, user, userProfile, signOut, isGuest } = useAuth();
+  const { isAuthenticated, user, userProfile, signOut, isGuest } = useAuth();
+  const tesisUser = isTesisMode() ? getTesisUser() : null;
+  const displayEmail = user?.email ?? tesisUser?.email ?? '';
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-background/95 backdrop-blur-xl flex flex-col">
@@ -70,7 +73,7 @@ export default function Sidebar() {
       </div>
 
       <div className="p-3 border-t border-border bg-muted/10">
-        {session ? (
+        {isAuthenticated ? (
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-card/60 border border-border/60 shadow-sm hover:border-primary/30 transition-colors group">
             <Link
               to="/profile"
@@ -84,13 +87,13 @@ export default function Sidebar() {
                 />
               ) : (
                 <span className="text-sm font-bold text-primary uppercase">
-                  {(userProfile?.username || user?.email || 'QM')[0].toUpperCase()}
+                  {(userProfile?.username || displayEmail || 'QM')[0].toUpperCase()}
                 </span>
               )}
             </Link>
             <Link to="/profile" className="flex flex-col flex-1 overflow-hidden min-w-0">
               <span className="text-sm font-semibold truncate text-foreground leading-tight">
-                {userProfile?.username || user?.email?.split('@')[0] || 'Adventurer'}
+                {userProfile?.username || displayEmail.split('@')[0] || 'Adventurer'}
               </span>
               <span className="text-[10px] uppercase tracking-widest text-primary/70 font-bold mt-0.5">
                 {userProfile?.role || 'player'}

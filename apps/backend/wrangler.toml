@@ -25,8 +25,18 @@ R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"
 
 [env.preview]
 name = "questmasters-api-preview"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "questmasters"
+database_id = "56aefb70-953d-49c1-b303-7d0c390ea896"
+
+[[env.preview.r2_buckets]]
+binding = "AVATARS_BUCKET"
+bucket_name = "questmasters-avatars"
+
 [env.preview.vars]
 NODE_ENV = "development"
-TESIS = "true"
+TESIS = "false"
 ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000"
 R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"

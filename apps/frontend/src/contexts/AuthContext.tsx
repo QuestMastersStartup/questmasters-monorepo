@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { authFetch } from "../lib/api";
+import { isTesisMode, getTesisToken, getTesisUser, clearTesisSession } from "../lib/tesis-auth";
 
 interface UserProfile {
   id: string;
@@ -47,14 +48,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Usa authFetch (getSession interno) para garantizar token fresco incluso tras un TOKEN_REFRESHED
   const fetchProfile = async () => {
     try {
       const response = await authFetch('/api/users/me');
       if (response.ok) {
         let profile = await response.json();
 
-        // Si el perfil no tiene username, intentar sincronizar el pending de OAuth
         if (profile && !profile.username) {
           const pendingUsername = sessionStorage.getItem('pending_username');
           if (pendingUsername) {
@@ -81,13 +80,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const refreshProfile = async () => {
-    if (session) {
+    if (isTesisMode() ? !!getTesisToken() : !!session) {
       await fetchProfile();
     }
   };
 
   useEffect(() => {
-    // Sesión inicial
+    if (isTesisMode()) {
+      const tesisUser = getTesisUser();
+      if (tesisUser && getTesisToken()) {
+        fetchProfile().finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -98,15 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // Escucha cambios de auth: login, logout, TOKEN_REFRESHED, etc.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-
         if (session) {
-          // TOKEN_REFRESHED: el SDK ya actualizó el token; fetchProfile usa getSession()
-          // así que siempre obtiene el token más nuevo sin necesidad de lógica extra
           fetchProfile();
         } else {
           setUserProfile(null);
@@ -114,17 +118,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => { subscription.unsubscribe(); };
   }, []);
 
   const signOut = async () => {
+    if (isTesisMode()) {
+      clearTesisSession();
+      setUserProfile(null);
+      window.location.href = '/login';
+      return;
+    }
     await supabase.auth.signOut();
   };
 
-  const isGuest = !session && !loading;
-  const isAuthenticated = !!session && !loading;
+  const isAuthenticated = isTesisMode() ? !!getTesisToken() : (!!session && !loading);
+  const isGuest = !isAuthenticated && !loading;
 
   return (
     <AuthContext.Provider value={{ session, user, userProfile, loading, isGuest, isAuthenticated, signOut, refreshProfile, authFetch }}>

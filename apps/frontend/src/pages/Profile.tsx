@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Shield, Upload, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { resizeImageToWebP } from '../lib/resize-image';
+import { authFetch } from '../lib/api';
+import { isTesisMode, getTesisUser } from '../lib/tesis-auth';
 
 export default function Profile() {
-  const { userProfile, user, session, refreshProfile } = useAuth();
+  const { userProfile, user, refreshProfile } = useAuth();
+  const displayEmail = user?.email ?? (isTesisMode() ? getTesisUser()?.email : undefined) ?? '';
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -34,11 +37,8 @@ export default function Profile() {
       const formData = new FormData();
       formData.append('file', resizedBlob, 'avatar.webp');
 
-      const response = await fetch('/api/users/me/avatar', {
+      const response = await authFetch('/api/users/me/avatar', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-        },
         body: formData,
       });
 
@@ -69,12 +69,8 @@ export default function Profile() {
     }
 
     try {
-      const response = await fetch('/api/users/me', {
+      const response = await authFetch('/api/users/me', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
-        },
         body: JSON.stringify({
           username: trimmedUsername || undefined,
           bio: bio.trim() || undefined,
@@ -94,7 +90,7 @@ export default function Profile() {
     }
   };
 
-  const avatarInitial = (userProfile?.username || user?.email || 'Q')[0].toUpperCase();
+  const avatarInitial = (userProfile?.username || displayEmail || 'Q')[0].toUpperCase();
 
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
@@ -167,7 +163,7 @@ export default function Profile() {
           </span>
           <span className="text-sm text-muted-foreground flex items-center gap-1.5 opacity-80">
             <Mail className="w-3.5 h-3.5" />
-            {user?.email}
+            {displayEmail}
           </span>
           <div className="flex items-center gap-2 mt-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 font-bold">

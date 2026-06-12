@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
+import { isTesisMode, setTesisSession } from "../lib/tesis-auth";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -29,6 +30,28 @@ export function Login() {
     }
     setLoading(true);
     setError(null);
+
+    if (isTesisMode()) {
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.message || "Login failed");
+        } else {
+          setTesisSession(data.token, { id: data.userId, email, username: data.username });
+          window.location.href = from;
+        }
+      } catch {
+        setError("Network error");
+      }
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(error.message);
