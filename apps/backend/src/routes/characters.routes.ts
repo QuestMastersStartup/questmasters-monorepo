@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
 import { requireUser } from '../infrastructure/auth/guards';
+import { uploadPortrait } from '../infrastructure/storage';
 import { CharacterMapper } from '../characters/infrastructure/mappers/character.mapper';
 import { AssetMapper } from '../content/infrastructure/mappers/asset.mapper';
 import { CharacterError } from '../characters/application/character-errors';
@@ -101,6 +102,29 @@ export function charactersRoutes(container: Container) {
     }
 
     return c.json(result.value.map((ch) => CharacterMapper.toEnrichedResponse(ch, assetNames)));
+  });
+
+  app.post('/portrait', async (c) => {
+    const user = await requireUser(c);
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
+
+    if (!file) return c.json({ message: 'Missing file' }, 400);
+
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) return c.json({ message: 'File too large (max 5MB)' }, 413);
+
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
+    }
+
+    try {
+      const portraitUrl = await uploadPortrait(c.env, user.id, file);
+      return c.json({ portraitUrl });
+    } catch (e: any) {
+      return c.json({ message: e.message || 'Internal server error' }, 500);
+    }
   });
 
   app.get('/available-assets', async (c) => {
