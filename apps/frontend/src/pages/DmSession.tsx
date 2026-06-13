@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
+  Bot,
   ChevronDown,
   ChevronRight,
   Loader2,
@@ -15,6 +16,7 @@ import {
   getSession,
   getMetrics,
   sendTurn,
+  simulateTurn,
   endSession,
   takePendingInitialStream,
   type DmModelChunk,
@@ -127,10 +129,24 @@ function MetricRow({ label, value }: { label: string; value: React.ReactNode }) 
 
 // ─── Burbuja de chat ──────────────────────────────────────────────────
 
-function PlayerBubble({ text }: { text: string }) {
+function PlayerBubble({ text, isAuto = false }: { text: string; isAuto?: boolean }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[80%] bg-slate-700/60 border border-slate-600/40 rounded-2xl rounded-br-sm px-4 py-3">
+      <div
+        className={`max-w-[80%] border rounded-2xl rounded-br-sm px-4 py-3 ${
+          isAuto
+            ? "bg-amber-900/20 border-amber-600/30"
+            : "bg-slate-700/60 border-slate-600/40"
+        }`}
+      >
+        {isAuto && (
+          <div className="flex items-center gap-1.5 mb-1">
+            <Bot size={11} className="text-amber-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+              Auto-jugador
+            </span>
+          </div>
+        )}
         <p className="text-sm text-slate-100 whitespace-pre-wrap leading-relaxed">{text}</p>
       </div>
     </div>
@@ -176,6 +192,10 @@ export const DmSession: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isStreaming = streamingText !== null;
 
+  const simulationActiveRef = useRef(false);
+  const [simulationActive, setSimulationActive] = useState(false);
+  const [pendingIsAuto, setPendingIsAuto] = useState(false);
+
   const refresh = useCallback(async () => {
     if (!id) return;
     const detail = await getSession(id);
@@ -186,15 +206,18 @@ export const DmSession: React.FC = () => {
   }, [id, isAdmin]);
 
   const consumeStream = useCallback(
-    async (stream: AsyncGenerator<DmModelChunk>, playerInput: string | null) => {
+    async (stream: AsyncGenerator<DmModelChunk>, playerInput: string | null, isAuto = false) => {
       setPendingPlayerInput(playerInput);
+      setPendingIsAuto(isAuto);
       setStreamingText("");
       try {
         for await (const chunk of stream) {
-          if (chunk.type === "delta" && chunk.delta) {
+          if (chunk.type === "player_input" && chunk.input) {
+            setPendingPlayerInput(chunk.input);
+            setPendingIsAuto(true);
+          } else if (chunk.type === "delta" && chunk.delta) {
             setStreamingText((prev) => (prev ?? "") + chunk.delta);
-          }
-          if (chunk.type === "error") {
+          } else if (chunk.type === "error") {
             setError(chunk.error ?? "El DM no pudo generar la respuesta");
           }
         }
@@ -204,6 +227,7 @@ export const DmSession: React.FC = () => {
       } finally {
         setStreamingText(null);
         setPendingPlayerInput(null);
+        setPendingIsAuto(false);
       }
     },
     [refresh],
@@ -245,8 +269,41 @@ export const DmSession: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [session?.turns.length, streamingText]);
 
+  // Auto-simulación: dispara un turno automático cuando está activa y no hay streaming en curso
+  useEffect(() => {
+    if (!simulationActive || isStreaming || !id || !session || session.status !== "active") return;
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if (cancelled || !simulationActiveRef.current) return;
+      setError(null);
+      try {
+        const stream = await simulateTurn(id);
+        if (cancelled || !simulationActiveRef.current) return;
+        await consumeStream(stream, null, true);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Error en simulación automática");
+          simulationActiveRef.current = false;
+          setSimulationActive(false);
+        }
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [simulationActive, isStreaming, id, session?.status, consumeStream]);
+
+  const toggleSimulation = () => {
+    const next = !simulationActive;
+    simulationActiveRef.current = next;
+    setSimulationActive(next);
+  };
+
   const handleSend = async () => {
-    if (!id || !session || input.trim() === "" || isStreaming) return;
+    if (!id || !session || input.trim() === "" || isStreaming || simulationActive) return;
     const playerInput = input.trim();
     setInput("");
     setError(null);
@@ -327,14 +384,29 @@ export const DmSession: React.FC = () => {
               <StatusBadge status={session.status} />
             </div>
             {!isEnded && (
-              <button
-                onClick={handleEnd}
-                disabled={isStreaming}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors disabled:opacity-50 shrink-0"
-              >
-                <Square size={12} />
-                Terminar
-              </button>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={toggleSimulation}
+                  disabled={isStreaming}
+                  title={simulationActive ? "Detener simulación" : "Simular campaña con IA"}
+                  className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                    simulationActive
+                      ? "text-amber-400 hover:text-amber-300"
+                      : "text-slate-400 hover:text-amber-400"
+                  }`}
+                >
+                  <Bot size={12} />
+                  {simulationActive ? "Detener sim." : "Simular"}
+                </button>
+                <button
+                  onClick={handleEnd}
+                  disabled={isStreaming}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                >
+                  <Square size={12} />
+                  Terminar
+                </button>
+              </div>
             )}
           </div>
 
@@ -348,7 +420,7 @@ export const DmSession: React.FC = () => {
             ))}
 
             {/* Turno en streaming */}
-            {pendingPlayerInput && <PlayerBubble text={pendingPlayerInput} />}
+            {pendingPlayerInput && <PlayerBubble text={pendingPlayerInput} isAuto={pendingIsAuto} />}
             {isStreaming && <DmBubble text={streamingText ?? ""} streaming />}
 
             {/* Inicializando sin stream activo */}
@@ -369,38 +441,60 @@ export const DmSession: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div className="px-5 py-4 border-t border-slate-800 shrink-0">
-            {isEnded ? (
-              <div className="text-center">
-                <span className="text-xs font-bold px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wide">
-                  Sesión terminada
-                </span>
-              </div>
-            ) : (
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                  disabled={isStreaming || isInitializing}
-                  placeholder="Describe la acción de tu grupo..."
-                  className="flex-1 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-50"
-                />
+          <div className="border-t border-slate-800 shrink-0">
+            {simulationActive && !isEnded && (
+              <div className="px-5 py-2 bg-amber-900/20 border-b border-amber-600/20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bot size={13} className="text-amber-400 animate-pulse" />
+                  <span className="text-xs text-amber-300 font-semibold">
+                    Simulación activa — IA controlando al jugador
+                  </span>
+                </div>
                 <button
-                  onClick={handleSend}
-                  disabled={isStreaming || isInitializing || input.trim() === ""}
-                  className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 rounded-xl transition-colors font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                  onClick={toggleSimulation}
+                  className="text-xs text-amber-400 hover:text-amber-300 font-bold transition-colors"
                 >
-                  {isStreaming ? (
-                    <Loader2 size={15} className="animate-spin" />
-                  ) : (
-                    <Send size={15} />
-                  )}
-                  Enviar
+                  Detener
                 </button>
               </div>
             )}
+            <div className="px-5 py-4">
+              {isEnded ? (
+                <div className="text-center">
+                  <span className="text-xs font-bold px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wide">
+                    Sesión terminada
+                  </span>
+                </div>
+              ) : simulationActive ? (
+                <p className="text-center text-xs text-amber-400/60 italic py-1">
+                  {isStreaming ? "El DM está respondiendo..." : "Preparando siguiente acción..."}
+                </p>
+              ) : (
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                    disabled={isStreaming || isInitializing}
+                    placeholder="Describe la acción de tu grupo..."
+                    className="flex-1 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-50"
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={isStreaming || isInitializing || input.trim() === ""}
+                    className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 rounded-xl transition-colors font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                  >
+                    {isStreaming ? (
+                      <Loader2 size={15} className="animate-spin" />
+                    ) : (
+                      <Send size={15} />
+                    )}
+                    Enviar
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

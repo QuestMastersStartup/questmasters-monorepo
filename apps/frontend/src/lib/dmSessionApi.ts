@@ -73,11 +73,16 @@ export interface SessionMetrics {
   turnBreakdown: DmTurn[];
 }
 
-/** Chunk del stream SSE — incluye el evento extra 'session' que el backend
- *  emite al crear una sesión (antes de los chunks del turno inicial). */
+/** Chunk del stream SSE.
+ *  - 'session': emitido al crear una sesión (antes de los chunks del turno inicial).
+ *  - 'player_input': emitido por auto-turn antes de los chunks del DM; contiene la
+ *    acción generada automáticamente para el lado del jugador.
+ */
 export interface DmModelChunk {
-  type: "session" | "delta" | "metadata" | "done" | "error";
+  type: "session" | "player_input" | "delta" | "metadata" | "done" | "error";
   session?: Omit<DmSessionDetail, "turns">;
+  /** type=player_input: texto de la acción auto-generada del jugador. */
+  input?: string;
   delta?: string;
   metadata?: {
     memorySnapshot: Record<string, any>;
@@ -233,6 +238,21 @@ export async function getMetrics(id: string): Promise<SessionMetrics> {
   const response = await authFetch(`/api/dm-sessions/${id}/metrics`);
   if (!response.ok) await throwApiError(response, "Error al obtener métricas");
   return response.json();
+}
+
+/** Genera un turno automático: el backend produce una acción de jugador (stub/IA)
+ *  y luego responde como DM. El stream emite primero `player_input` y después
+ *  los chunks normales de delta/metadata/done. */
+export async function simulateTurn(
+  id: string,
+): Promise<AsyncGenerator<DmModelChunk>> {
+  const response = await authFetch(`/api/dm-sessions/${id}/auto-turn`, {
+    method: "POST",
+  });
+
+  if (!response.ok) await throwApiError(response, "Error al simular el turno");
+
+  return streamDmResponse(response);
 }
 
 export async function endSession(id: string): Promise<DmSessionSummary> {
