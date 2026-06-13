@@ -236,7 +236,7 @@ export const SessionInitModal: React.FC<SessionInitModalProps> = ({ onClose }) =
                   No tienes personajes creados todavía.
                 </p>
                 <a
-                  href="/characters/new"
+                  href="/characters/create"
                   className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 mt-2 transition-colors"
                   onClick={onClose}
                 >

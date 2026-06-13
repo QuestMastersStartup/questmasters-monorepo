@@ -159,7 +159,7 @@ export async function fetchMyCharacters(): Promise<MyCharacter[]> {
 export async function uploadCharacterPortrait(file: Blob): Promise<string> {
   const formData = new FormData();
   formData.append("file", file, "character-portrait.webp");
-  const response = await authFetch("/api/campaigns/portrait", {
+  const response = await authFetch("/api/characters/portrait", {
     method: "POST",
     body: formData,
   });
