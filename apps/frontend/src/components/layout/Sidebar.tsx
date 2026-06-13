@@ -41,9 +41,8 @@ function NavItem({ to, icon: Icon, label }: NavItemProps) {
 }
 
 export default function Sidebar() {
-  const { isAuthenticated, user, userProfile, signOut, isGuest } = useAuth();
-  const tesisUser = isTesisMode() ? getTesisUser() : null;
-  const displayEmail = user?.email ?? tesisUser?.email ?? '';
+  const { isAuthenticated, userProfile, signOut, isGuest } = useAuth();
+  const displayEmail = isTesisMode() ? (getTesisUser()?.email ?? '') : '';
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-background/95 backdrop-blur-xl flex flex-col">

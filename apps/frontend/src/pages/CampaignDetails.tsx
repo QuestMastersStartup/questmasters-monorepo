@@ -40,11 +40,13 @@ import { MemberCard } from "../components/features/campaigns/MemberCard";
 import { ManagePacksModal } from "../components/features/campaigns/ManagePacksModal";
 import { CharacterCard } from "../components/features/characters/CharacterCard";
 import { ConfirmModal } from "../components/features/characters/ConfirmModal";
-import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 export const CampaignDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { userProfile } = useAuth();
+  const currentUserId = userProfile?.id ?? null;
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [packs, setPacks] = useState<Pack[]>([]);
   const [members, setMembers] = useState<CampaignMember[]>([]);
@@ -53,7 +55,6 @@ export const CampaignDetails: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showPacksModal, setShowPacksModal] = useState(false);
   const [showCharWizard, setShowCharWizard] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -64,12 +65,6 @@ export const CampaignDetails: React.FC = () => {
     action: () => Promise<void>;
   } | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
-
-  useEffect(() => {
-    supabase.auth
-      .getUser()
-      .then(({ data }) => setCurrentUserId(data.user?.id || null));
-  }, []);
 
   useEffect(() => {
     const loadData = async () => {

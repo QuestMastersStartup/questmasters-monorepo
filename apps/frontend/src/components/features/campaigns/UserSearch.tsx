@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, UserPlus, X, Loader2 } from "lucide-react";
 import { debounce } from "lodash";
-import { supabase } from "../../../lib/supabase";
+import { authFetch } from "../../../lib/api";
 
 interface UserSearchResult {
   id: string;
@@ -29,17 +29,7 @@ export function UserSearch({ onSelect, excludeUserIds }: UserSearchProps) {
       }
 
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        const res = await fetch(
-          `/api/users/search?q=${encodeURIComponent(searchQuery)}`,
-          {
-            headers: session?.access_token
-              ? { Authorization: `Bearer ${session.access_token}` }
-              : {},
-          },
-        );
+        const res = await authFetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
         if (!res.ok) throw new Error("Search failed");
         const data = await res.json();
         const filtered = data.filter(

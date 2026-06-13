@@ -30,7 +30,7 @@ interface AssetTypeSummary {
 export function PackDetails() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, user, userProfile } = useAuth();
+  const { isAuthenticated, userProfile } = useAuth();
   const [pack, setPack] = useState<PackWithAssets | null>(null);
   const [assetSummary, setAssetSummary] = useState<AssetTypeSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +110,7 @@ export function PackDetails() {
             <ArrowLeft className="w-4 h-4" /> Back to Library
           </Link>
           
-          {isAuthenticated && (user?.id === pack.creatorId || userProfile?.isAdmin) && (
+          {isAuthenticated && (userProfile?.id === pack.creatorId || userProfile?.isAdmin) && (
             <div className="flex items-center gap-2">
               <Link to={`/library/${slug}/edit`} className="btn btn-outline gap-2">
                 Edit Pack

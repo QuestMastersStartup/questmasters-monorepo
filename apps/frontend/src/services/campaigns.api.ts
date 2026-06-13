@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { authFetch } from "../lib/api";
 
 export interface Campaign {
   id: string;
@@ -34,182 +34,134 @@ export interface CreateCampaignRequest {
 
 export type UpdateCampaignRequest = Partial<CreateCampaignRequest>;
 
-async function getHeaders() {
-  const { data: { session } } = await supabase.auth.getSession();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  
-  if (session?.access_token) {
-    headers["Authorization"] = `Bearer ${session.access_token}`;
-  }
-  
-  return headers;
-}
-
 export async function fetchCampaigns(): Promise<Campaign[]> {
-  const response = await fetch("/api/campaigns", {
-    headers: await getHeaders(),
-  });
+  const response = await authFetch("/api/campaigns");
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to fetch campaigns");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch campaigns");
   }
   return response.json();
 }
 
 export async function fetchCampaign(id: string): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}`, {
-    headers: await getHeaders(),
-  });
+  const response = await authFetch(`/api/campaigns/${id}`);
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Campaign not found");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Campaign not found");
   }
   return response.json();
 }
 
 export async function createCampaign(data: CreateCampaignRequest): Promise<Campaign> {
-  const response = await fetch("/api/campaigns", {
+  const response = await authFetch("/api/campaigns", {
     method: "POST",
-    headers: await getHeaders(),
     body: JSON.stringify(data),
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to create campaign");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to create campaign");
   }
-
   return response.json();
 }
 
 export async function updateCampaign(id: string, data: UpdateCampaignRequest): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}`, {
+  const response = await authFetch(`/api/campaigns/${id}`, {
     method: "PUT",
-    headers: await getHeaders(),
     body: JSON.stringify(data),
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to update campaign");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update campaign");
   }
-
   return response.json();
 }
 
 export async function installPacks(id: string, packIds: string[]): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}/packs`, {
+  const response = await authFetch(`/api/campaigns/${id}/packs`, {
     method: "POST",
-    headers: await getHeaders(),
     body: JSON.stringify({ packIds }),
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to install packs");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to install packs");
   }
-
   return response.json();
 }
 
 export async function uninstallPacks(id: string, packIds: string[]): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}/packs/uninstall`, {
+  const response = await authFetch(`/api/campaigns/${id}/packs/uninstall`, {
     method: "POST",
-    headers: await getHeaders(),
     body: JSON.stringify({ packIds }),
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to uninstall packs");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to uninstall packs");
   }
-
   return response.json();
 }
 
 export async function deleteCampaign(id: string): Promise<void> {
-  const response = await fetch(`/api/campaigns/${id}`, {
-    method: "DELETE",
-    headers: await getHeaders(),
-  });
-
+  const response = await authFetch(`/api/campaigns/${id}`, { method: "DELETE" });
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to delete campaign");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to delete campaign");
   }
 }
 
 export async function changeCampaignStatus(id: string, status: string): Promise<Campaign> {
-  const response = await fetch(`/api/campaigns/${id}/status`, {
+  const response = await authFetch(`/api/campaigns/${id}/status`, {
     method: "PATCH",
-    headers: await getHeaders(),
     body: JSON.stringify({ status }),
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to change campaign status");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to change campaign status");
   }
-
   return response.json();
 }
 
 export async function uploadCampaignPortrait(file: Blob): Promise<string> {
   const formData = new FormData();
   formData.append("file", file, "portrait.webp");
-
-  const headers = await getHeaders();
-  // Fetch handles Content-Type for FormData automatically
-  delete headers["Content-Type"];
-
-  const response = await fetch("/api/campaigns/portrait", {
+  const response = await authFetch("/api/campaigns/portrait", {
     method: "POST",
-    headers,
     body: formData,
   });
-
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to upload portrait");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to upload portrait");
   }
-
   const data = await response.json();
   return data.portraitUrl;
 }
 
 export async function fetchMembers(campaignId: string): Promise<CampaignMember[]> {
-  const response = await fetch(`/api/campaigns/${campaignId}/members`, {
-    headers: await getHeaders(),
-  });
+  const response = await authFetch(`/api/campaigns/${campaignId}/members`);
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to fetch members");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch members");
   }
   return response.json();
 }
 
 export async function invitePlayer(campaignId: string, userId: string): Promise<CampaignMember> {
-  const response = await fetch(`/api/campaigns/${campaignId}/members`, {
+  const response = await authFetch(`/api/campaigns/${campaignId}/members`, {
     method: "POST",
-    headers: await getHeaders(),
     body: JSON.stringify({ userId }),
   });
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to invite player");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to invite player");
   }
   return response.json();
 }
 
 export async function removeMember(campaignId: string, userId: string): Promise<void> {
-  const response = await fetch(`/api/campaigns/${campaignId}/members/${userId}`, {
+  const response = await authFetch(`/api/campaigns/${campaignId}/members/${userId}`, {
     method: "DELETE",
-    headers: await getHeaders(),
   });
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to remove member");
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to remove member");
   }
 }

@@ -8,7 +8,7 @@ import {
 import { fetchCharacter, deleteCharacter, type Character } from "../services/characters.api";
 import { calculateProficiencyBonus } from "@questmasters/dnd-rules";
 import { fetchCampaign } from "../services/campaigns.api";
-import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -139,25 +139,23 @@ function ConfirmDeleteModal({ characterName, onConfirm, onCancel, deleting }: Co
 export const CharacterDetail: React.FC = () => {
   const { charId } = useParams<{ charId: string }>();
   const navigate = useNavigate();
+  const { userProfile } = useAuth();
 
   const [character,     setCharacter]     = useState<Character | null>(null);
   const [campaignName,  setCampaignName]  = useState<string | null>(null);
   const [loading,       setLoading]       = useState(true);
   const [error,         setError]         = useState<string | null>(null);
-  const [isOwner,       setIsOwner]       = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
+
+  const isOwner = !!userProfile && !!character && userProfile.id === character.userId;
 
   useEffect(() => {
     if (!charId) return;
     const load = async () => {
       try {
-        const [char, { data: { user } }] = await Promise.all([
-          fetchCharacter(charId),
-          supabase.auth.getUser(),
-        ]);
+        const char = await fetchCharacter(charId);
         setCharacter(char);
-        setIsOwner(user?.id === char.userId);
 
         if (char.campaignId) {
           try {
