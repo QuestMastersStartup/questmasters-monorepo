@@ -40,6 +40,9 @@ app.all('/api/*', async (c) => {
   const db = createDb(c.env.DB);
   const container = createContainer(db, c.env);
 
+  // Seed SRD data if not yet in D1 — no-op after first run (2 fast existsBySlug queries)
+  await container.srdSeederService.onApplicationBootstrap();
+
   const api = new Hono<{ Bindings: CloudflareBindings }>();
   api.get('/', (ctx) => ctx.text('QuestMasters API is running!'));
   api.route('/users', usersRoutes(container));

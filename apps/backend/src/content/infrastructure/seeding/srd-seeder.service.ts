@@ -1,25 +1,58 @@
-import {
-  ContentPackRepository,
-  CONTENT_PACK_REPOSITORY,
-} from '../../domain/repositories/content-pack.repository';
-import {
-  AssetRepository,
-  ASSET_REPOSITORY,
-} from '../../domain/repositories/asset.repository';
+import type { ContentPackRepository } from '../../domain/repositories/content-pack.repository';
+import type { AssetRepository } from '../../domain/repositories/asset.repository';
 import { ContentPack } from '../../domain/entities/content-pack.entity';
-
+import { Asset } from '../../domain/entities/asset.entity';
 import { SystemTypeValue } from '../../domain/value-objects/system-type.vo';
 import { PackTypeValue } from '../../domain/value-objects/pack-type.vo';
-import {
-  AssetType,
-  AssetTypeValue,
-} from '../../domain/value-objects/asset-type.vo';
+import { AssetType, AssetTypeValue } from '../../domain/value-objects/asset-type.vo';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 import { Slug } from '@shared/domain/value-objects/slug.vo';
-import { Asset } from '@content/domain/entities/asset.entity';
+
+// Static imports — works in Cloudflare Workers (no fs/promises)
+import races2014 from './data/dnd-5e-2014/5e-SRD-Races.json';
+import subraces2014 from './data/dnd-5e-2014/5e-SRD-Subraces.json';
+import classes2014 from './data/dnd-5e-2014/5e-SRD-Classes.json';
+import backgrounds2014 from './data/dnd-5e-2014/5e-SRD-Backgrounds.json';
+import backgrounds2024 from './data/dnd-5e-2024/5e-SRD-Backgrounds.json';
+
+type AssetEntry = { index: string; name?: string; [key: string]: unknown };
+
+const SRD_DATA: Record<string, Array<{ type: AssetTypeValue; items: AssetEntry[] }>> = {
+  [SystemTypeValue.DND_5E_2014]: [
+    { type: AssetTypeValue.RACE,       items: races2014 as AssetEntry[] },
+    { type: AssetTypeValue.SUBRACE,    items: subraces2014 as AssetEntry[] },
+    { type: AssetTypeValue.CLASS,      items: classes2014 as AssetEntry[] },
+    { type: AssetTypeValue.BACKGROUND, items: backgrounds2014 as AssetEntry[] },
+  ],
+  [SystemTypeValue.DND_5E_2024]: [
+    { type: AssetTypeValue.BACKGROUND, items: backgrounds2024 as AssetEntry[] },
+  ],
+};
+
+const PACKS: Array<{
+  slug: string;
+  name: string;
+  description: string;
+  version: string;
+  system: SystemTypeValue;
+}> = [
+  {
+    slug: 'srd-dnd-5e-2014',
+    name: 'System Reference Document 5.1 (2014)',
+    description: 'Official SRD content for Dungeons & Dragons 5th Edition (2014 rules).',
+    version: '5.1',
+    system: SystemTypeValue.DND_5E_2014,
+  },
+  {
+    slug: 'srd-dnd-5e-2024',
+    name: 'Free Rules (2024)',
+    description: 'Official Free Rules content for Dungeons & Dragons (2024 revision).',
+    version: '2024.1',
+    system: SystemTypeValue.DND_5E_2024,
+  },
+];
 
 export class SrdSeederService {
-  // Hardcoded Admin ID for system content (Valid UUID v4)
   private readonly SYSTEM_CREATOR_ID = '550e8400-e29b-41d4-a716-446655440000';
 
   constructor(
@@ -27,49 +60,30 @@ export class SrdSeederService {
     private readonly assetRepository: AssetRepository,
   ) {}
 
-  async onApplicationBootstrap() {
-    console.log('[SrdSeeder] Checking for SRD content packs...');
-
-    // D&D 5e (2014)
-    await this.seedPackAndAssets(
-      'srd-dnd-5e-2014',
-      'System Reference Document 5.1 (2014)',
-      'Official SRD content for Dungeons & Dragons 5th Edition (2014 rules).',
-      '5.1',
-      SystemTypeValue.DND_5E_2014,
-    );
-
-    // D&D 5e (2024)
-    await this.seedPackAndAssets(
-      'srd-dnd-5e-2024',
-      'Free Rules (2024)',
-      'Official Free Rules content for Dungeons & Dragons (2024 revision).',
-      '2024.1',
-      SystemTypeValue.DND_5E_2024,
-    );
+  async onApplicationBootstrap(): Promise<void> {
+    for (const packDef of PACKS) {
+      try {
+        await this.seedPack(packDef);
+      } catch (err) {
+        console.error(`[SrdSeeder] Failed to seed pack "${packDef.slug}":`, err);
+      }
+    }
   }
 
-  private async seedPackAndAssets(
-    slugStr: string,
-    name: string,
-    description: string,
-    version: string,
-    systemVal: SystemTypeValue,
-  ) {
-    const slug = Slug.create(slugStr);
+  private async seedPack(packDef: typeof PACKS[number]): Promise<void> {
+    const slug = Slug.create(packDef.slug);
     const exists = await this.packRepository.existsBySlug(slug);
 
     let packId: UUID;
 
     if (!exists) {
-      console.log(`[SrdSeeder] Seeding Pack: ${name} (${systemVal})`);
       const pack = ContentPack.create({
-        slug: slugStr,
-        name,
-        description,
-        version,
+        slug: packDef.slug,
+        name: packDef.name,
+        description: packDef.description,
+        version: packDef.version,
         type: PackTypeValue.SRD,
-        system: systemVal,
+        system: packDef.system,
         creatorId: this.SYSTEM_CREATOR_ID,
       });
       await this.packRepository.save(pack);
@@ -80,126 +94,51 @@ export class SrdSeederService {
       packId = pack.id;
     }
 
-    // Load assets from JSON files in the corresponding system folder
-    await this.loadAssetsFromDisk(packId, systemVal, name);
-  }
-
-  private async loadAssetsFromDisk(
-    packId: UUID,
-    systemVal: string,
-    packName: string,
-  ) {
-    const fs = await import('fs/promises');
-    const path = await import('path');
-
-    const dataDir = path.join(process.cwd(), 'dist', 'data', systemVal);
-    console.log(`[SrdSeeder] Looking for data in: ${dataDir}`);
-
-    try {
-      const files = await fs.readdir(dataDir);
-
-      for (const file of files) {
-        if (!file.endsWith('.json')) continue;
-
-        const assetTypeStr = this.mapFilenameToAssetType(file);
-        if (!assetTypeStr) {
-          console.warn(
-            `[SrdSeeder] Skipping file ${file}: Could not map to AssetType`,
-          );
-          continue;
-        }
-
-        const filePath = path.join(dataDir, file);
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        const assets: any[] = JSON.parse(fileContent);
-
-        console.log(
-          `[SrdSeeder] Seeding ${assets.length} assets from ${file} (${assetTypeStr}) for ${packName}`,
-        );
-
-        for (const assetData of assets) {
-          try {
-            const type = AssetType.create(assetTypeStr);
-            const assetExists =
-              await this.assetRepository.existsByPackAndTypeAndIndex(
-                packId,
-                type,
-                assetData.index,
-              );
-
-            if (!assetExists) {
-              const { index, name: _name, ...rest } = assetData;
-              void _name;
-
-              // Construct name if missing (e.g. for Levels)
-              let assetName = assetData.name;
-              if (!assetName) {
-                if (
-                  assetTypeStr === (AssetTypeValue.LEVEL as string) &&
-                  assetData.level &&
-                  assetData.class
-                ) {
-                  assetName = `${assetData.class.name} Level ${assetData.level}`;
-                } else {
-                  assetName = assetData.index; // Fallback to index
-                }
-              }
-
-              const asset = Asset.create({
-                packId: packId.toString(),
-                type: assetTypeStr as AssetTypeValue,
-                index: String(index),
-                name: String(assetName),
-                data: rest,
-                compatibleWith: (assetData.compatibleWith as string[]) || [],
-              });
-              await this.assetRepository.save(asset);
-            }
-          } catch (err: unknown) {
-            const _message =
-              err instanceof Error ? err.message : 'Unknown error';
-          }
-        }
-      }
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.warn(
-        `[SrdSeeder] No seed data found for ${systemVal} at ${dataDir}: ${message}`,
-      );
+    const groups = SRD_DATA[packDef.system] ?? [];
+    for (const group of groups) {
+      await this.seedAssets(packId, group.type, group.items);
     }
   }
 
-  private mapFilenameToAssetType(filename: string): string | null {
-    const lower = filename.toLowerCase();
-    if (lower.includes('spells')) return AssetTypeValue.SPELL;
-    if (lower.includes('subclasses')) return AssetTypeValue.SUBCLASS;
-    if (lower.includes('classes')) return AssetTypeValue.CLASS;
-    if (lower.includes('subraces')) return AssetTypeValue.SUBRACE;
-    if (lower.includes('races')) return AssetTypeValue.RACE;
-    if (lower.includes('monsters')) return AssetTypeValue.MONSTER;
-    if (lower.includes('features')) return AssetTypeValue.FEATURE;
-    if (lower.includes('feats')) return AssetTypeValue.FEAT;
-    if (lower.includes('backgrounds')) return AssetTypeValue.BACKGROUND;
-    if (lower.includes('equipment-categories'))
-      return AssetTypeValue.EQUIPMENT_CATEGORY;
-    if (lower.includes('equipment')) return AssetTypeValue.EQUIPMENT;
-    if (lower.includes('magic-items')) return AssetTypeValue.MAGIC_ITEM;
-    if (lower.includes('conditions')) return AssetTypeValue.CONDITION;
-    if (lower.includes('damage-types')) return AssetTypeValue.DAMAGE_TYPE;
-    if (lower.includes('magic-schools')) return AssetTypeValue.MAGIC_SCHOOL;
-    if (lower.includes('ability-scores')) return AssetTypeValue.ABILITY_SCORE;
-    if (lower.includes('languages')) return AssetTypeValue.LANGUAGE;
-    if (lower.includes('skills')) return AssetTypeValue.SKILL;
-    if (lower.includes('proficiencies')) return AssetTypeValue.PROFICIENCY;
-    if (lower.includes('traits')) return AssetTypeValue.TRAIT;
-    if (lower.includes('weapon-mastery')) return AssetTypeValue.WEAPON_MASTERY;
-    if (lower.includes('weapon-properties'))
-      return AssetTypeValue.WEAPON_PROPERTY;
-    if (lower.includes('alignments')) return AssetTypeValue.ALIGNMENT;
-    if (lower.includes('levels')) return AssetTypeValue.LEVEL;
-    if (lower.includes('rules')) return AssetTypeValue.RULE;
-    if (lower.includes('rule-sections')) return AssetTypeValue.RULE_SECTION;
+  private async seedAssets(
+    packId: UUID,
+    assetType: AssetTypeValue,
+    items: AssetEntry[],
+  ): Promise<void> {
+    const type = AssetType.create(assetType);
 
-    return null;
+    for (const item of items) {
+      try {
+        const alreadyExists = await this.assetRepository.existsByPackAndTypeAndIndex(
+          packId,
+          type,
+          String(item.index),
+        );
+        if (alreadyExists) continue;
+
+        const { index, name, ...rest } = item;
+
+        let assetName = name;
+        if (!assetName) {
+          if (assetType === AssetTypeValue.LEVEL && (item as any).level && (item as any).class) {
+            assetName = `${(item as any).class.name} Level ${(item as any).level}`;
+          } else {
+            assetName = String(index);
+          }
+        }
+
+        const asset = Asset.create({
+          packId: packId.toString(),
+          type: assetType,
+          index: String(index),
+          name: String(assetName),
+          data: rest as Record<string, unknown>,
+          compatibleWith: (item.compatibleWith as string[]) ?? [],
+        });
+        await this.assetRepository.save(asset);
+      } catch (err) {
+        console.error(`[SrdSeeder] Failed to seed ${assetType} "${String(item.index)}":`, err);
+      }
+    }
   }
 }

@@ -27,6 +27,7 @@ export interface AvailableAssetsResult {
   races: Asset[];
   subraces: Asset[];
   classes: Asset[];
+  subclasses: Asset[];
   backgrounds: Asset[];
 }
 
@@ -68,15 +69,16 @@ export class ListAvailableAssetsUseCase {
         packIds: resolvedPackIds,
       };
 
-      // Four separate typed queries avoid the search() limit pooling issue
-      const [races, subraces, classes, backgrounds] = await Promise.all([
+      // Five separate typed queries avoid the search() limit pooling issue
+      const [races, subraces, classes, subclasses, backgrounds] = await Promise.all([
         this.assetRepo.search({ ...baseFilters, type: 'race' }),
         this.assetRepo.search({ ...baseFilters, type: 'subrace' }),
         this.assetRepo.search({ ...baseFilters, type: 'class' }),
+        this.assetRepo.search({ ...baseFilters, type: 'subclass' }),
         this.assetRepo.search({ ...baseFilters, type: 'background' }),
       ]);
 
-      return Result.ok({ races, subraces, classes, backgrounds });
+      return Result.ok({ races, subraces, classes, subclasses, backgrounds });
     } catch (e) {
       console.error(e);
       return Result.fail(CharacterError.NOT_FOUND);

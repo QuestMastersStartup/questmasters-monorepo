@@ -23,7 +23,7 @@ export const StatCounter: React.FC<StatCounterProps> = ({
   const cost = method === 'point-buy' ? calculatePointBuyCost(value) : null;
 
   return (
-    <div className="bg-slate-900/40 border border-slate-700/50 rounded-2xl p-4 flex flex-col items-center gap-3 transition-all hover:bg-slate-900/60 group">
+    <div className="bg-slate-900/40 border border-slate-700/50 rounded-2xl p-4 flex flex-col items-center gap-3 transition-colors hover:bg-slate-900/60 group">
       <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-indigo-400 transition-colors">
         {label}
       </span>
@@ -33,7 +33,7 @@ export const StatCounter: React.FC<StatCounterProps> = ({
           type="button"
           onClick={() => onChange(value - 1)}
           disabled={disabledMinus}
-          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500/20 disabled:opacity-20 transition-all active:scale-90"
+          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500/20 disabled:opacity-20 transition-all active:scale-[0.92]"
         >
           <Minus size={16} />
         </button>
@@ -49,7 +49,7 @@ export const StatCounter: React.FC<StatCounterProps> = ({
           type="button"
           onClick={() => onChange(value + 1)}
           disabled={disabledPlus}
-          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-500/20 disabled:opacity-20 transition-all active:scale-90"
+          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-emerald-500/20 disabled:opacity-20 transition-all active:scale-[0.92]"
         >
           <Plus size={16} />
         </button>

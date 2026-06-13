@@ -94,7 +94,7 @@ function Field({ label, icon, hint, required, children, counter }: FieldProps) {
   );
 }
 
-const inputCls = "w-full bg-slate-950/50 border border-slate-700 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/60 transition-all";
+const inputCls = "w-full bg-slate-950/50 border border-slate-700 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/60 transition-colors";
 const textareaCls = `${inputCls} resize-none`;
 
 // Section wrapper
@@ -144,8 +144,8 @@ export const CreateCharacter: React.FC = () => {
 
   // ── Asset data ────────────────────────────────────────────────────────────
   const [assets, setAssets] = useState<{
-    races: Asset[]; subraces: Asset[]; classes: Asset[]; backgrounds: Asset[];
-  }>({ races: [], subraces: [], classes: [], backgrounds: [] });
+    races: Asset[]; subraces: Asset[]; classes: Asset[]; subclasses: Asset[]; backgrounds: Asset[];
+  }>({ races: [], subraces: [], classes: [], subclasses: [], backgrounds: [] });
 
   // ── Identity ──────────────────────────────────────────────────────────────
   const [name,       setName]       = useState("");
@@ -165,12 +165,14 @@ export const CreateCharacter: React.FC = () => {
   const [raceAssetId,       setRaceAssetId]       = useState("");
   const [subraceAssetId,    setSubraceAssetId]     = useState("");
   const [classAssetId,      setClassAssetId]       = useState("");
+  const [subclassAssetId,   setSubclassAssetId]    = useState("");
   const [backgroundAssetId, setBackgroundAssetId]  = useState("");
 
   // ── Origin — libre text ───────────────────────────────────────────────────
   const [libreRace,       setLibreRace]      = useState("");
   const [libreSubrace,    setLibreSubrace]   = useState("");
   const [libreClass,      setLibreClass]     = useState("");
+  const [libreSubclass,   setLibreSubclass]  = useState("");
   const [libreBackground, setLibreBackground]= useState("");
 
   // ── Background narrative fields ───────────────────────────────────────────
@@ -224,12 +226,14 @@ export const CreateCharacter: React.FC = () => {
             setRaceAssetId(char.raceAssetId ?? "");
             setSubraceAssetId((ch.subraceAssetId as string) ?? "");
             setClassAssetId(char.classAssetId ?? "");
+            setSubclassAssetId((ch.subclassAssetId as string) ?? "");
             skipBgAutoPopulateRef.current = true;
             setBackgroundAssetId(char.backgroundAssetId ?? "");
           } else {
             setLibreRace((ch.libreRace as string) ?? "");
             setLibreSubrace((ch.libreSubrace as string) ?? "");
             setLibreClass((ch.libreClass as string) ?? "");
+            setLibreSubclass((ch.libreSubclass as string) ?? "");
             setLibreBackground((ch.libreBackground as string) ?? "");
           }
 
@@ -304,8 +308,8 @@ export const CreateCharacter: React.FC = () => {
     setSubraceAssetId("");
   }, [raceAssetId]);
 
-  // Reset HP when class changes
-  useEffect(() => { setCustomHp(null); }, [classAssetId]);
+  // Reset HP and subclass when class changes
+  useEffect(() => { setCustomHp(null); setSubclassAssetId(""); }, [classAssetId]);
 
   // Clamp customHp to new max when CON changes (non-libre only)
   useEffect(() => {
@@ -332,8 +336,11 @@ export const CreateCharacter: React.FC = () => {
     ? (customHp ?? 10)
     : (customHp ?? hpResult.maxHp);
   const selectedRace   = assets.races.find(r => r.id === raceAssetId);
-  const availSubraces  = assets.subraces.filter(
+  const availSubraces   = assets.subraces.filter(
     sr => (sr.data as any)?.race?.index === selectedRace?.index
+  );
+  const availSubclasses = assets.subclasses.filter(
+    sc => (sc.data as any)?.class?.index === selectedClass?.index
   );
 
   // Background proficiency display (vanilla/personalizado)
@@ -399,9 +406,11 @@ export const CreateCharacter: React.FC = () => {
         // Origin (libre)
         ...(isLibre && { libreRace: libreRace.trim(), libreClass: libreClass.trim() }),
         ...(isLibre && libreSubrace.trim() && { libreSubrace: libreSubrace.trim() }),
+        ...(isLibre && libreSubclass.trim() && { libreSubclass: libreSubclass.trim() }),
         ...(isLibre && libreBackground.trim() && { libreBackground: libreBackground.trim() }),
-        // Subrace (vanilla/personalizado)
+        // Subrace / subclass (vanilla/personalizado)
         ...(subraceAssetId && { subraceAssetId }),
+        ...(subclassAssetId && { subclassAssetId }),
         // Background narrative
         ...(bgFeature.trim()     && { bgFeature:     bgFeature.trim() }),
         ...(bgPersonality.trim() && { bgPersonality: bgPersonality.trim() }),
@@ -620,7 +629,7 @@ export const CreateCharacter: React.FC = () => {
                             type="button"
                             onClick={rollHp}
                             title={`Tirar 1d${hitDie} + ${conMod >= 0 ? "+" : ""}${conMod} CON`}
-                            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/40 transition-all active:scale-90"
+                            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/40 transition-colors active:scale-[0.90] active:rotate-12 transition-transform"
                           >
                             <Dices size={16} />
                           </button>
@@ -949,7 +958,7 @@ export const CreateCharacter: React.FC = () => {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl flex items-start gap-3">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl flex items-start gap-3 animate-in fade-in-0 slide-in-from-top-1 duration-200 ease-out">
               <AlertCircle className="shrink-0 mt-0.5" size={18} />
               <p className="text-xs font-bold">{error}</p>
             </div>
@@ -1067,11 +1076,52 @@ export const CreateCharacter: React.FC = () => {
             )}
           </section>
 
+          {/* Subclase */}
+          {isLibre ? (
+            <section className="space-y-3">
+              <h3 className="text-lg font-black text-white flex items-center gap-2">
+                <Sword className="text-violet-400" size={20} />
+                Subclase
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500 border border-slate-700 normal-case tracking-normal">opcional</span>
+              </h3>
+              <input
+                type="text"
+                maxLength={LIBRE_MAX}
+                value={libreSubclass}
+                onChange={e => setLibreSubclass(e.target.value)}
+                placeholder="Ej: Camino del Berserker, Escuela de Evocación..."
+                className={inputCls}
+              />
+              <p className={`text-right text-[10px] font-mono ${libreSubclass.length >= LIBRE_MAX ? "text-red-400" : "text-slate-700"}`}>
+                {libreSubclass.length}/{LIBRE_MAX}
+              </p>
+            </section>
+          ) : availSubclasses.length > 0 ? (
+            <section className="space-y-3">
+              <h3 className="text-lg font-black text-white flex items-center gap-2">
+                <Sword className="text-violet-400" size={20} />
+                Subclase de {selectedClass?.name}
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500 border border-slate-700 normal-case tracking-normal">opcional</span>
+              </h3>
+              <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+                {availSubclasses.map(asset => (
+                  <AssetCard
+                    key={asset.id}
+                    asset={asset}
+                    isSelected={subclassAssetId === asset.id}
+                    onSelect={() => setSubclassAssetId(subclassAssetId === asset.id ? "" : asset.id)}
+                    type="class"
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {/* Submit */}
           <button
             onClick={handleSubmit}
             disabled={submitting || uploading}
-            className="w-full py-5 rounded-3xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xl uppercase tracking-widest shadow-2xl shadow-indigo-600/20 transition-all active:scale-[0.98] disabled:opacity-50 group flex items-center justify-center gap-3"
+            className="w-full py-5 rounded-3xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xl uppercase tracking-widest shadow-2xl shadow-indigo-600/20 transition-colors active:scale-[0.98] transition-transform disabled:opacity-50 group flex items-center justify-center gap-3"
           >
             {submitting ? (
               <Loader2 className="animate-spin" size={24} />

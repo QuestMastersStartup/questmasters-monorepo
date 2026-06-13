@@ -4,9 +4,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const apiTarget =
-    mode === "production" || env.VITE_TESIS_MODE === "true"
+    env.VITE_API_URL ??
+    (env.VITE_TESIS_MODE === "true"
       ? "https://questmasters-api.questmastersstartup.workers.dev"
-      : "http://localhost:3000";
+      : "http://localhost:3000");
 
   return {
     plugins: [react()],

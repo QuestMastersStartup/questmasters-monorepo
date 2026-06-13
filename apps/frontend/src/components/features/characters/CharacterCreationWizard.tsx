@@ -176,12 +176,12 @@ export const CharacterCreationWizard: React.FC<Props> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-in fade-in-0 duration-150"
         onClick={onClose}
       />
 
       {/* Panel */}
-      <div className="relative bg-slate-900 border border-slate-700/60 rounded-3xl shadow-2xl shadow-indigo-900/20 w-full max-w-lg overflow-hidden">
+      <div className="relative bg-slate-900 border border-slate-700/60 rounded-3xl shadow-2xl shadow-indigo-900/20 w-full max-w-lg overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 ease-out">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800">
           <div className="flex items-center gap-3">
@@ -214,7 +214,7 @@ export const CharacterCreationWizard: React.FC<Props> = ({
           {[1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`h-1 rounded-full flex-1 transition-all ${
+              className={`h-1 rounded-full flex-1 transition-colors duration-300 ${
                 s <= step ? "bg-indigo-500" : "bg-slate-800"
               }`}
             />
@@ -222,14 +222,14 @@ export const CharacterCreationWizard: React.FC<Props> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-3">
+        <div key={step} className="p-6 space-y-3 animate-in fade-in-0 slide-in-from-right-2 duration-150 ease-out">
           {/* Step 1: System */}
           {step === 1 &&
             SYSTEMS.map((sys) => (
               <button
                 key={sys.id}
                 onClick={() => handleSystemSelect(sys.id)}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl border border-slate-700/50 bg-slate-800/30 hover:bg-slate-800/70 hover:border-indigo-500/40 transition-all text-left group"
+                className="w-full flex items-center gap-4 p-4 rounded-2xl border border-slate-700/50 bg-slate-800/30 hover:bg-slate-800/70 hover:border-indigo-500/40 transition-colors text-left group active:scale-[0.98] transition-transform"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -245,7 +245,7 @@ export const CharacterCreationWizard: React.FC<Props> = ({
                   </p>
                 </div>
                 <ChevronRight
-                  className="text-slate-600 group-hover:text-indigo-400 shrink-0 transition-colors"
+                  className="text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 shrink-0 transition-[color,transform] duration-150"
                   size={18}
                 />
               </button>
@@ -257,7 +257,7 @@ export const CharacterCreationWizard: React.FC<Props> = ({
               <button
                 key={m.id}
                 onClick={() => handleModeSelect(m.id)}
-                className={`w-full flex items-start gap-4 p-4 rounded-2xl border transition-all text-left group ${m.color}`}
+                className={`w-full flex items-start gap-4 p-4 rounded-2xl border transition-colors text-left group active:scale-[0.98] transition-transform ${m.color}`}
               >
                 <div className="mt-0.5 shrink-0">{m.icon}</div>
                 <div className="flex-1 min-w-0">
@@ -269,7 +269,7 @@ export const CharacterCreationWizard: React.FC<Props> = ({
                   </p>
                 </div>
                 <ChevronRight
-                  className="mt-1 shrink-0 opacity-50 group-hover:opacity-100 transition-opacity"
+                  className="mt-1 shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-[opacity,transform] duration-150"
                   size={18}
                 />
               </button>
@@ -301,14 +301,14 @@ export const CharacterCreationWizard: React.FC<Props> = ({
                       <button
                         key={pack.id}
                         onClick={() => togglePack(pack.id)}
-                        className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left ${
+                        className={`w-full flex items-center gap-3 p-3.5 rounded-2xl border transition-colors text-left active:scale-[0.98] transition-transform ${
                           selected
                             ? "border-indigo-500/60 bg-indigo-500/10"
                             : "border-slate-700/50 bg-slate-800/30 hover:bg-slate-800/60"
                         }`}
                       >
                         <div
-                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
+                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors duration-150 ${
                             selected
                               ? "bg-indigo-500 border-indigo-500"
                               : "border-slate-600"
@@ -337,9 +337,9 @@ export const CharacterCreationWizard: React.FC<Props> = ({
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setStep(2)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors text-sm font-bold"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors text-sm font-bold group active:scale-[0.98]"
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform duration-150" />
                   Volver
                 </button>
                 <button
@@ -363,9 +363,9 @@ export const CharacterCreationWizard: React.FC<Props> = ({
           <div className="px-6 pb-5">
             <button
               onClick={() => setStep(1)}
-              className="flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors text-sm"
+              className="flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors text-sm group"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform duration-150" />
               Cambiar sistema
             </button>
           </div>

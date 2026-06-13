@@ -44,6 +44,7 @@ import { ListCharactersUseCase } from '../characters/application/use-cases/list-
 import { UpdateCharacterUseCase } from '../characters/application/use-cases/update-character.use-case';
 import { DeleteCharacterUseCase } from '../characters/application/use-cases/delete-character.use-case';
 import { ListAvailableAssetsUseCase } from '../characters/application/use-cases/list-available-assets.use-case';
+import { SrdSeederService } from '../content/infrastructure/seeding/srd-seeder.service';
 import { CreateDmSessionUseCase } from '../dm-session/application/use-cases/create-dm-session.use-case';
 import { InitializeDmSessionUseCase } from '../dm-session/application/use-cases/initialize-dm-session.use-case';
 import { SendPlayerTurnUseCase } from '../dm-session/application/use-cases/send-player-turn.use-case';
@@ -133,6 +134,8 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
   const listMembersUseCase = new ListMembersUseCase(campaignMemberRepo);
   const removeMemberUseCase = new RemoveMemberUseCase(campaignMemberRepo);
 
+  const srdSeederService = new SrdSeederService(packRepo, assetRepo);
+
   const createPackUseCase = new CreatePackUseCase(packRepo, createAssetUseCase);
   const getPackUseCase = new GetPackUseCase(packRepo, assetRepo);
   const listPacksUseCase = new ListPacksUseCase(packRepo);
@@ -149,6 +152,8 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
   const changePackStatusUseCase = new ChangePackStatusUseCase(packRepo);
 
   return {
+    // Seeder
+    srdSeederService,
     // Repositories (acceso directo desde routes que lo necesitan)
     assetRepo,
     campaignRepo,

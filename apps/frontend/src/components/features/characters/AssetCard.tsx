@@ -23,10 +23,10 @@ export const AssetCard: React.FC<AssetCardProps> = ({
     <button
       type="button"
       onClick={onSelect}
-      className={`relative w-full text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-4 h-full ${
+      className={`relative w-full text-left p-4 rounded-2xl border-2 transition-colors flex items-start gap-4 h-full active:scale-[0.98] transition-transform ${
         isSelected
-          ? "bg-indigo-500/10 border-indigo-500 shadow-lg shadow-indigo-500/10 scale-[1.02]"
-          : "bg-slate-900/40 border-slate-700/50 hover:bg-slate-900/60 hover:border-slate-600 active:scale-[0.98]"
+          ? "bg-indigo-500/10 border-indigo-500 shadow-lg shadow-indigo-500/20"
+          : "bg-slate-900/40 border-slate-700/50 hover:bg-slate-900/60 hover:border-slate-600"
       }`}
     >
       <div className={`p-3 rounded-xl flex-shrink-0 ${isSelected ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-500"}`}>

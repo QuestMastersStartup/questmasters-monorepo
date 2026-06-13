@@ -69,6 +69,7 @@ export interface AvailableAssetsResponse {
   races: Asset[];
   subraces: Asset[];
   classes: Asset[];
+  subclasses: Asset[];
   backgrounds: Asset[];
 }
 
