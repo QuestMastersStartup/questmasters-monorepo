@@ -64,6 +64,21 @@ function sseResponse(
   );
 }
 
+const STUB_PLAYER_ACTIONS = [
+  'Avanzamos con cautela y examinamos el entorno.',
+  'Intento hablar con quien esté cerca. ¿Qué podemos averiguar?',
+  'El grupo busca trampas y pistas ocultas en esta zona.',
+  'Decidimos explorar más a fondo y seguimos adelante.',
+  'Evaluamos la situación antes de actuar.',
+  'Intentamos movernos sin hacer ruido.',
+  'Preparamos una táctica conjunta antes de continuar.',
+  'Buscamos cualquier ventaja que nos dé el entorno.',
+];
+
+function buildAutoPlayerInput(): string {
+  return STUB_PLAYER_ACTIONS[Math.floor(Date.now() / 1000) % STUB_PLAYER_ACTIONS.length];
+}
+
 export function dmSessionsRoutes(container: Container) {
   async function getIsAdmin(userId: string): Promise<boolean> {
     const profile = await container.getUserProfileUseCase.execute(userId);
@@ -180,6 +195,27 @@ export function dmSessionsRoutes(container: Container) {
       ...result.value,
       turnBreakdown: result.value.turnBreakdown.map(DmTurnMapper.toResponse),
     });
+  });
+
+  app.post('/:id/auto-turn', async (c) => {
+    const user = await requireUser(c);
+    const isAdmin = await getIsAdmin(user.id);
+    const id = c.req.param('id');
+
+    const playerInput = buildAutoPlayerInput();
+
+    const result = await container.sendPlayerTurnUseCase.execute({
+      sessionId: id,
+      playerInput,
+      userId: user.id,
+      isAdmin,
+    });
+
+    if (result.isFailure) {
+      return c.json({ message: result.error }, errorToStatus(result.error) as any);
+    }
+
+    return sseResponse(result.value, [{ type: 'player_input', input: playerInput }]);
   });
 
   app.delete('/:id', async (c) => {
