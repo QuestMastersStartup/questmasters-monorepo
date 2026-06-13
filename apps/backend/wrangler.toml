@@ -37,6 +37,6 @@ bucket_name = "questmasters-avatars"
 
 [env.preview.vars]
 NODE_ENV = "development"
-TESIS = "false"
+TESIS = "true"
 ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000"
 R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"
