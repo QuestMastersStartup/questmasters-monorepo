@@ -55,6 +55,7 @@ import { EndDmSessionUseCase } from '../dm-session/application/use-cases/end-dm-
 
 // DM Model Providers
 import { StubDmModelAdapter } from '../dm-session/infrastructure/adapters/stub-dm-model.adapter';
+import { RunpodDmModelAdapter } from '../dm-session/infrastructure/adapters/runpod-dm-model.adapter';
 import type { DmModelProvider } from '../dm-session/domain/ports/dm-model.provider';
 import type { ArchitectureType } from '../dm-session/domain/entities/dm-session.entity';
 
@@ -69,10 +70,15 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
   const dmSessionRepo = new DmSessionDrizzleRepository(db);
   const dmTurnRepo = new DmTurnDrizzleRepository(db);
 
-  // DM Model Providers
+  // DM Model Providers — RunPod solo si DM_USE_RUNPOD="true", si no usa stub
+  const runpodAdapter =
+    env.DM_USE_RUNPOD === 'true'
+      ? new RunpodDmModelAdapter(env.RUNPOD_ENDPOINT_ID, env.RUNPOD_API_KEY)
+      : null;
+
   const dmModelProviders: Record<ArchitectureType, DmModelProvider> = {
-    mas: new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MAS),
-    monolithic: new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MONOLITHIC),
+    mas: runpodAdapter ?? new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MAS),
+    monolithic: runpodAdapter ?? new StubDmModelAdapter(env.DM_MODEL_ENDPOINT_MONOLITHIC),
   };
 
   // Use Cases
