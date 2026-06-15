@@ -11,7 +11,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenize
 
 _BASE_MODEL_PATH = Path("/runpod-volume/shared/base_model")
 _LORA_BASE_PATH = Path("/runpod-volume/shared/lora_weights")
-_HF_TOKEN = os.environ["HF_TOKEN"]
+_HF_TOKEN = os.environ.get("HF_TOKEN", "")
+if not _HF_TOKEN:
+    raise RuntimeError("HF_TOKEN environment variable is not set")
 
 _LORA_REPOS: dict[str, str] = {
     "narrator": "Questmasters/lora_narrador",
