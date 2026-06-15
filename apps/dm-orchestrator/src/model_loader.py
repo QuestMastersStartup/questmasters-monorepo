@@ -9,7 +9,7 @@ from huggingface_hub import snapshot_download
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerBase
 
-_BASE_MODEL_PATH = Path("/runpod-volume/shared/base_model")
+_BASE_MODEL_ID = "google/gemma-4-26B-A4B-it"
 _LORA_BASE_PATH = Path("/runpod-volume/shared/lora_weights")
 _HF_TOKEN = os.environ.get("HF_TOKEN", "")
 if not _HF_TOKEN:
@@ -42,15 +42,17 @@ def download_lora_weights() -> None:
 def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
     download_lora_weights()
 
+    # HF_HOME=/runpod-volume/shared/hf_cache (Dockerfile) — el modelo se cachea
+    # en el Network Volume y no se re-descarga en cold starts posteriores
     base = AutoModelForCausalLM.from_pretrained(
-        str(_BASE_MODEL_PATH),
+        _BASE_MODEL_ID,
+        token=_HF_TOKEN,
         load_in_8bit=True,
         device_map="auto",
         torch_dtype=torch.float16,
     )
-    tokenizer = AutoTokenizer.from_pretrained(str(_BASE_MODEL_PATH))
+    tokenizer = AutoTokenizer.from_pretrained(_BASE_MODEL_ID, token=_HF_TOKEN)
 
-    # Cargar primer adapter y luego añadir el resto
     first_name, *rest_names = list(_LORA_REPOS.keys())
     model = PeftModel.from_pretrained(
         base,
