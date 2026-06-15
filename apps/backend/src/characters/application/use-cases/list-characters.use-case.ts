@@ -13,20 +13,14 @@ export class ListCharactersUseCase {
   constructor(private readonly characterRepo: CharacterRepository) {}
 
   async execute(filters: ListCharactersFilters): Promise<Result<Character[], CharacterError>> {
-    try {
-      let characters: Character[] = [];
+    let characters: Character[] = [];
 
-      if (filters.campaignId) {
-        characters = await this.characterRepo.findByCampaignId(UUID.fromString(filters.campaignId));
-      } else if (filters.userId) {
-        characters = await this.characterRepo.findByUserId(filters.userId);
-      }
-
-      return Result.ok(characters);
-    } catch (e) {
-      // Log real error para debug (ej: tabla "characters" no existe — ejecutar migraciones)
-      console.error('[ListCharactersUseCase] DB error:', String(e));
-      return Result.fail(CharacterError.NOT_FOUND);
+    if (filters.campaignId) {
+      characters = await this.characterRepo.findByCampaignId(UUID.fromString(filters.campaignId));
+    } else if (filters.userId) {
+      characters = await this.characterRepo.findByUserId(filters.userId);
     }
+
+    return Result.ok(characters);
   }
 }
