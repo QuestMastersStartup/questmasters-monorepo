@@ -1,0 +1,19 @@
+# Copia este archivo a .dev.vars y rellena los valores reales.
+# .dev.vars es ignorado por git (ver .gitignore).
+
+# ─── Auth ────────────────────────────────────────────────────────────────────
+JWT_SECRET=local-dev-secret-do-not-use-in-production
+
+# ─── DM Model endpoints ──────────────────────────────────────────────────────
+DM_MODEL_ENDPOINT_MAS=http://localhost:9999/placeholder
+DM_MODEL_ENDPOINT_MONOLITHIC=http://localhost:9999/placeholder
+
+# ─── RunPod Serverless ───────────────────────────────────────────────────────
+DM_USE_RUNPOD=false
+RUNPOD_ENDPOINT_ID=
+RUNPOD_API_KEY=
+
+# ─── Supabase (solo si TESIS != "true") ──────────────────────────────────────
+SUPABASE_URL=
+SUPABASE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
