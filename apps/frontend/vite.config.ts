@@ -7,11 +7,12 @@ export default defineConfig(({ mode }) => {
     env.VITE_API_URL ??
     (env.VITE_TESIS_MODE === "true"
       ? "https://questmasters-api.questmastersstartup.workers.dev"
-      : "http://localhost:3000");
+      : "http://127.0.0.1:3000");
 
   return {
     plugins: [react()],
     server: {
+      strictPort: false,
       proxy: {
         "/api": {
           target: apiTarget,
