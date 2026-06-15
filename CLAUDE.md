@@ -14,10 +14,11 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 
 ### Arquitectura del stack
 
-- **Backend:** Elysia (no NestJS) + DDD. `apps/backend/src/`
+- **Backend:** Hono + DDD + Cloudflare Workers. `apps/backend/src/`
 - **Frontend:** React + Vite + TailwindCSS. `apps/frontend/src/`
+- **DM Orchestrator:** Python + RunPod Serverless. `apps/dm-orchestrator/` — modelo Gemma 4 26B-A4B-it con LoRAs
 - **Reglas D&D:** `packages/dnd-rules/src/` — lógica pura sin I/O
-- **Landing:** `apps/landing/` — Astro + Elysia separado (marketing)
+- **Landing:** `apps/landing/` — Astro separado (marketing)
 - **UI compartida:** `packages/ui/src/` — componentes reutilizables
 
 ### Dónde va cada tipo de archivo
@@ -36,10 +37,12 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 | Lógica de reglas D&D | `packages/dnd-rules/src/` |
 | Documentación del proyecto | `context/` |
 | Script de utilidad | `apps/backend/scripts/` (nunca en la raíz del app) |
+| Handler/agente Python (DM) | `apps/dm-orchestrator/src/` |
+| Script de inicialización RunPod | `apps/dm-orchestrator/scripts/` |
 
 ### Convenciones de código
 
-- **Backend usa Elysia, NO NestJS** — no usar `@Injectable()`, `@Controller()`, `@Module()` ni decorators de NestJS
+- **Backend usa Hono, NO NestJS** — no usar `@Injectable()`, `@Controller()`, `@Module()` ni decorators de NestJS
 - Use cases retornan `Result<T, Error>` — ver `apps/backend/src/shared/application/result.ts`
 - Entidades extienden `BaseEntity` — ver `apps/backend/src/shared/domain/entities/base.entity.ts`
 - IDs usan el value object `UUID` — ver `apps/backend/src/shared/domain/value-objects/uuid.vo.ts`
@@ -70,4 +73,6 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 
 ### Contexto del dominio
 
-Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`. Antes de añadir un módulo nuevo, verificar si ya existe con `graphify query "<concepto>"`. Las entidades god node son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
+Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`, `dm-session`. Antes de añadir un módulo nuevo, verificar si ya existe con `graphify query "<concepto>"`. Las entidades god node son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
+
+El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `RunpodDmModelAdapter` — activado con `DM_USE_RUNPOD=true` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` con LoRAs en `Questmasters/` en HuggingFace.

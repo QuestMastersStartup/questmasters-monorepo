@@ -2,7 +2,7 @@
   "name": "api",
   "version": "0.0.1",
   "type": "module",
-  "description": "QuestMasters API - Bun + Elysia",
+  "description": "QuestMasters API - Hono + Cloudflare Workers",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@questmasters/dnd-rules": "workspace:^",
-    "@supabase/supabase-js": "^2.93.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.25",
     "jose": "^6.2.3",
