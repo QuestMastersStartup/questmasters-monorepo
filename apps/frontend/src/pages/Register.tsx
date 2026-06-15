@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Check, X, Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
-import { setTesisSession } from "../lib/tesis-auth";
+import { setSession } from "../lib/auth";
 
 export function Register() {
   const [username, setUsername] = useState("");
@@ -100,7 +100,7 @@ export function Register() {
       if (!res.ok) {
         setError(data.message || "Registration failed");
       } else {
-        setTesisSession(data.token, { id: data.userId, email, username: username.trim() });
+        setSession(data.token, { id: data.userId, email, username: username.trim() });
         navigate("/library", { replace: true });
       }
     } catch {

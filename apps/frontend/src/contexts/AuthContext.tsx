@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { authFetch } from "../lib/api";
-import { getTesisToken, getTesisUser, clearTesisSession } from "../lib/tesis-auth";
+import { getToken, clearSession } from "../lib/auth";
 
 interface UserProfile {
   id: string;
@@ -66,11 +66,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const refreshProfile = async () => {
-    if (getTesisToken()) await fetchProfile();
+    if (getToken()) await fetchProfile();
   };
 
   useEffect(() => {
-    if (getTesisToken()) {
+    if (getToken()) {
       fetchProfile().finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -78,12 +78,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signOut = () => {
-    clearTesisSession();
+    clearSession();
     setUserProfile(null);
     window.location.href = '/login';
   };
 
-  const isAuthenticated = !!getTesisToken();
+  const isAuthenticated = !!getToken();
   const isGuest = !isAuthenticated && !loading;
 
   return (

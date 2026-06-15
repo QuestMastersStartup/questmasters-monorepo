@@ -14,14 +14,14 @@ bucket_name = "questmasters-avatars"
 
 [vars]
 NODE_ENV = "production"
-TESIS = "true"
 ALLOWED_ORIGINS = "https://questmasters.app"
 R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"
 
-# Secrets (set via: wrangler secret put <NAME>)
+# Secrets — configurar con: wrangler secret put <NAME>
 # JWT_SECRET
-# DM_MODEL_ENDPOINT_MAS
-# DM_MODEL_ENDPOINT_MONOLITHIC
+# DM_USE_RUNPOD
+# RUNPOD_ENDPOINT_ID
+# RUNPOD_API_KEY
 
 [env.preview]
 name = "questmasters-api-preview"
@@ -37,6 +37,5 @@ bucket_name = "questmasters-avatars"
 
 [env.preview.vars]
 NODE_ENV = "development"
-TESIS = "true"
 ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000"
 R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"

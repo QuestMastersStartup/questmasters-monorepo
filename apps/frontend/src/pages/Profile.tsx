@@ -3,11 +3,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Shield, Upload, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { resizeImageToWebP } from '../lib/resize-image';
 import { authFetch } from '../lib/api';
-import { getTesisUser } from '../lib/tesis-auth';
+import { getUser } from '../lib/auth';
 
 export default function Profile() {
   const { userProfile, refreshProfile } = useAuth();
-  const displayEmail = getTesisUser()?.email ?? '';
+  const displayEmail = getUser()?.email ?? '';
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');

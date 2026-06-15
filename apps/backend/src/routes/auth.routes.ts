@@ -48,7 +48,6 @@ export function authRoutes() {
   const app = new Hono<{ Bindings: CloudflareBindings }>();
 
   app.post('/register', async (c) => {
-    if (c.env.TESIS !== 'true') return c.json({ message: 'Not available in this mode' }, 501);
 
     const body = await c.req.json().catch(() => null);
     const parsed = registerSchema.safeParse(body);
@@ -76,7 +75,6 @@ export function authRoutes() {
   });
 
   app.post('/login', async (c) => {
-    if (c.env.TESIS !== 'true') return c.json({ message: 'Not available in this mode' }, 501);
 
     const body = await c.req.json().catch(() => null);
     const parsed = loginSchema.safeParse(body);

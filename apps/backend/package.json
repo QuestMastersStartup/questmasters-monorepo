@@ -2,12 +2,12 @@
   "name": "api",
   "version": "0.0.1",
   "type": "module",
-  "description": "QuestMasters API - Bun + Elysia",
+  "description": "QuestMasters API - Hono + Cloudflare Workers",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "wrangler dev --env preview --port 3000",
+    "dev": "bun run scripts/dev.ts",
     "build": "bun build ./src/index.ts --outdir ./dist --target bun --sourcemap && bun -e \"import { cpSync } from 'node:fs'; cpSync('src/content/infrastructure/seeding/data', './dist/data', { recursive: true })\"",
     "start": "bun run src/index.ts",
     "start:prod": "bun run dist/index.js",
@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@questmasters/dnd-rules": "workspace:^",
-    "@supabase/supabase-js": "^2.93.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.25",
     "jose": "^6.2.3",

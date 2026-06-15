@@ -26,6 +26,7 @@ app.use('*', async (c, next) => {
   })(c, next);
 });
 
+app.get('/', (c) => c.json({ name: 'QuestMasters API', status: 'ok' }));
 app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.onError((err, c) => {
