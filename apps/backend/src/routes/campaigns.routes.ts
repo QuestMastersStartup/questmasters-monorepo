@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { createClient } from '@supabase/supabase-js';
 import type { CloudflareBindings } from '../types/bindings';
 import type { Container } from '../infrastructure/container';
 import { requireUser, requireOwnerOrAdmin } from '../infrastructure/auth/guards';
+import { uploadCampaignPortrait } from '../infrastructure/storage';
 import { CampaignMapper } from '../campaigns/infrastructure/mappers/campaign.mapper';
 import { CampaignMemberMapper } from '../campaigns/infrastructure/mappers/campaign-member.mapper';
 import { CampaignError } from '../campaigns/application/errors';
@@ -27,30 +27,9 @@ export function campaignsRoutes(container: Container) {
       return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
     }
 
-    const token = c.req.header('authorization')?.split(' ')[1];
-    if (!token) return c.json({ message: 'Missing authentication token' }, 401);
-
-    const userSupabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
-
-    const fileExt = file.type.split('/')[1] || 'webp';
-    const fileName = `${user.id}/portrait-${Date.now()}.${fileExt}`;
-
     try {
-      const { error: uploadError } = await userSupabase.storage
-        .from('campaign-portrait')
-        .upload(fileName, file, { upsert: true, contentType: file.type });
-
-      if (uploadError) {
-        return c.json({ message: uploadError.message || 'Failed to upload image' }, 500);
-      }
-
-      const { data: { publicUrl } } = userSupabase.storage
-        .from('campaign-portrait')
-        .getPublicUrl(fileName);
-
-      return c.json({ message: 'Portrait uploaded successfully', portraitUrl: publicUrl });
+      const portraitUrl = await uploadCampaignPortrait(c.env, user.id, file);
+      return c.json({ message: 'Portrait uploaded successfully', portraitUrl });
     } catch (e: any) {
       return c.json({ message: e.message || 'Internal server error' }, 500);
     }

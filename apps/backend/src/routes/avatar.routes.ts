@@ -22,10 +22,8 @@ export function avatarRoutes(container: Container) {
       return c.json({ message: 'Invalid file type. Only JPEG, PNG, WEBP and GIF are allowed.' }, 400);
     }
 
-    const token = c.req.header('authorization')?.split(' ')[1] ?? '';
-
     try {
-      const avatarUrl = await uploadAvatar(c.env, user.id, file, token);
+      const avatarUrl = await uploadAvatar(c.env, user.id, file);
       await container.updateUserProfileUseCase.execute({ userId: user.id, avatarUrl });
       return c.json({ message: 'Avatar updated successfully', avatarUrl });
     } catch (e: any) {
