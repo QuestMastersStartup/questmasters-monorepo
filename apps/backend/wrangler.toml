@@ -7,6 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "questmasters"
 database_id = "56aefb70-953d-49c1-b303-7d0c390ea896"
+migrations_dir = "drizzle"
 
 [[r2_buckets]]
 binding = "AVATARS_BUCKET"
@@ -30,6 +31,7 @@ name = "questmasters-api-preview"
 binding = "DB"
 database_name = "questmasters"
 database_id = "56aefb70-953d-49c1-b303-7d0c390ea896"
+migrations_dir = "drizzle"
 
 [[env.preview.r2_buckets]]
 binding = "AVATARS_BUCKET"
