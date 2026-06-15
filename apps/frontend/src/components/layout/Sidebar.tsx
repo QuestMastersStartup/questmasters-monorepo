@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Book, ShoppingBag, Crown, LogOut, LogIn, Swords, Sparkles } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../contexts/AuthContext";
-import { isTesisMode, getTesisUser } from "../../lib/tesis-auth";
 
 interface NavItemProps {
   to: string;
@@ -42,7 +41,6 @@ function NavItem({ to, icon: Icon, label }: NavItemProps) {
 
 export default function Sidebar() {
   const { isAuthenticated, userProfile, signOut, isGuest } = useAuth();
-  const displayEmail = isTesisMode() ? (getTesisUser()?.email ?? '') : '';
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-background/95 backdrop-blur-xl flex flex-col">
@@ -86,13 +84,13 @@ export default function Sidebar() {
                 />
               ) : (
                 <span className="text-sm font-bold text-primary uppercase">
-                  {(userProfile?.username || displayEmail || 'QM')[0].toUpperCase()}
+                  {(userProfile?.username || 'QM')[0].toUpperCase()}
                 </span>
               )}
             </Link>
             <Link to="/profile" className="flex flex-col flex-1 overflow-hidden min-w-0">
               <span className="text-sm font-semibold truncate text-foreground leading-tight">
-                {userProfile?.username || displayEmail.split('@')[0] || 'Adventurer'}
+                {userProfile?.username || 'Adventurer'}
               </span>
               <span className="text-[10px] uppercase tracking-widest text-primary/70 font-bold mt-0.5">
                 {userProfile?.role || 'player'}

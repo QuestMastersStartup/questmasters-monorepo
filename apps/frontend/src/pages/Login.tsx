@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { setTesisSession } from "../lib/tesis-auth";
+import { setSession } from "../lib/auth";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -40,7 +40,7 @@ export function Login() {
       if (!res.ok) {
         setError(data.message || "Login failed");
       } else {
-        setTesisSession(data.token, { id: data.userId, email, username: data.username });
+        setSession(data.token, { id: data.userId, email, username: data.username });
         window.location.href = from;
       }
     } catch {

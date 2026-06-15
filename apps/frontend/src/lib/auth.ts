@@ -1,21 +1,17 @@
-const TOKEN_KEY = 'tesis_token';
-const USER_KEY = 'tesis_user';
+const TOKEN_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
 
-export interface TesisUser {
+export interface AuthUser {
   id: string;
   email: string;
   username: string;
 }
 
-export function isTesisMode(): boolean {
-  return import.meta.env.VITE_TESIS_MODE === 'true';
-}
-
-export function getTesisToken(): string | null {
+export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-export function getTesisUser(): TesisUser | null {
+export function getUser(): AuthUser | null {
   const raw = localStorage.getItem(USER_KEY);
   try {
     return raw ? JSON.parse(raw) : null;
@@ -24,12 +20,12 @@ export function getTesisUser(): TesisUser | null {
   }
 }
 
-export function setTesisSession(token: string, user: TesisUser): void {
+export function setSession(token: string, user: AuthUser): void {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
-export function clearTesisSession(): void {
+export function clearSession(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 }
