@@ -1,4 +1,4 @@
-FROM runpod/base:0.4.0-cuda11.8.0
+FROM runpod/base:0.6.1-cuda12.1.0
 
 WORKDIR /app
 
