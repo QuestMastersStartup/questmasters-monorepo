@@ -55,10 +55,8 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
             total_vram / 1024 ** 3,
             free_vram / 1024 ** 3,
         )
-        max_memory = {0: f"{int(free_vram * 0.95 / 1024 ** 3)}GiB", "cpu": "0GiB"}
     else:
         log.warning("No CUDA GPU detected!")
-        max_memory = None
 
     download_lora_weights()
 
@@ -74,8 +72,7 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
         model_source,
         token=_HF_TOKEN,
         quantization_config=bnb_config,
-        device_map="auto",
-        max_memory=max_memory,
+        device_map={"": 0},
     )
     log.info("Base model loaded")
 
