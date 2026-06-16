@@ -47,6 +47,19 @@ def download_lora_weights() -> None:
 def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
     log.info("torch %s | CUDA available: %s", torch.__version__, torch.cuda.is_available())
 
+    if torch.cuda.is_available():
+        free_vram, total_vram = torch.cuda.mem_get_info(0)
+        log.info(
+            "GPU: %s | VRAM total=%.1fGB free=%.1fGB",
+            torch.cuda.get_device_name(0),
+            total_vram / 1024 ** 3,
+            free_vram / 1024 ** 3,
+        )
+        max_memory = {0: f"{int(free_vram * 0.95 / 1024 ** 3)}GiB", "cpu": "0GiB"}
+    else:
+        log.warning("No CUDA GPU detected!")
+        max_memory = None
+
     download_lora_weights()
 
     model_source = str(_BASE_MODEL_LOCAL) if _BASE_MODEL_LOCAL.exists() else _BASE_MODEL_ID
@@ -62,6 +75,7 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
         token=_HF_TOKEN,
         quantization_config=bnb_config,
         device_map="auto",
+        max_memory=max_memory,
     )
     log.info("Base model loaded")
 
