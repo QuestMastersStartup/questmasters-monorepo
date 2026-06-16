@@ -14,6 +14,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(
 log = logging.getLogger(__name__)
 
 _BASE_MODEL_ID = "google/gemma-4-26B-A4B-it"
+_BASE_MODEL_LOCAL = Path("/runpod-volume/shared/base_model")
 _LORA_BASE_PATH = Path("/runpod-volume/shared/lora_weights")
 _HF_TOKEN = os.environ.get("HF_TOKEN", "")
 if not _HF_TOKEN:
@@ -48,18 +49,19 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
 
     download_lora_weights()
 
-    log.info("Loading base model %s (8-bit) ...", _BASE_MODEL_ID)
+    model_source = str(_BASE_MODEL_LOCAL) if _BASE_MODEL_LOCAL.exists() else _BASE_MODEL_ID
+    log.info("Loading base model from %s (8-bit) ...", model_source)
     bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     base = AutoModelForCausalLM.from_pretrained(
-        _BASE_MODEL_ID,
+        model_source,
         token=_HF_TOKEN,
         quantization_config=bnb_config,
         device_map="auto",
     )
     log.info("Base model loaded")
 
-    log.info("Loading tokenizer ...")
-    tokenizer = AutoTokenizer.from_pretrained(_BASE_MODEL_ID, token=_HF_TOKEN)
+    log.info("Loading tokenizer from %s ...", model_source)
+    tokenizer = AutoTokenizer.from_pretrained(model_source, token=_HF_TOKEN)
     log.info("Tokenizer loaded")
 
     first_name, *rest_names = list(_LORA_REPOS.keys())
