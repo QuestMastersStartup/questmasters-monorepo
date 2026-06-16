@@ -54,7 +54,6 @@ dist
 .DS_Store
 *.pem
 nul
-/context
 
 # Other AI agent / IDE configs (personal, not project)
 .agent/
