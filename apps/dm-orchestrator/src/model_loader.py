@@ -50,8 +50,13 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
     download_lora_weights()
 
     model_source = str(_BASE_MODEL_LOCAL) if _BASE_MODEL_LOCAL.exists() else _BASE_MODEL_ID
-    log.info("Loading base model from %s (8-bit) ...", model_source)
-    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+    log.info("Loading base model from %s (4-bit NF4) ...", model_source)
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4",
+    )
     base = AutoModelForCausalLM.from_pretrained(
         model_source,
         token=_HF_TOKEN,
