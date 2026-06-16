@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
 import os
 import time
 from pathlib import Path
@@ -75,12 +76,12 @@ def _get_lightrag(session_id: str) -> LightRAG:
     )
 
 
+_async_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
+
 def _run_async(coro) -> object:
-    loop = asyncio.new_event_loop()
-    try:
-        return loop.run_until_complete(coro)
-    finally:
-        loop.close()
+    future = _async_executor.submit(asyncio.run, coro)
+    return future.result()
 
 
 def _retrieve_context(session_id: str, query: str) -> str:
