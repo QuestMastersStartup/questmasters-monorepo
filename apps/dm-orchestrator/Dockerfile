@@ -10,5 +10,6 @@ COPY apps/dm-orchestrator/ .
 
 ENV PYTHONUNBUFFERED=1
 ENV HF_HOME=/runpod-volume/shared/hf_cache
+ENV TRANSFORMERS_VERBOSITY=info
 
 CMD ["python3", "-u", "handler.py"]
