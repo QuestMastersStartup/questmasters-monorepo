@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import logging
+import sys
+
 import runpod
 
 from src.schemas import DmModelRequest, ErrorChunk
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+log = logging.getLogger(__name__)
 
 
 def _run_mode(request: DmModelRequest):
@@ -28,4 +34,9 @@ def handler(event: dict):
         yield ErrorChunk(message=str(exc)).model_dump_json()
 
 
-runpod.serverless.start({"handler": handler, "return_aggregate_stream": True})
+log.info("Starting RunPod serverless worker ...")
+try:
+    runpod.serverless.start({"handler": handler, "return_aggregate_stream": True})
+except Exception as exc:
+    log.critical("runpod.serverless.start() failed: %s", exc, exc_info=True)
+    sys.exit(1)
