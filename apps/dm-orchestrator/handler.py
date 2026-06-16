@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import runpod
 
-from src.model_loader import get_model  # precarga en arranque del pod
 from src.schemas import DmModelRequest, ErrorChunk
 
 
@@ -28,8 +27,5 @@ def handler(event: dict):
     except Exception as exc:
         yield ErrorChunk(message=str(exc)).model_dump_json()
 
-
-# Precarga el modelo al arrancar el pod (antes de recibir el primer job)
-get_model()
 
 runpod.serverless.start({"handler": handler, "return_aggregate_stream": True})
