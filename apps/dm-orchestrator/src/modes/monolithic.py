@@ -85,6 +85,9 @@ def _run_async(coro) -> object:
 
 
 def _retrieve_context(session_id: str, query: str) -> str:
+    working_dir = Path(_lightrag_working_dir(session_id))
+    if not any(working_dir.iterdir()):
+        return ""
     rag = _get_lightrag(session_id)
     return _run_async(rag.aquery(query, param=QueryParam(mode="hybrid")))
 
@@ -129,6 +132,8 @@ def _stream_generation(prompt: str) -> Generator[DeltaChunk, None, str]:
 def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
     t_start = time.monotonic()
     player_input = request.player_input or ""
+
+    get_model()  # carga explícita antes de que LightRAG pueda intentarlo
 
     rag_context = _retrieve_context(request.session_id, player_input)
     prompt = _build_prompt(request, rag_context)
