@@ -7,7 +7,7 @@ from threading import Lock
 import torch
 from huggingface_hub import snapshot_download
 from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerBase
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, PreTrainedTokenizerBase
 
 _BASE_MODEL_ID = "google/gemma-4-26B-A4B-it"
 _LORA_BASE_PATH = Path("/runpod-volume/shared/lora_weights")
@@ -44,12 +44,12 @@ def _load_model_and_adapters() -> tuple[PeftModel, PreTrainedTokenizerBase]:
 
     # HF_HOME=/runpod-volume/shared/hf_cache (Dockerfile) — el modelo se cachea
     # en el Network Volume y no se re-descarga en cold starts posteriores
+    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     base = AutoModelForCausalLM.from_pretrained(
         _BASE_MODEL_ID,
         token=_HF_TOKEN,
-        load_in_8bit=True,
+        quantization_config=bnb_config,
         device_map="auto",
-        torch_dtype=torch.float16,
     )
     tokenizer = AutoTokenizer.from_pretrained(_BASE_MODEL_ID, token=_HF_TOKEN)
 
