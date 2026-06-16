@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import time
 from pathlib import Path
-from threading import Thread
+from threading import Lock, Thread
 from typing import Generator
 
+import torch
 from lightrag import LightRAG, QueryParam
-from transformers import TextIteratorStreamer
+from lightrag.utils import EmbeddingFunc
+from transformers import AutoModel, AutoTokenizer, TextIteratorStreamer
 
 from src.model_loader import get_model, get_tokenizer, switch_adapter
 from src.schemas import (
@@ -19,6 +22,32 @@ from src.schemas import (
     SseChunk,
     UsageStats,
 )
+
+_EMBED_MODEL_ID = "BAAI/bge-small-en-v1.5"
+_EMBED_DIM = 512
+_embed_tok: AutoTokenizer | None = None
+_embed_mod: AutoModel | None = None
+_embed_lock = Lock()
+
+
+def _get_embed_model() -> tuple[AutoTokenizer, AutoModel]:
+    global _embed_tok, _embed_mod
+    if _embed_mod is None:
+        with _embed_lock:
+            if _embed_mod is None:
+                hf_token = os.environ.get("HF_TOKEN", "")
+                _embed_tok = AutoTokenizer.from_pretrained(_EMBED_MODEL_ID, token=hf_token)
+                _embed_mod = AutoModel.from_pretrained(_EMBED_MODEL_ID, token=hf_token)
+                _embed_mod.eval()
+    return _embed_tok, _embed_mod  # type: ignore[return-value]
+
+
+async def _embedding_func(texts: list[str]) -> list[list[float]]:
+    etok, emod = _get_embed_model()
+    inputs = etok(texts, return_tensors="pt", truncation=True, max_length=512, padding=True)
+    with torch.no_grad():
+        out = emod(**inputs)
+    return out.last_hidden_state[:, 0, :].cpu().float().tolist()
 
 
 def _lightrag_working_dir(session_id: str) -> str:
@@ -38,7 +67,12 @@ async def _llm_func(prompt: str, **_kwargs) -> str:
 
 
 def _get_lightrag(session_id: str) -> LightRAG:
-    return LightRAG(working_dir=_lightrag_working_dir(session_id), llm_model_func=_llm_func)
+    embed = EmbeddingFunc(embedding_dim=_EMBED_DIM, max_token_size=512, func=_embedding_func)
+    return LightRAG(
+        working_dir=_lightrag_working_dir(session_id),
+        llm_model_func=_llm_func,
+        embedding_func=embed,
+    )
 
 
 def _run_async(coro) -> object:
@@ -95,7 +129,6 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
     t_start = time.monotonic()
     player_input = request.player_input or ""
 
-    # LightRAG es la única fuente de memoria: recupera contexto
     rag_context = _retrieve_context(request.session_id, player_input)
     prompt = _build_prompt(request, rag_context)
 
@@ -104,7 +137,6 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
         full_response += chunk.content
         yield chunk
 
-    # LightRAG aprende del turno actual (construye su propio grafo interno)
     _insert_turn(request.session_id, player_input, full_response)
 
     latency_ms = int((time.monotonic() - t_start) * 1000)
