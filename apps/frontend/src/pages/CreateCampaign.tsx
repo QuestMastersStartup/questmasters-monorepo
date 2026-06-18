@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { createCampaign, uploadCampaignPortrait } from "../services/campaigns.api";
 import { ArrowLeft, Send, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
-import { resizeImageToWebP } from "../lib/resize-image";
+import { ImageCropModal } from "../components/features/shared/ImageCropModal";
 
 export const CreateCampaign: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ export const CreateCampaign: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,23 +19,24 @@ export const CreateCampaign: React.FC = () => {
     coverImageUrl: "",
   });
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropFile(null);
     setUploading(true);
     setError(null);
-
     try {
-      // Resize to 800px (standard cover portait)
-      const resizedBlob = await resizeImageToWebP(file, 800);
-      const portraitUrl = await uploadCampaignPortrait(resizedBlob);
+      const portraitUrl = await uploadCampaignPortrait(blob);
       setFormData({ ...formData, coverImageUrl: portraitUrl });
     } catch (err: any) {
       setError(err.message || "Error al subir la imagen");
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -213,6 +215,15 @@ export const CreateCampaign: React.FC = () => {
           </button>
         </form>
       </div>
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspect={16 / 9}
+          outputSize={800}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 };
