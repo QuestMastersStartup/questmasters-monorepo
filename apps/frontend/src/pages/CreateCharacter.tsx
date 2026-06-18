@@ -29,7 +29,7 @@ import {
   ABILITY_SCORE_MIN,
   ABILITY_SCORE_MAX,
 } from "@questmasters/dnd-rules";
-import { resizeImageToWebP } from "../lib/resize-image";
+import { ImageCropModal } from "../components/features/shared/ImageCropModal";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -139,6 +139,7 @@ export const CreateCharacter: React.FC = () => {
   const [loading,    setLoading]    = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [uploading,  setUploading]  = useState(false);
+  const [cropFile,   setCropFile]   = useState<File | null>(null);
   const [error,      setError]      = useState<string | null>(null);
   const [,           setCampaign]   = useState<Campaign | null>(null);
 
@@ -372,20 +373,24 @@ export const CreateCharacter: React.FC = () => {
     setStats(prev => ({ ...prev, [stat]: val }));
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropFile(null);
     setUploading(true);
     setError(null);
     try {
-      const blob = await resizeImageToWebP(file, 400);
-      const url  = await uploadCharacterPortrait(blob);
+      const url = await uploadCharacterPortrait(blob);
       setPortraitUrl(url);
     } catch (err: any) {
       setError(err.message ?? "Error al subir retrato");
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -1137,6 +1142,15 @@ export const CreateCharacter: React.FC = () => {
           </p>
         </div>
       </div>
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspect={1}
+          outputSize={400}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 };
