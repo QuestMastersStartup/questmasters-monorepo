@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Shield, Upload, Link as LinkIcon, AlertCircle } from 'lucide-react';
-import { resizeImageToWebP } from '../lib/resize-image';
 import { authFetch } from '../lib/api';
 import { getUser } from '../lib/auth';
+import { ImageCropModal } from '../components/features/shared/ImageCropModal';
 
 export default function Profile() {
   const { userProfile, refreshProfile } = useAuth();
@@ -15,6 +15,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -25,26 +26,26 @@ export default function Profile() {
     }
   }, [userProfile]);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropFile(null);
     setUploading(true);
     setMessage(null);
-
     try {
-      const resizedBlob = await resizeImageToWebP(file, 256);
       const formData = new FormData();
-      formData.append('file', resizedBlob, 'avatar.webp');
-
+      formData.append('file', blob, 'avatar.webp');
       const response = await authFetch('/api/users/me/avatar', {
         method: 'POST',
         body: formData,
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to upload avatar');
-
       setAvatarUrl(data.avatarUrl);
       await refreshProfile();
       setMessage({ type: 'success', text: 'Avatar updated successfully!' });
@@ -52,7 +53,6 @@ export default function Profile() {
       setMessage({ type: 'error', text: error.message });
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -148,11 +148,11 @@ export default function Profile() {
           >
             <Upload className="w-3.5 h-3.5" />
           </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleAvatarUpload} 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
             accept="image/*"
           />
         </div>
@@ -265,6 +265,16 @@ export default function Profile() {
           </button>
         </div>
       </form>
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspect={1}
+          outputSize={256}
+          cropShape="round"
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 }
