@@ -11,7 +11,6 @@ VTT (Virtual Tabletop) web-based para juegos de rol. El DM humano es el protagon
 | `apps/dm-orchestrator` | Python + RunPod Serverless | — |
 | `apps/landing` | Astro | — |
 | `packages/dnd-rules` | TypeScript puro | — |
-| `packages/ui` | Componentes React compartidos | — |
 
 Almacenamiento: Cloudflare D1 (SQLite) + R2 (objetos/imágenes). Auth: JWT (HS256) con `jose`.
 
@@ -73,6 +72,5 @@ questmasters-monorepo/
 │   └── landing/          # Marketing — Astro
 ├── packages/
 │   ├── dnd-rules/        # Lógica de reglas D&D (sin I/O)
-│   └── ui/               # Componentes React compartidos
 └── turbo.json
 ```

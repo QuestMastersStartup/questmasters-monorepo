@@ -16,10 +16,9 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 
 - **Backend:** Hono + DDD + Cloudflare Workers. `apps/backend/src/`
 - **Frontend:** React + Vite + TailwindCSS. `apps/frontend/src/`
-- **DM Orchestrator:** Python + RunPod Serverless. `apps/dm-orchestrator/` — modelo Gemma 4 26B-A4B-it con LoRAs
+- **DM Orchestrator:** Python + Google Colab / RunPod. `apps/dm-orchestrator/` — modelo Gemma 4 26B-A4B-it (base, sin LoRA)
 - **Reglas D&D:** `packages/dnd-rules/src/` — lógica pura sin I/O
 - **Landing:** `apps/landing/` — Astro separado (marketing)
-- **UI compartida:** `packages/ui/src/` — componentes reutilizables
 
 ### Dónde va cada tipo de archivo
 
@@ -27,7 +26,7 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 |-----------|-------|
 | Nueva página frontend | `apps/frontend/src/pages/` |
 | Componente de feature | `apps/frontend/src/components/features/{módulo}/` |
-| Componente UI reutilizable | `packages/ui/src/components/` |
+| Componente UI reutilizable | `apps/frontend/src/components/ui/` |
 | Nuevo use case backend | `apps/backend/src/{módulo}/application/use-cases/` |
 | Nueva entidad de dominio | `apps/backend/src/{módulo}/domain/entities/` |
 | Value object | `apps/backend/src/{módulo}/domain/value-objects/` |
@@ -75,4 +74,4 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 
 Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`, `dm-session`. Antes de añadir un módulo nuevo, verificar si ya existe con `graphify query "<concepto>"`. Las entidades god node son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
 
-El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `RunpodDmModelAdapter` — activado con `DM_USE_RUNPOD=true` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` con LoRAs en `Questmasters/` en HuggingFace.
+El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `RunpodDmModelAdapter` — activado con `DM_USE_RUNPOD=true` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` (sin LoRA, base puro). Para dev local se usa Google Colab con ngrok.
