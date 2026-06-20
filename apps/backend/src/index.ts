@@ -29,6 +29,16 @@ app.use('*', async (c, next) => {
 app.get('/', (c) => c.json({ name: 'QuestMasters API', status: 'ok' }));
 app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
+// Proxy local para el emulador R2 de wrangler dev (en producción el bucket es público vía r2.dev)
+app.get('/r2/:key{.+}', async (c) => {
+  const key = c.req.param('key');
+  const obj = await c.env.AVATARS_BUCKET.get(key);
+  if (!obj) return c.notFound();
+  const headers = new Headers();
+  obj.writeHttpMetadata(headers);
+  return new Response(obj.body, { headers });
+});
+
 app.onError((err, c) => {
   if (err.message === 'Unauthorized') return c.json({ message: 'Unauthorized' }, 401);
   if ((err as any).status === 403) return c.json({ message: 'Forbidden' }, 403);

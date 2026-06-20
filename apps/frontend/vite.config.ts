@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       strictPort: false,
+      hmr: {
+        host: 'localhost',
+      },
       proxy: {
         "/api": {
           target: apiTarget,
