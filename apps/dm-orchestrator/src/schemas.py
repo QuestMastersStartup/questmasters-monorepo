@@ -2,19 +2,17 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CharacterSnapshot(BaseModel):
-    id: str
+    model_config = ConfigDict(populate_by_name=True)
+
     name: str
-    class_name: str
-    level: int
-    hit_points: int
-    max_hit_points: int
-    conditions: list[str] = []
-    inventory: list[str] = []
-    notes: str = ""
+    race: str = ""
+    class_name: str = Field(default="", alias="class")
+    background: str = ""
+    description: str = ""
 
 
 class DmModelRequest(BaseModel):

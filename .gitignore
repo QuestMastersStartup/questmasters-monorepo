@@ -16,6 +16,12 @@ node_modules
 coverage
 testsprite_tests/tmp/
 
+# Python
+__pycache__/
+
+# DM Orchestrator training data (too large for GitHub)
+apps/dm-orchestrator/loras_dataset/
+
 # Runtime artifacts
 out.txt
 *.log

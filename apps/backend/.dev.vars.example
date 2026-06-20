@@ -15,6 +15,9 @@
 JWT_SECRET=local-dev-secret-do-not-use-in-production
 
 # ─── DM Model endpoints ──────────────────────────────────────────────────────
+# Para modo local con Gemma 4 E4B, apuntar al local_server.py:
+#   DM_MODEL_ENDPOINT_MAS=http://localhost:8000
+#   DM_MODEL_ENDPOINT_MONOLITHIC=http://localhost:8000
 DM_MODEL_ENDPOINT_MAS=http://localhost:9999/placeholder
 DM_MODEL_ENDPOINT_MONOLITHIC=http://localhost:9999/placeholder
 

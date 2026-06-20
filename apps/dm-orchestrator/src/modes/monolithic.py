@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+import logging
 import os
 import time
 from pathlib import Path
@@ -9,11 +10,10 @@ from threading import Lock, Thread
 from typing import Generator
 
 import torch
-from lightrag import LightRAG, QueryParam
-from lightrag.utils import EmbeddingFunc
 from transformers import AutoModel, AutoTokenizer, TextIteratorStreamer
 
-from src.model_loader import get_model, get_tokenizer, switch_adapter
+from src.config import SESSIONS_DIR
+from src.model_loader import get_input_device, get_model, get_tokenizer, switch_adapter
 from src.schemas import (
     DeltaChunk,
     DmModelRequest,
@@ -23,6 +23,8 @@ from src.schemas import (
     SseChunk,
     UsageStats,
 )
+
+log = logging.getLogger(__name__)
 
 _EMBED_MODEL_ID = "BAAI/bge-small-en-v1.5"
 _EMBED_DIM = 512
@@ -52,7 +54,7 @@ async def _embedding_func(texts: list[str]) -> list[list[float]]:
 
 
 def _lightrag_working_dir(session_id: str) -> str:
-    path = Path("/runpod-volume/sessions") / session_id / "lightrag"
+    path = SESSIONS_DIR / session_id / "lightrag"
     path.mkdir(parents=True, exist_ok=True)
     return str(path)
 
@@ -61,19 +63,11 @@ async def _llm_func(prompt: str, **_kwargs) -> str:
     switch_adapter("monolithic")
     model = get_model()
     tokenizer = get_tokenizer()
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    device = get_input_device()
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
     output_ids = model.generate(**inputs, max_new_tokens=256, do_sample=False)
     prompt_len = inputs["input_ids"].shape[1]
     return tokenizer.decode(output_ids[0][prompt_len:], skip_special_tokens=True)
-
-
-def _get_lightrag(session_id: str) -> LightRAG:
-    embed = EmbeddingFunc(embedding_dim=_EMBED_DIM, max_token_size=512, func=_embedding_func)
-    return LightRAG(
-        working_dir=_lightrag_working_dir(session_id),
-        llm_model_func=_llm_func,
-        embedding_func=embed,
-    )
 
 
 _async_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
@@ -84,18 +78,47 @@ def _run_async(coro) -> object:
     return future.result()
 
 
+def _get_lightrag(session_id: str):
+    try:
+        from lightrag import LightRAG
+        from lightrag.utils import EmbeddingFunc
+
+        embed = EmbeddingFunc(embedding_dim=_EMBED_DIM, max_token_size=512, func=_embedding_func)
+        rag = LightRAG(
+            working_dir=_lightrag_working_dir(session_id),
+            llm_model_func=_llm_func,
+            embedding_func=embed,
+        )
+        _run_async(rag.initialize_storages())
+        return rag
+    except Exception as exc:
+        log.warning("[rag] LightRAG no disponible, continuando sin RAG: %s", exc)
+        return None
+
+
 def _retrieve_context(session_id: str, query: str) -> str:
     working_dir = Path(_lightrag_working_dir(session_id))
     if not any(working_dir.iterdir()):
         return ""
     rag = _get_lightrag(session_id)
-    return _run_async(rag.aquery(query, param=QueryParam(mode="hybrid")))
+    if rag is None:
+        return ""
+    try:
+        return _run_async(rag.aquery(query, param=__import__("lightrag").QueryParam(mode="hybrid")))
+    except Exception as exc:
+        log.warning("[rag] Error en query, continuando sin contexto: %s", exc)
+        return ""
 
 
 def _insert_turn(session_id: str, player_input: str, dm_response: str) -> None:
     rag = _get_lightrag(session_id)
-    text = f"Jugador: {player_input}\nDM: {dm_response}"
-    _run_async(rag.ainsert(text))
+    if rag is None:
+        return
+    try:
+        text = f"Jugador: {player_input}\nDM: {dm_response}"
+        _run_async(rag.ainsert(text))
+    except Exception as exc:
+        log.warning("[rag] Error al insertar turno: %s", exc)
 
 
 def _build_prompt(request: DmModelRequest, rag_context: str) -> str:
@@ -105,7 +128,7 @@ def _build_prompt(request: DmModelRequest, rag_context: str) -> str:
     )
     characters = ", ".join(c.name for c in request.characters)
     return (
-        f"Campaña: {request.campaign_prompt}\n"
+        f"Campana: {request.campaign_prompt}\n"
         f"Personajes: {characters}\n\n"
         f"Contexto:\n{rag_context}\n\n"
         f"Historial reciente:\n{history}\n\n"
@@ -117,7 +140,8 @@ def _stream_generation(prompt: str) -> Generator[DeltaChunk, None, str]:
     switch_adapter("monolithic")
     model = get_model()
     tokenizer = get_tokenizer()
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    device = get_input_device()
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
     kwargs = {**inputs, "max_new_tokens": 512, "temperature": 0.8, "do_sample": True, "streamer": streamer}
     Thread(target=model.generate, kwargs=kwargs, daemon=True).start()
@@ -133,7 +157,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
     t_start = time.monotonic()
     player_input = request.player_input or ""
 
-    get_model()  # carga explícita antes de que LightRAG pueda intentarlo
+    get_model()
 
     rag_context = _retrieve_context(request.session_id, player_input)
     prompt = _build_prompt(request, rag_context)
