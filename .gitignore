@@ -63,6 +63,7 @@ dist
 # Misc
 .DS_Store
 *.pem
+*.session.sql
 nul
 
 # IDE configs (personal)
