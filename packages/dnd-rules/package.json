@@ -19,7 +19,6 @@
   "author": "QuestMasters",
   "license": "ISC",
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "eslint": "^9.39.1",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
