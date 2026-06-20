@@ -109,6 +109,7 @@ export const SessionInitModal: React.FC<SessionInitModalProps> = ({ onClose }) =
           <button
             onClick={onClose}
             disabled={submitting}
+            title="Cerrar"
             className="text-slate-400 hover:text-white transition-colors disabled:opacity-50"
           >
             <X size={20} />
@@ -187,6 +188,7 @@ export const SessionInitModal: React.FC<SessionInitModalProps> = ({ onClose }) =
                 <button
                   type="button"
                   onClick={() => removeChar()}
+                  title="Quitar personaje"
                   className="text-slate-500 hover:text-red-400 transition-colors shrink-0"
                 >
                   <Trash2 size={14} />

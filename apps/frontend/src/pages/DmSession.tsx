@@ -60,7 +60,7 @@ function CollapsibleSection({
 
 // ─── Panel admin: visor JSON con highlighting básico ──────────────────
 
-function JsonViewer({ data }: { data: Record<string, any> | null | undefined }) {
+function JsonViewer({ data }: { data: Record<string, unknown> | null | undefined }) {
   if (!data || Object.keys(data).length === 0) {
     return <p className="text-xs text-slate-500 italic">Sin datos de memoria aún</p>;
   }
@@ -142,11 +142,10 @@ function PlayerBubble({
   return (
     <div className="flex justify-end">
       <div
-        className={`max-w-[80%] border rounded-2xl rounded-br-sm px-4 py-3 ${
-          isAuto
+        className={`max-w-[80%] border rounded-2xl rounded-br-sm px-4 py-3 ${isAuto
             ? "bg-amber-900/20 border-amber-600/30"
             : "bg-slate-700/60 border-slate-600/40"
-        }`}
+          }`}
       >
         <div className="flex items-center gap-1.5 mb-1">
           {isAuto ? (
@@ -269,7 +268,7 @@ export const DmSession: React.FC = () => {
     const detail = await getSession(id);
     setSession(detail);
     if (isAdmin) {
-      getMetrics(id).then(setMetrics).catch(() => {});
+      getMetrics(id).then(setMetrics).catch(() => { });
     }
   }, [id, isAdmin]);
 
@@ -325,7 +324,7 @@ export const DmSession: React.FC = () => {
         setSession(detail);
         setLoading(false);
         if (isAdmin) {
-          getMetrics(id).then((m) => !cancelled && setMetrics(m)).catch(() => {});
+          getMetrics(id).then((m) => !cancelled && setMetrics(m)).catch(() => { });
         }
 
         const pendingStream = takePendingInitialStream(id);
@@ -469,9 +468,8 @@ export const DmSession: React.FC = () => {
     <div className="container mx-auto p-4 md:p-6 h-[calc(100vh-4rem)]">
       {/* 60/40 cuando hay panel admin; sin columna fantasma para no-admins */}
       <div
-        className={`grid gap-6 h-full ${
-          isAdmin ? "grid-cols-1 lg:grid-cols-[3fr_2fr]" : "grid-cols-1"
-        }`}
+        className={`grid gap-6 h-full ${isAdmin ? "grid-cols-1 lg:grid-cols-[3fr_2fr]" : "grid-cols-1"
+          }`}
       >
         {/* ─── COLUMNA IZQUIERDA: Chat ─────────────────────────────── */}
         <div className="flex flex-col h-full min-h-0 bg-slate-900/40 border border-slate-700/50 rounded-2xl overflow-hidden">
@@ -494,11 +492,10 @@ export const DmSession: React.FC = () => {
                   onClick={toggleSimulation}
                   disabled={isStreaming}
                   title={simulationActive ? "Detener simulación" : "Simular campaña con IA"}
-                  className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
-                    simulationActive
+                  className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${simulationActive
                       ? "text-amber-400 hover:text-amber-300"
                       : "text-slate-400 hover:text-amber-400"
-                  }`}
+                    }`}
                 >
                   <Bot size={12} />
                   {simulationActive ? "Detener sim." : "Simular"}
@@ -735,6 +732,7 @@ export const DmSession: React.FC = () => {
               </h3>
               <button
                 onClick={() => setExpandedTurnId(null)}
+                title="Cerrar"
                 className="text-slate-400 hover:text-white transition-colors"
               >
                 <X size={16} />
