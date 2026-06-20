@@ -115,6 +115,7 @@ export const dmSessions = sqliteTable('dm_sessions', {
   totalLatencyMs:   integer('total_latency_ms').notNull().default(0),
   createdAt:        integer('created_at', { mode: 'timestamp_ms' }).notNull().default(nowMs),
   updatedAt:        integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(nowMs),
+  deletedAt:        integer('deleted_at', { mode: 'timestamp_ms' }),
 });
 
 export const dmTurns = sqliteTable('dm_turns', {

@@ -20,6 +20,7 @@ function errorToStatus(error: DmSessionError): number {
     case DmSessionError.NOT_INITIALIZING:
     case DmSessionError.NOT_ACTIVE:
     case DmSessionError.ALREADY_ENDED:
+    case DmSessionError.ALREADY_DELETED:
       return 409;
     default:
       return 500;
@@ -218,7 +219,7 @@ export function dmSessionsRoutes(container: Container) {
     return sseResponse(result.value, [{ type: 'player_input', input: playerInput }]);
   });
 
-  app.delete('/:id', async (c) => {
+  app.post('/:id/end', async (c) => {
     const user = await requireUser(c);
     const isAdmin = await getIsAdmin(user.id);
     const id = c.req.param('id');
@@ -230,10 +231,28 @@ export function dmSessionsRoutes(container: Container) {
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any as any);
+      return c.json({ message: result.error }, errorToStatus(result.error) as any);
     }
 
     return c.json(DmSessionMapper.toSummaryResponse(result.value));
+  });
+
+  app.delete('/:id', async (c) => {
+    const user = await requireUser(c);
+    const isAdmin = await getIsAdmin(user.id);
+    const id = c.req.param('id');
+
+    const result = await container.softDeleteDmSessionUseCase.execute({
+      sessionId: id,
+      userId: user.id,
+      isAdmin,
+    });
+
+    if (result.isFailure) {
+      return c.json({ message: result.error }, errorToStatus(result.error) as any);
+    }
+
+    return c.json({ success: true });
   });
 
   return app;

@@ -25,7 +25,7 @@ export class CreateDmSessionUseCase {
     }
 
     const validCharacters = (dto.characters ?? []).filter(
-      (c) => c.name?.trim() && c.description?.trim(),
+      (c) => c.name?.trim(),
     );
     if (validCharacters.length === 0) {
       return Result.fail(DmSessionError.INVALID_CHARACTERS);

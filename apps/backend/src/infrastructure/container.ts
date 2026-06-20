@@ -52,6 +52,7 @@ import { GetDmSessionUseCase } from '../dm-session/application/use-cases/get-dm-
 import { ListDmSessionsUseCase } from '../dm-session/application/use-cases/list-dm-sessions.use-case';
 import { GetSessionMetricsUseCase } from '../dm-session/application/use-cases/get-session-metrics.use-case';
 import { EndDmSessionUseCase } from '../dm-session/application/use-cases/end-dm-session.use-case';
+import { SoftDeleteDmSessionUseCase } from '../dm-session/application/use-cases/soft-delete-dm-session.use-case';
 
 // DM Model Providers
 import { StubDmModelAdapter } from '../dm-session/infrastructure/adapters/stub-dm-model.adapter';
@@ -131,6 +132,7 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
   const listDmSessionsUseCase = new ListDmSessionsUseCase(dmSessionRepo);
   const getSessionMetricsUseCase = new GetSessionMetricsUseCase(dmSessionRepo, dmTurnRepo);
   const endDmSessionUseCase = new EndDmSessionUseCase(dmSessionRepo);
+  const softDeleteDmSessionUseCase = new SoftDeleteDmSessionUseCase(dmSessionRepo);
 
   const invitePlayerUseCase = new InvitePlayerUseCase(
     campaignRepo,
@@ -207,6 +209,7 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
     listDmSessionsUseCase,
     getSessionMetricsUseCase,
     endDmSessionUseCase,
+    softDeleteDmSessionUseCase,
     // Members
     invitePlayerUseCase,
     listMembersUseCase,

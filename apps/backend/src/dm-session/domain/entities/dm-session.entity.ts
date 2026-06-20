@@ -9,8 +9,10 @@ export interface CharacterSnapshot {
   race: string;
   class: string;
   background: string;
-  /** Texto libre con personalidad, historia, motivaciones. */
-  description: string;
+  level: number;
+  backstory: string;
+  alignment: string;
+  personalityTraits: string;
 }
 
 export interface NarrativeNote {
@@ -47,6 +49,7 @@ export interface ReconstructDmSessionProps {
   totalLatencyMs: number;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 /** Resultado de un turno aplicado a la sesión (deltas que llegan del modelo). */
@@ -76,6 +79,7 @@ export class DmSession {
     public readonly totalLatencyMs: number,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly deletedAt: Date | null,
   ) {}
 
   static create(props: CreateDmSessionProps): DmSession {
@@ -96,6 +100,7 @@ export class DmSession {
       0,
       new Date(),
       new Date(),
+      null,
     );
   }
 
@@ -117,6 +122,7 @@ export class DmSession {
       props.totalLatencyMs,
       props.createdAt,
       props.updatedAt,
+      props.deletedAt,
     );
   }
 
@@ -139,6 +145,7 @@ export class DmSession {
       this.totalLatencyMs + outcome.latencyMs,
       this.createdAt,
       new Date(),
+      this.deletedAt,
     );
   }
 
@@ -160,11 +167,34 @@ export class DmSession {
       this.totalLatencyMs,
       this.createdAt,
       new Date(),
+      this.deletedAt,
     );
   }
 
   end(): DmSession {
     return this.changeStatus('ended');
+  }
+
+  softDelete(): DmSession {
+    return new DmSession(
+      this.id,
+      this.userId,
+      this.title,
+      this.campaignPrompt,
+      this.characters,
+      this.architectureType,
+      this.status === 'ended' ? this.status : 'ended',
+      this.modelId,
+      this.memorySnapshot,
+      this.narrativeNotes,
+      this.turnCount,
+      this.totalInputTokens,
+      this.totalOutputTokens,
+      this.totalLatencyMs,
+      this.createdAt,
+      new Date(),
+      new Date(),
+    );
   }
 
   isOwnedBy(userId: string): boolean {
