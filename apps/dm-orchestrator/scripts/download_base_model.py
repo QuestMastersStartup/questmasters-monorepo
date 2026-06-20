@@ -1,55 +1,49 @@
 """
-Corre este script UNA SOLA VEZ desde un pod de RunPod con el Network Volume adjunto.
-Descarga el modelo base y todos los LoRAs al volumen compartido.
+Descarga el modelo base y todos los LoRAs según DM_MODE.
 
 Uso:
-    HF_TOKEN=<tu_token> python scripts/download_base_model.py
+    RunPod (default):  HF_TOKEN=<token> python scripts/download_base_model.py
+    Local (E4B):       DM_MODE=local HF_TOKEN=<token> python scripts/download_base_model.py
 """
 from __future__ import annotations
 
-import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from huggingface_hub import snapshot_download
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+from src.config import BASE_MODEL_ID, BASE_MODEL_LOCAL, HF_TOKEN, LORA_BASE_PATH, LORA_REPOS, MODE
+
 if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN environment variable is not set")
 
-BASE_MODEL_ID = "google/gemma-4-26B-A4B-it"
-BASE_MODEL_DIR = Path("/runpod-volume/shared/base_model")
-
-LORA_REPOS: dict[str, str] = {
-    "narrator": "Questmasters/lora_narrador",
-    "arbiter": "Questmasters/lora_reglas",
-    "npc": "Questmasters/lora_npc",
-    "state": "Questmasters/lora_estado",
-    "monolithic": "Questmasters/qlora_monolitico",
-}
-LORA_BASE_DIR = Path("/runpod-volume/shared/lora_weights")
-
 
 def download_base_model() -> None:
-    if BASE_MODEL_DIR.exists() and any(BASE_MODEL_DIR.iterdir()):
-        print(f"Modelo base ya existe en {BASE_MODEL_DIR}, saltando.")
+    if BASE_MODEL_LOCAL.exists() and any(BASE_MODEL_LOCAL.iterdir()):
+        print(f"Modelo base ya existe en {BASE_MODEL_LOCAL}, saltando.")
         return
-    print(f"Descargando modelo base {BASE_MODEL_ID} → {BASE_MODEL_DIR}")
-    snapshot_download(repo_id=BASE_MODEL_ID, local_dir=str(BASE_MODEL_DIR), token=HF_TOKEN)
+    BASE_MODEL_LOCAL.mkdir(parents=True, exist_ok=True)
+    print(f"Descargando modelo base {BASE_MODEL_ID} -> {BASE_MODEL_LOCAL}")
+    snapshot_download(repo_id=BASE_MODEL_ID, local_dir=str(BASE_MODEL_LOCAL), token=HF_TOKEN)
     print("Modelo base descargado.")
 
 
 def download_loras() -> None:
     for name, repo_id in LORA_REPOS.items():
-        local_dir = LORA_BASE_DIR / name
+        local_dir = LORA_BASE_PATH / name
         if local_dir.exists() and any(local_dir.iterdir()):
             print(f"LoRA '{name}' ya existe, saltando.")
             continue
-        print(f"Descargando LoRA '{name}' desde {repo_id} → {local_dir}")
+        local_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Descargando LoRA '{name}' desde {repo_id} -> {local_dir}")
         snapshot_download(repo_id=repo_id, local_dir=str(local_dir), token=HF_TOKEN)
         print(f"LoRA '{name}' descargado.")
 
 
 if __name__ == "__main__":
+    print(f"DM_MODE={MODE} | Modelo base: {BASE_MODEL_ID}")
     download_base_model()
     download_loras()
-    print("\nTodo listo. Podés apagar el pod.")
+    print("\nTodo listo.")
