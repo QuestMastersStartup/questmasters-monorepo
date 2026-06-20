@@ -1,1 +1,0 @@
-ALTER TABLE dm_sessions ADD COLUMN deleted_at INTEGER DEFAULT NULL;
