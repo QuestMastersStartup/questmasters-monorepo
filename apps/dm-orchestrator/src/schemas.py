@@ -12,7 +12,10 @@ class CharacterSnapshot(BaseModel):
     race: str = ""
     class_name: str = Field(default="", alias="class")
     background: str = ""
-    description: str = ""
+    level: int = 1
+    backstory: str = ""
+    alignment: str = ""
+    personality_traits: str = Field(default="", alias="personalityTraits")
 
 
 class DmModelRequest(BaseModel):
