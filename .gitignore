@@ -39,7 +39,6 @@ testsprite_tests/tmp/
 
 # Superpowers / AI planning artifacts (personal, not project)
 docs/superpowers/
-context/
 
 # Claude Code artifacts (personal, not project)
 skills-lock.json
