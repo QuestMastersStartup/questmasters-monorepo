@@ -1,4 +1,9 @@
+-- ═══════════════════════════════════════════════════════════════
 -- Campaigns: campañas, miembros y packs instalados
+-- ═══════════════════════════════════════════════════════════════
+
+-- Tablas ──────────────────────────────────────────────────────
+
 CREATE TABLE `campaigns` (
   `id`              TEXT PRIMARY KEY NOT NULL,
   `name`            TEXT NOT NULL,
@@ -19,11 +24,13 @@ CREATE TABLE `campaign_members` (
   `joined_at`   INTEGER NOT NULL DEFAULT (unixepoch('now') * 1000)
 );
 
-CREATE UNIQUE INDEX `IDX_campaign_members_unique` ON `campaign_members` (`campaign_id`, `user_id`);
-
 CREATE TABLE `campaign_installed_packs` (
   `campaign_id`  TEXT NOT NULL REFERENCES `campaigns`(`id`) ON DELETE CASCADE,
   `pack_id`      TEXT NOT NULL REFERENCES `content_packs`(`id`) ON DELETE CASCADE,
   `installed_at` INTEGER NOT NULL DEFAULT (unixepoch('now') * 1000),
   PRIMARY KEY (`campaign_id`, `pack_id`)
 );
+
+-- Índices ─────────────────────────────────────────────────────
+
+CREATE UNIQUE INDEX `IDX_campaign_members_unique` ON `campaign_members` (`campaign_id`, `user_id`);

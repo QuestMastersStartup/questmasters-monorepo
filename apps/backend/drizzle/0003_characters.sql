@@ -1,4 +1,9 @@
+-- ═══════════════════════════════════════════════════════════════
 -- Characters: personajes de jugadores
+-- ═══════════════════════════════════════════════════════════════
+
+-- Tablas ──────────────────────────────────────────────────────
+
 CREATE TABLE `characters` (
   `id`                  TEXT PRIMARY KEY NOT NULL,
   `campaign_id`         TEXT REFERENCES `campaigns`(`id`) ON DELETE SET NULL,
@@ -17,6 +22,8 @@ CREATE TABLE `characters` (
   `created_at`          INTEGER NOT NULL DEFAULT (unixepoch('now') * 1000),
   `updated_at`          INTEGER NOT NULL DEFAULT (unixepoch('now') * 1000)
 );
+
+-- Índices ─────────────────────────────────────────────────────
 
 CREATE INDEX `IDX_characters_user_id` ON `characters` (`user_id`);
 CREATE INDEX `IDX_characters_campaign_id` ON `characters` (`campaign_id`);
