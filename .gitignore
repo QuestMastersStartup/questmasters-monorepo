@@ -65,6 +65,9 @@ dist
 *.pem
 nul
 
+# IDE configs (personal)
+.vscode/
+
 # Other AI agent / IDE configs (personal, not project)
 .agent/
 .agents/
