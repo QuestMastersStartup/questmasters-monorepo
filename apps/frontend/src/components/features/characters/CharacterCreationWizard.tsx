@@ -10,6 +10,7 @@ import {
   Package,
   Check,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { authFetch } from "../../../lib/api";
 
@@ -224,6 +225,14 @@ export const CharacterCreationWizard: React.FC<Props> = ({
         {/* Content */}
         <div key={step} className="p-6 space-y-3 animate-in fade-in-0 slide-in-from-right-2 duration-150 ease-out">
           {/* Step 1: System */}
+          {step === 1 && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-purple-500/5 border border-purple-500/15 mb-1">
+              <Sparkles size={14} className="text-purple-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-purple-300/80">
+                El DM IA solo es compatible con personajes de <strong>D&D 5e</strong>. Si quieres jugar con el DM IA, elige una edición de 5e.
+              </p>
+            </div>
+          )}
           {step === 1 &&
             SYSTEMS.map((sys) => (
               <button

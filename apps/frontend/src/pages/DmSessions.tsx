@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Sparkles, MessageSquare, Calendar } from "lucide-react";
-import { getSessions, type DmSessionSummary } from "../lib/dmSessionApi";
+import { Plus, Sparkles, MessageSquare, Calendar, Trash2 } from "lucide-react";
+import { getSessions, deleteSession, type DmSessionSummary } from "../lib/dmSessionApi";
 import { SessionInitModal } from "../components/features/dm-session/SessionInitModal";
 
 // ─── Badges ───────────────────────────────────────────────────────────
@@ -50,39 +50,55 @@ export function StatusBadge({ status }: { status: DmSessionSummary["status"] }) 
 
 // ─── Card de sesión ───────────────────────────────────────────────────
 
-function SessionCard({ session }: { session: DmSessionSummary }) {
+function SessionCard({
+  session,
+  onDelete,
+}: {
+  session: DmSessionSummary;
+  onDelete: (id: string) => void;
+}) {
   return (
-    <Link
-      to={`/dm-sessions/${session.id}`}
-      className="block rounded-2xl border border-slate-700/50 bg-slate-900/40 hover:bg-slate-900/60 hover:border-purple-500/30 transition-all duration-300 p-5"
-    >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className="text-white font-black text-lg leading-tight truncate">
-          {session.title}
-        </h3>
-        <Sparkles size={18} className="text-purple-400 shrink-0" />
-      </div>
+    <div className="relative group rounded-2xl border border-slate-700/50 bg-slate-900/40 hover:bg-slate-900/60 hover:border-purple-500/30 transition-all duration-300">
+      <Link to={`/dm-sessions/${session.id}`} className="block p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className="text-white font-black text-lg leading-tight truncate">
+            {session.title}
+          </h3>
+          <Sparkles size={18} className="text-purple-400 shrink-0" />
+        </div>
 
-      <div className="flex items-center gap-2 flex-wrap mb-4">
-        <ArchitectureBadge type={session.architectureType} />
-        <StatusBadge status={session.status} />
-      </div>
+        <div className="flex items-center gap-2 flex-wrap mb-4">
+          <ArchitectureBadge type={session.architectureType} />
+          <StatusBadge status={session.status} />
+        </div>
 
-      <div className="flex items-center gap-4 text-xs text-slate-400">
-        <span className="flex items-center gap-1">
-          <MessageSquare size={12} className="text-indigo-400" />
-          <span className="font-bold">{session.turnCount}</span> turnos
-        </span>
-        <span className="flex items-center gap-1">
-          <Calendar size={12} className="text-slate-500" />
-          {new Date(session.createdAt).toLocaleDateString("es", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
-      </div>
-    </Link>
+        <div className="flex items-center gap-4 text-xs text-slate-400">
+          <span className="flex items-center gap-1">
+            <MessageSquare size={12} className="text-indigo-400" />
+            <span className="font-bold">{session.turnCount}</span> turnos
+          </span>
+          <span className="flex items-center gap-1">
+            <Calendar size={12} className="text-slate-500" />
+            {new Date(session.createdAt).toLocaleDateString("es", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </span>
+        </div>
+      </Link>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(session.id);
+        }}
+        className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 bg-slate-800/80 hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-all"
+        title="Eliminar sesión"
+      >
+        <Trash2 size={14} />
+      </button>
+    </div>
   );
 }
 
@@ -100,6 +116,17 @@ export const DmSessions: React.FC = () => {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleDelete(id: string) {
+    const session = sessions.find((s) => s.id === id);
+    if (!confirm(`¿Eliminar la sesión "${session?.title ?? id}"?`)) return;
+    try {
+      await deleteSession(id);
+      setSessions((prev) => prev.filter((s) => s.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al eliminar");
+    }
+  }
 
   if (loading) {
     return (
@@ -162,7 +189,7 @@ export const DmSessions: React.FC = () => {
         {sessions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {sessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard key={session.id} session={session} onDelete={handleDelete} />
             ))}
           </div>
         )}
