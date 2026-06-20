@@ -26,10 +26,10 @@ Almacenamiento: Cloudflare D1 (SQLite) + R2 (objetos/imágenes). Auth: JWT (HS25
 # 1. Instalar dependencias
 bun install
 
-# 2. Configurar variables locales del backend
-cp apps/backend/.dev.vars.example apps/backend/.dev.vars
-# El archivo ya incluye valores funcionales para dev local.
-# Opcional: cambia JWT_SECRET por cualquier string aleatorio.
+# 2. Configurar variables de entorno (un solo archivo para todo el monorepo)
+cp .env.example .env
+# Rellena los valores reales. El script de dev del backend genera
+# .dev.vars automáticamente a partir de este archivo.
 
 # 3. Aplicar migraciones a la base de datos D1 local
 cd apps/backend

@@ -1,4 +1,36 @@
 import { createServer } from "net";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+
+const ROOT_ENV = resolve(import.meta.dir, "../../../.env");
+const DEV_VARS = resolve(import.meta.dir, "../.dev.vars");
+
+const BACKEND_KEYS = [
+  "JWT_SECRET",
+  "DM_MODEL_ENDPOINT_MAS",
+  "DM_MODEL_ENDPOINT_MONOLITHIC",
+  "DM_USE_RUNPOD",
+  "RUNPOD_ENDPOINT_ID",
+  "RUNPOD_API_KEY",
+];
+
+function syncDevVars() {
+  if (!existsSync(ROOT_ENV)) return;
+  const lines = readFileSync(ROOT_ENV, "utf-8").split("\n");
+  const vars: string[] = ["# Auto-generado desde .env raíz — no editar manualmente"];
+  for (const line of lines) {
+    const match = line.match(/^([A-Z_]+)=(.*)$/);
+    if (match && BACKEND_KEYS.includes(match[1])) {
+      vars.push(`${match[1]}=${match[2]}`);
+    }
+  }
+  if (vars.length > 1) {
+    writeFileSync(DEV_VARS, vars.join("\n") + "\n");
+    console.log("✔ .dev.vars sincronizado desde .env raíz");
+  }
+}
+
+syncDevVars();
 
 async function isPortFree(port: number): Promise<boolean> {
   return new Promise((resolve) => {
