@@ -48,6 +48,7 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 - Slugs usan el value object `Slug` — ver `apps/backend/src/shared/domain/value-objects/slug.vo.ts`
 - No usar `console.log` en producción — usar `apps/backend/src/shared/infrastructure/logger.ts`
 - Tests van junto al archivo que testean: `{nombre}.test.ts` en la misma carpeta
+- Al modificar el schema de BD (agregar tabla, columna o índice), actualizar también `docs/schema.sql` para mantenerlo sincronizado
 
 ### Archivos que NO se deben crear ni committear
 
