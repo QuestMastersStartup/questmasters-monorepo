@@ -9,6 +9,7 @@ import {
   Send,
   Sparkles,
   Square,
+  Swords,
   X,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -129,7 +130,15 @@ function MetricRow({ label, value }: { label: string; value: React.ReactNode }) 
 
 // ─── Burbuja de chat ──────────────────────────────────────────────────
 
-function PlayerBubble({ text, isAuto = false }: { text: string; isAuto?: boolean }) {
+function PlayerBubble({
+  text,
+  characterName,
+  isAuto = false,
+}: {
+  text: string;
+  characterName?: string;
+  isAuto?: boolean;
+}) {
   return (
     <div className="flex justify-end">
       <div
@@ -139,14 +148,23 @@ function PlayerBubble({ text, isAuto = false }: { text: string; isAuto?: boolean
             : "bg-slate-700/60 border-slate-600/40"
         }`}
       >
-        {isAuto && (
-          <div className="flex items-center gap-1.5 mb-1">
-            <Bot size={11} className="text-amber-400" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
-              Auto-jugador
-            </span>
-          </div>
-        )}
+        <div className="flex items-center gap-1.5 mb-1">
+          {isAuto ? (
+            <>
+              <Bot size={11} className="text-amber-400" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                Auto-jugador
+              </span>
+            </>
+          ) : (
+            <>
+              <Swords size={11} className="text-emerald-400" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                {characterName ?? "Jugador"}
+              </span>
+            </>
+          )}
+        </div>
         <p className="text-sm text-slate-100 whitespace-pre-wrap leading-relaxed">{text}</p>
       </div>
     </div>
@@ -168,6 +186,53 @@ function DmBubble({ text, streaming = false }: { text: string; streaming?: boole
           {streaming && <span className="animate-pulse text-purple-300">▊</span>}
         </p>
       </div>
+    </div>
+  );
+}
+
+// ─── Barra de progreso de inicialización ─────────────────────────────
+
+const INIT_STEPS = [
+  "Conectando con el Dungeon Master...",
+  "Preparando el escenario...",
+  "Generando la escena inicial...",
+  "Casi listo...",
+];
+
+function SessionProgressBar() {
+  const [progress, setProgress] = useState(5);
+  const [stepIdx, setStepIdx] = useState(0);
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => { setProgress(20); setStepIdx(0); }, 400),
+      setTimeout(() => { setProgress(40); setStepIdx(1); }, 2500),
+      setTimeout(() => { setProgress(60); setStepIdx(2); }, 5000),
+      setTimeout(() => { setProgress(78); setStepIdx(3); }, 9000),
+      setTimeout(() => { setProgress(88); }, 14000),
+      setTimeout(() => { setProgress(93); }, 20000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-5 py-16 px-4">
+      <div className="relative">
+        <Sparkles size={28} className="text-purple-400" />
+        <div className="absolute inset-0 animate-ping">
+          <Sparkles size={28} className="text-purple-400/30" />
+        </div>
+      </div>
+      <p className="text-sm text-purple-300 font-medium text-center transition-opacity duration-500">
+        {INIT_STEPS[stepIdx]}
+      </p>
+      <div className="w-72 max-w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-purple-600 to-indigo-500 rounded-full transition-all duration-[1500ms] ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <p className="text-xs text-slate-500">Esto puede tomar unos segundos</p>
     </div>
   );
 }
@@ -195,6 +260,9 @@ export const DmSession: React.FC = () => {
   const simulationActiveRef = useRef(false);
   const [simulationActive, setSimulationActive] = useState(false);
   const [pendingIsAuto, setPendingIsAuto] = useState(false);
+  const [initializing, setInitializing] = useState(false);
+  const [incompleteTurn, setIncompleteTurn] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const refresh = useCallback(async () => {
     if (!id) return;
@@ -210,24 +278,36 @@ export const DmSession: React.FC = () => {
       setPendingPlayerInput(playerInput);
       setPendingIsAuto(isAuto);
       setStreamingText("");
+      let aborted = false;
       try {
         for await (const chunk of stream) {
           if (chunk.type === "player_input" && chunk.input) {
             setPendingPlayerInput(chunk.input);
             setPendingIsAuto(true);
           } else if (chunk.type === "delta" && chunk.delta) {
+            setInitializing(false);
             setStreamingText((prev) => (prev ?? "") + chunk.delta);
           } else if (chunk.type === "error") {
             setError(chunk.error ?? "El DM no pudo generar la respuesta");
           }
         }
         await refresh();
-      } catch {
-        setError("Se perdió la conexión con el DM");
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          aborted = true;
+          await refresh();
+        } else {
+          setError("Se perdió la conexión con el DM");
+        }
       } finally {
         setStreamingText(null);
         setPendingPlayerInput(null);
         setPendingIsAuto(false);
+        setInitializing(false);
+        abortControllerRef.current = null;
+        if (aborted) {
+          setError(null);
+        }
       }
     },
     [refresh],
@@ -243,18 +323,27 @@ export const DmSession: React.FC = () => {
         const detail = await getSession(id);
         if (cancelled) return;
         setSession(detail);
+        setLoading(false);
         if (isAdmin) {
           getMetrics(id).then((m) => !cancelled && setMetrics(m)).catch(() => {});
         }
 
         const pendingStream = takePendingInitialStream(id);
-        if (pendingStream) await consumeStream(pendingStream, null);
+        if (pendingStream) {
+          setInitializing(true);
+          await consumeStream(pendingStream, null);
+        } else if (detail.status === "active" && detail.turns.length > 0) {
+          const lastTurn = detail.turns[detail.turns.length - 1];
+          if (lastTurn.role === "player" && lastTurn.playerInput && !lastTurn.dmResponse) {
+            setIncompleteTurn(lastTurn.playerInput);
+            setInput(lastTurn.playerInput);
+          }
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Error al cargar la sesión");
+          setLoading(false);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     })();
 
@@ -277,8 +366,10 @@ export const DmSession: React.FC = () => {
     const timer = setTimeout(async () => {
       if (cancelled || !simulationActiveRef.current) return;
       setError(null);
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
       try {
-        const stream = await simulateTurn(id);
+        const stream = await simulateTurn(id, controller.signal);
         if (cancelled || !simulationActiveRef.current) return;
         await consumeStream(stream, null, true);
       } catch (err) {
@@ -307,14 +398,22 @@ export const DmSession: React.FC = () => {
     const playerInput = input.trim();
     setInput("");
     setError(null);
+    setIncompleteTurn(null);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     try {
-      const stream = await sendTurn(id, playerInput);
+      const stream = await sendTurn(id, playerInput, controller.signal);
       await consumeStream(stream, playerInput);
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
       setError(err instanceof Error ? err.message : "Error al enviar el turno");
       setPendingPlayerInput(null);
       setStreamingText(null);
     }
+  };
+
+  const handleStopGeneration = () => {
+    abortControllerRef.current?.abort();
   };
 
   const handleEnd = async () => {
@@ -328,7 +427,12 @@ export const DmSession: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-400">Cargando sesión...</div>;
+    return (
+      <div className="flex items-center justify-center gap-3 p-8">
+        <Loader2 size={18} className="animate-spin text-purple-400" />
+        <span className="text-slate-400">Cargando sesión...</span>
+      </div>
+    );
   }
 
   if (!session) {
@@ -350,6 +454,7 @@ export const DmSession: React.FC = () => {
 
   const isEnded = session.status === "ended";
   const isInitializing = session.status === "initializing" && !isStreaming;
+  const characterName = session.characters[0]?.name;
   const totals = {
     inputTokens: metrics?.totalInputTokens ?? session.totalInputTokens,
     outputTokens: metrics?.totalOutputTokens ?? session.totalOutputTokens,
@@ -414,20 +519,34 @@ export const DmSession: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0">
             {session.turns.map((turn) => (
               <React.Fragment key={turn.id}>
-                {turn.playerInput && <PlayerBubble text={turn.playerInput} />}
+                {turn.playerInput && <PlayerBubble text={turn.playerInput} characterName={characterName} />}
                 <DmBubble text={turn.dmResponse} />
               </React.Fragment>
             ))}
 
+            {/* Progreso de inicialización */}
+            {initializing && !isStreaming && <SessionProgressBar />}
+
             {/* Turno en streaming */}
-            {pendingPlayerInput && <PlayerBubble text={pendingPlayerInput} isAuto={pendingIsAuto} />}
+            {pendingPlayerInput && <PlayerBubble text={pendingPlayerInput} characterName={characterName} isAuto={pendingIsAuto} />}
             {isStreaming && <DmBubble text={streamingText ?? ""} streaming />}
 
-            {/* Inicializando sin stream activo */}
-            {isInitializing && (
-              <div className="flex items-center justify-center gap-3 py-10 text-slate-400">
-                <Loader2 size={18} className="animate-spin text-purple-400" />
-                <span className="text-sm">El DM está preparando la escena...</span>
+            {/* Indicador de typing */}
+            {isStreaming && !initializing && (
+              <div className="flex items-center gap-2 pl-4 text-xs text-purple-400/60">
+                <Loader2 size={12} className="animate-spin" />
+                El DM está escribiendo...
+              </div>
+            )}
+
+            {/* Inicializando sin stream activo (recarga de página) */}
+            {isInitializing && !initializing && <SessionProgressBar />}
+
+            {/* Aviso de turno incompleto */}
+            {incompleteTurn && !isStreaming && (
+              <div className="flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-sm text-amber-300">
+                <Bot size={16} className="shrink-0 text-amber-400" />
+                <span>Tu última acción no recibió respuesta. Puedes reenviarla.</span>
               </div>
             )}
 
@@ -469,6 +588,21 @@ export const DmSession: React.FC = () => {
                 <p className="text-center text-xs text-amber-400/60 italic py-1">
                   {isStreaming ? "El DM está respondiendo..." : "Preparando siguiente acción..."}
                 </p>
+              ) : isStreaming ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-sm text-purple-300">
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>El DM está generando...</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleStopGeneration}
+                    className="inline-flex items-center gap-2 bg-red-600/80 hover:bg-red-500 text-white px-4 py-2.5 rounded-xl transition-colors font-semibold text-sm shrink-0"
+                  >
+                    <Square size={13} className="fill-current" />
+                    Detener
+                  </button>
+                </div>
               ) : (
                 <div className="flex gap-3">
                   <input
@@ -476,20 +610,17 @@ export const DmSession: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                    disabled={isStreaming || isInitializing}
-                    placeholder="Describe la acción de tu grupo..."
+                    disabled={isInitializing}
+                    placeholder="Describe la acción de tu personaje..."
                     className="flex-1 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-50"
                   />
                   <button
+                    type="button"
                     onClick={handleSend}
-                    disabled={isStreaming || isInitializing || input.trim() === ""}
+                    disabled={isInitializing || input.trim() === ""}
                     className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 rounded-xl transition-colors font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                   >
-                    {isStreaming ? (
-                      <Loader2 size={15} className="animate-spin" />
-                    ) : (
-                      <Send size={15} />
-                    )}
+                    <Send size={15} />
                     Enviar
                   </button>
                 </div>

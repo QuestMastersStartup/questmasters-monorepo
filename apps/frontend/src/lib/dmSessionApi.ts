@@ -10,7 +10,10 @@ export interface CharacterSnapshot {
   race: string;
   class: string;
   background: string;
-  description: string;
+  level: number;
+  backstory: string;
+  alignment: string;
+  personalityTraits: string;
 }
 
 export interface NarrativeNote {
@@ -223,10 +226,12 @@ export async function getSession(id: string): Promise<DmSessionDetail> {
 export async function sendTurn(
   id: string,
   playerInput: string,
+  signal?: AbortSignal,
 ): Promise<AsyncGenerator<DmModelChunk>> {
   const response = await authFetch(`/api/dm-sessions/${id}/turns`, {
     method: "POST",
     body: JSON.stringify({ playerInput }),
+    signal,
   });
 
   if (!response.ok) await throwApiError(response, "Error al enviar el turno");
@@ -245,9 +250,11 @@ export async function getMetrics(id: string): Promise<SessionMetrics> {
  *  los chunks normales de delta/metadata/done. */
 export async function simulateTurn(
   id: string,
+  signal?: AbortSignal,
 ): Promise<AsyncGenerator<DmModelChunk>> {
   const response = await authFetch(`/api/dm-sessions/${id}/auto-turn`, {
     method: "POST",
+    signal,
   });
 
   if (!response.ok) await throwApiError(response, "Error al simular el turno");
@@ -256,9 +263,16 @@ export async function simulateTurn(
 }
 
 export async function endSession(id: string): Promise<DmSessionSummary> {
-  const response = await authFetch(`/api/dm-sessions/${id}`, {
-    method: "DELETE",
+  const response = await authFetch(`/api/dm-sessions/${id}/end`, {
+    method: "POST",
   });
   if (!response.ok) await throwApiError(response, "Error al terminar la sesión");
   return response.json();
+}
+
+export async function deleteSession(id: string): Promise<void> {
+  const response = await authFetch(`/api/dm-sessions/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) await throwApiError(response, "Error al eliminar la sesión");
 }
