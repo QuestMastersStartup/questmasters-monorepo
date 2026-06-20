@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { createCampaign, uploadCampaignPortrait } from "../services/campaigns.api";
+import { createCampaign, uploadCampaignPortrait, type CreateCampaignRequest } from "../services/campaigns.api";
 import { ArrowLeft, Send, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
 import { ImageCropModal } from "../components/features/shared/ImageCropModal";
 
@@ -33,8 +33,8 @@ export const CreateCampaign: React.FC = () => {
     try {
       const portraitUrl = await uploadCampaignPortrait(blob);
       setFormData({ ...formData, coverImageUrl: portraitUrl });
-    } catch (err: any) {
-      setError(err.message || "Error al subir la imagen");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al subir la imagen");
     } finally {
       setUploading(false);
     }
@@ -48,14 +48,17 @@ export const CreateCampaign: React.FC = () => {
     setError(null);
 
     try {
-      const payload = { ...formData };
-      if (!payload.coverImageUrl) delete (payload as any).coverImageUrl;
-      if (!payload.description) delete (payload as any).description;
+      const payload: CreateCampaignRequest = {
+        name: formData.name,
+        system: formData.system,
+        ...(formData.description && { description: formData.description }),
+        ...(formData.coverImageUrl && { coverImageUrl: formData.coverImageUrl }),
+      };
 
       const newCampaign = await createCampaign(payload);
       navigate(`/campaigns/${newCampaign.id}`);
-    } catch (err: any) {
-      setError(err.message || "Error al crear la campaña");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al crear la campaña");
     } finally {
       setLoading(false);
     }
