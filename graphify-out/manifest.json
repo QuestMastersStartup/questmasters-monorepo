@@ -1,0 +1,1842 @@
+{
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\.claude\\settings.json": {
+    "mtime": 1781370128.9052198,
+    "ast_hash": "af5683cedca023035194f9ad92eb0eef",
+    "semantic_hash": "af5683cedca023035194f9ad92eb0eef"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle.config.ts": {
+    "mtime": 1781214341.8189664,
+    "ast_hash": "c0f224b286a2790c65a47998fe6fe9b1",
+    "semantic_hash": "c0f224b286a2790c65a47998fe6fe9b1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle\\0000_users.sql": {
+    "mtime": 1781989034.712075,
+    "ast_hash": "7456c9c3d4a815d848b04bc5f31d619b",
+    "semantic_hash": "7456c9c3d4a815d848b04bc5f31d619b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle\\0001_content_packs.sql": {
+    "mtime": 1781989044.8653312,
+    "ast_hash": "f501070b8cd5d917a1f9e63a0733c8d8",
+    "semantic_hash": "f501070b8cd5d917a1f9e63a0733c8d8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle\\0002_campaigns.sql": {
+    "mtime": 1781989055.051931,
+    "ast_hash": "ea9db64c36cbfc29abcf13e5cf16e8fa",
+    "semantic_hash": "ea9db64c36cbfc29abcf13e5cf16e8fa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle\\0003_characters.sql": {
+    "mtime": 1781989063.3759282,
+    "ast_hash": "7a4c6a23a5dc98090450a85fc9121812",
+    "semantic_hash": "7a4c6a23a5dc98090450a85fc9121812"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\drizzle\\0004_dm_sessions.sql": {
+    "mtime": 1781989075.0484235,
+    "ast_hash": "731c674cc64226cf4bf9058ec29db28f",
+    "semantic_hash": "731c674cc64226cf4bf9058ec29db28f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\eslint.config.mjs": {
+    "mtime": 1772502596.6752818,
+    "ast_hash": "4c3d8eda80c93c94ddc3ab0a167a987e",
+    "semantic_hash": "4c3d8eda80c93c94ddc3ab0a167a987e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\package.json": {
+    "mtime": 1781987314.6060243,
+    "ast_hash": "a887fc0d91c3cccda0db2b26cf012a3e",
+    "semantic_hash": "a887fc0d91c3cccda0db2b26cf012a3e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\scripts\\dev.ts": {
+    "mtime": 1781987809.665605,
+    "ast_hash": "c670bb800e75cb9551e620fc097c2c1c",
+    "semantic_hash": "c670bb800e75cb9551e620fc097c2c1c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\errors.ts": {
+    "mtime": 1781196724.5262916,
+    "ast_hash": "01e5949db25e25982e50ee3de44cf707",
+    "semantic_hash": "01e5949db25e25982e50ee3de44cf707"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\create-campaign.use-case.test.ts": {
+    "mtime": 1781196724.527798,
+    "ast_hash": "0dbd6c21552f22bdc4f63cc4ac68522b",
+    "semantic_hash": "0dbd6c21552f22bdc4f63cc4ac68522b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\create-campaign.use-case.ts": {
+    "mtime": 1781196724.5423641,
+    "ast_hash": "e18867704b0a29e25e9a2caed080c160",
+    "semantic_hash": "e18867704b0a29e25e9a2caed080c160"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\delete-campaign.use-case.test.ts": {
+    "mtime": 1781196724.5433629,
+    "ast_hash": "d879d7f6ecefc3602b7ce7e1dcf84f35",
+    "semantic_hash": "d879d7f6ecefc3602b7ce7e1dcf84f35"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\delete-campaign.use-case.ts": {
+    "mtime": 1781196724.5634995,
+    "ast_hash": "c79a38ec0b591fdcccb5997cd993c9ba",
+    "semantic_hash": "c79a38ec0b591fdcccb5997cd993c9ba"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\get-campaign.use-case.ts": {
+    "mtime": 1781196724.5758462,
+    "ast_hash": "9242e88dca803fdb861f2794b492f0f3",
+    "semantic_hash": "9242e88dca803fdb861f2794b492f0f3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\invite-player.use-case.test.ts": {
+    "mtime": 1781196724.5768461,
+    "ast_hash": "43d88e71b0186e1896ba0a05226a8201",
+    "semantic_hash": "43d88e71b0186e1896ba0a05226a8201"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\invite-player.use-case.ts": {
+    "mtime": 1781196724.5840847,
+    "ast_hash": "460f695c7720c833ae1b453dbd4ea82d",
+    "semantic_hash": "460f695c7720c833ae1b453dbd4ea82d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\list-campaigns.use-case.ts": {
+    "mtime": 1781196724.5997634,
+    "ast_hash": "14f48ef49a52dc5545f04e9df42f8ed2",
+    "semantic_hash": "14f48ef49a52dc5545f04e9df42f8ed2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\list-members.use-case.ts": {
+    "mtime": 1781196724.6139185,
+    "ast_hash": "da6e38cf9e1cac6004a8d316d1c68ba2",
+    "semantic_hash": "da6e38cf9e1cac6004a8d316d1c68ba2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\remove-member.use-case.test.ts": {
+    "mtime": 1781196724.6139185,
+    "ast_hash": "d397776e5971510694df1447fa2062ac",
+    "semantic_hash": "d397776e5971510694df1447fa2062ac"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\remove-member.use-case.ts": {
+    "mtime": 1781196724.6226654,
+    "ast_hash": "a3e8aab1b72e5738c3163108c1cad83e",
+    "semantic_hash": "a3e8aab1b72e5738c3163108c1cad83e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\update-campaign.use-case.test.ts": {
+    "mtime": 1781196724.6236584,
+    "ast_hash": "67d75d65c702fae19b95c87493a4ce53",
+    "semantic_hash": "67d75d65c702fae19b95c87493a4ce53"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\application\\use-cases\\update-campaign.use-case.ts": {
+    "mtime": 1781196724.6375327,
+    "ast_hash": "de87d5bd66811c5c0b3c3f8734fa6198",
+    "semantic_hash": "de87d5bd66811c5c0b3c3f8734fa6198"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\entities\\campaign-member.entity.ts": {
+    "mtime": 1781196724.6527984,
+    "ast_hash": "e90b502ac3a957f2345c63a6c61945fa",
+    "semantic_hash": "e90b502ac3a957f2345c63a6c61945fa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\entities\\campaign.entity.ts": {
+    "mtime": 1781196724.6629531,
+    "ast_hash": "d94988344879986837bc9e82ac1ad6ea",
+    "semantic_hash": "d94988344879986837bc9e82ac1ad6ea"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\repositories\\campaign-member.repository.ts": {
+    "mtime": 1781196724.6760094,
+    "ast_hash": "9a64ff01fdc689933e9e45c62623cf46",
+    "semantic_hash": "9a64ff01fdc689933e9e45c62623cf46"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\repositories\\campaign.repository.ts": {
+    "mtime": 1781196724.6918058,
+    "ast_hash": "34cd13a1ac77f8eb2bf18190b35f5d6d",
+    "semantic_hash": "34cd13a1ac77f8eb2bf18190b35f5d6d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\value-objects\\campaign-status.vo.test.ts": {
+    "mtime": 1781196724.693689,
+    "ast_hash": "8f1ebef03fe2789330e447f07efefd57",
+    "semantic_hash": "8f1ebef03fe2789330e447f07efefd57"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\domain\\value-objects\\campaign-status.vo.ts": {
+    "mtime": 1781196724.7177832,
+    "ast_hash": "46a6e01e9d7e1efb197623fcc02e30f5",
+    "semantic_hash": "46a6e01e9d7e1efb197623fcc02e30f5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\infrastructure\\drizzle\\campaign-member.drizzle-repository.ts": {
+    "mtime": 1781214341.8236294,
+    "ast_hash": "57fc86f6140ce34dc157caa18d2c6198",
+    "semantic_hash": "57fc86f6140ce34dc157caa18d2c6198"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\infrastructure\\drizzle\\campaign.drizzle-repository.ts": {
+    "mtime": 1781214341.8246315,
+    "ast_hash": "0d713530af61b18181d83ae63f0bf3f0",
+    "semantic_hash": "0d713530af61b18181d83ae63f0bf3f0"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\infrastructure\\mappers\\campaign-member.mapper.ts": {
+    "mtime": 1781214341.8246315,
+    "ast_hash": "0551b1a4d6a3ae6c6a77b02f282f35ca",
+    "semantic_hash": "0551b1a4d6a3ae6c6a77b02f282f35ca"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\campaigns\\infrastructure\\mappers\\campaign.mapper.ts": {
+    "mtime": 1781214341.8256288,
+    "ast_hash": "05bb2688792d7182fdc1339a113ec7ff",
+    "semantic_hash": "05bb2688792d7182fdc1339a113ec7ff"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\character-errors.ts": {
+    "mtime": 1781196724.81852,
+    "ast_hash": "564b108cfd0404ac4a0a69d00e275b66",
+    "semantic_hash": "564b108cfd0404ac4a0a69d00e275b66"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\create-character.use-case.test.ts": {
+    "mtime": 1781196724.820264,
+    "ast_hash": "8970293b7c5d60a4b686ae31b56609b5",
+    "semantic_hash": "8970293b7c5d60a4b686ae31b56609b5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\create-character.use-case.ts": {
+    "mtime": 1781214341.8266287,
+    "ast_hash": "0b582de4854d28eb12d01dc0d67bb392",
+    "semantic_hash": "0b582de4854d28eb12d01dc0d67bb392"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\delete-character.use-case.test.ts": {
+    "mtime": 1781196724.8215628,
+    "ast_hash": "c265b54bf4b659921217956658cba00b",
+    "semantic_hash": "c265b54bf4b659921217956658cba00b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\delete-character.use-case.ts": {
+    "mtime": 1781196724.822049,
+    "ast_hash": "30f0480a56711da1aa5f31d4698d7d10",
+    "semantic_hash": "30f0480a56711da1aa5f31d4698d7d10"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\get-character.use-case.ts": {
+    "mtime": 1781196724.822049,
+    "ast_hash": "5402824ad02e016bd97b6b54f838bc53",
+    "semantic_hash": "5402824ad02e016bd97b6b54f838bc53"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\list-available-assets.use-case.ts": {
+    "mtime": 1781394542.3235543,
+    "ast_hash": "9b525d13824f8f04a278af0b06d395b9",
+    "semantic_hash": "9b525d13824f8f04a278af0b06d395b9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\list-characters.use-case.ts": {
+    "mtime": 1781540018.4976594,
+    "ast_hash": "46b39e7cedefc9900b0f678a219873e1",
+    "semantic_hash": "46b39e7cedefc9900b0f678a219873e1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\update-character.use-case.test.ts": {
+    "mtime": 1781196724.8237572,
+    "ast_hash": "56275797d072a71a46cba0b66c626091",
+    "semantic_hash": "56275797d072a71a46cba0b66c626091"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\application\\use-cases\\update-character.use-case.ts": {
+    "mtime": 1781214341.8271344,
+    "ast_hash": "83555d6926e3be7bbfbe2650edba3ef6",
+    "semantic_hash": "83555d6926e3be7bbfbe2650edba3ef6"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\domain\\entities\\character.entity.ts": {
+    "mtime": 1781196724.8248875,
+    "ast_hash": "631ad070cf077cb26b5219d249a68900",
+    "semantic_hash": "631ad070cf077cb26b5219d249a68900"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\domain\\repositories\\character.repository.ts": {
+    "mtime": 1781196724.8259304,
+    "ast_hash": "6ef397fb04739500e09b644f50a20faf",
+    "semantic_hash": "6ef397fb04739500e09b644f50a20faf"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\domain\\value-objects\\character-status.vo.test.ts": {
+    "mtime": 1781196724.8259304,
+    "ast_hash": "90dfb43403abae6ba751eff95ca40177",
+    "semantic_hash": "90dfb43403abae6ba751eff95ca40177"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\domain\\value-objects\\character-status.vo.ts": {
+    "mtime": 1781196724.8259304,
+    "ast_hash": "dc07e8ab399abdbf9d80d919172bf836",
+    "semantic_hash": "dc07e8ab399abdbf9d80d919172bf836"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\infrastructure\\drizzle\\character.drizzle-repository.ts": {
+    "mtime": 1781214341.8281505,
+    "ast_hash": "9cf5a12e50bc8ed96105ce8b3aa49eff",
+    "semantic_hash": "9cf5a12e50bc8ed96105ce8b3aa49eff"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\characters\\infrastructure\\mappers\\character.mapper.ts": {
+    "mtime": 1781214341.8281505,
+    "ast_hash": "394de39445a85e942c1ac2168f9b053b",
+    "semantic_hash": "394de39445a85e942c1ac2168f9b053b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\errors.ts": {
+    "mtime": 1781196724.8290534,
+    "ast_hash": "213db800daa14d209e614a009b95e5ae",
+    "semantic_hash": "213db800daa14d209e614a009b95e5ae"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\change-pack-status.use-case.ts": {
+    "mtime": 1781196724.8301055,
+    "ast_hash": "a148d5c1020d5c13ab7ca457afec0b6d",
+    "semantic_hash": "a148d5c1020d5c13ab7ca457afec0b6d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\create-asset.use-case.test.ts": {
+    "mtime": 1781196724.8301055,
+    "ast_hash": "dfdf3d897c558b9e17129e85f7ea2c93",
+    "semantic_hash": "dfdf3d897c558b9e17129e85f7ea2c93"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\create-asset.use-case.ts": {
+    "mtime": 1781196724.8310964,
+    "ast_hash": "01580239b6eecc8b2b5f52642083d85c",
+    "semantic_hash": "01580239b6eecc8b2b5f52642083d85c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\create-pack.use-case.test.ts": {
+    "mtime": 1781196724.8317335,
+    "ast_hash": "0d3a12384eaba10a3f450a98b17a0bc9",
+    "semantic_hash": "0d3a12384eaba10a3f450a98b17a0bc9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\create-pack.use-case.ts": {
+    "mtime": 1781196724.8317335,
+    "ast_hash": "dcb6e75824d2a5fd0941466a670df5e4",
+    "semantic_hash": "dcb6e75824d2a5fd0941466a670df5e4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\delete-asset.use-case.ts": {
+    "mtime": 1781196724.8328307,
+    "ast_hash": "f22b55320b1e2b7fb74331c9a6cad580",
+    "semantic_hash": "f22b55320b1e2b7fb74331c9a6cad580"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\delete-pack.use-case.test.ts": {
+    "mtime": 1781196724.8404806,
+    "ast_hash": "aee37220c45e92dca4029fc2ce2ba771",
+    "semantic_hash": "aee37220c45e92dca4029fc2ce2ba771"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\delete-pack.use-case.ts": {
+    "mtime": 1781196724.841516,
+    "ast_hash": "fe82be9d42f289e559f12de7376c453e",
+    "semantic_hash": "fe82be9d42f289e559f12de7376c453e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\get-asset.use-case.ts": {
+    "mtime": 1781196724.841516,
+    "ast_hash": "90e6ccd130a4e31c04c613f7ebcf8782",
+    "semantic_hash": "90e6ccd130a4e31c04c613f7ebcf8782"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\get-pack.use-case.test.ts": {
+    "mtime": 1781196724.8491993,
+    "ast_hash": "d3331fb20b0701e06740b48db59ae4bc",
+    "semantic_hash": "d3331fb20b0701e06740b48db59ae4bc"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\get-pack.use-case.ts": {
+    "mtime": 1781196724.8501918,
+    "ast_hash": "2bd5ea79ca9aaac7dffb0fd857854277",
+    "semantic_hash": "2bd5ea79ca9aaac7dffb0fd857854277"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\list-assets.use-case.ts": {
+    "mtime": 1781196724.8501918,
+    "ast_hash": "ca634f8d08327393c00952f4f3a72b89",
+    "semantic_hash": "ca634f8d08327393c00952f4f3a72b89"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\list-packs.use-case.ts": {
+    "mtime": 1781196724.8501918,
+    "ast_hash": "645a71ef004361109c1f730e9689d8dd",
+    "semantic_hash": "645a71ef004361109c1f730e9689d8dd"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\resolve-asset.use-case.test.ts": {
+    "mtime": 1781196724.851699,
+    "ast_hash": "f255bb947b4f25682f27d2f5516c3b13",
+    "semantic_hash": "f255bb947b4f25682f27d2f5516c3b13"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\resolve-asset.use-case.ts": {
+    "mtime": 1781196724.851699,
+    "ast_hash": "37974dcc18e2e177fa93c19d48280a45",
+    "semantic_hash": "37974dcc18e2e177fa93c19d48280a45"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\suspend-pack.use-case.ts": {
+    "mtime": 1781196724.851699,
+    "ast_hash": "69bf50b06f331731f79bc6f81c675b8f",
+    "semantic_hash": "69bf50b06f331731f79bc6f81c675b8f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\unsuspend-pack.use-case.ts": {
+    "mtime": 1781196724.852615,
+    "ast_hash": "b8f0918958f74d0028c3da9eacf45046",
+    "semantic_hash": "b8f0918958f74d0028c3da9eacf45046"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\update-asset.use-case.ts": {
+    "mtime": 1781196724.852615,
+    "ast_hash": "6a340594deef6439cac54117a0f559d3",
+    "semantic_hash": "6a340594deef6439cac54117a0f559d3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\application\\use-cases\\update-pack.use-case.ts": {
+    "mtime": 1781196724.8536575,
+    "ast_hash": "5232a9b11c822f7378985922ff996d81",
+    "semantic_hash": "5232a9b11c822f7378985922ff996d81"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\entities\\asset.entity.test.ts": {
+    "mtime": 1781196724.8546581,
+    "ast_hash": "10668943dceee0ed5682004bf5b92314",
+    "semantic_hash": "10668943dceee0ed5682004bf5b92314"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\entities\\asset.entity.ts": {
+    "mtime": 1781196724.8546581,
+    "ast_hash": "8c33b752cfdee60e0b469e8d6172eae1",
+    "semantic_hash": "8c33b752cfdee60e0b469e8d6172eae1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\entities\\content-pack.entity.test.ts": {
+    "mtime": 1781196724.8556652,
+    "ast_hash": "85c41d3461ab8ed5514558bdf3b3c9d8",
+    "semantic_hash": "85c41d3461ab8ed5514558bdf3b3c9d8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\entities\\content-pack.entity.ts": {
+    "mtime": 1781196724.8556652,
+    "ast_hash": "f621139c21d72530c6999f4c59a49282",
+    "semantic_hash": "f621139c21d72530c6999f4c59a49282"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\repositories\\asset.repository.ts": {
+    "mtime": 1781196724.856665,
+    "ast_hash": "0240a4e26887d315309fd67a17a42a62",
+    "semantic_hash": "0240a4e26887d315309fd67a17a42a62"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\repositories\\content-pack.repository.ts": {
+    "mtime": 1781196724.856665,
+    "ast_hash": "622974fdb0733498ddf43e67c334bbc1",
+    "semantic_hash": "622974fdb0733498ddf43e67c334bbc1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\asset-data.vo.test.ts": {
+    "mtime": 1781196724.857666,
+    "ast_hash": "acbc27dc70e55261c05aa33b9deb735e",
+    "semantic_hash": "acbc27dc70e55261c05aa33b9deb735e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\asset-data.vo.ts": {
+    "mtime": 1781196724.858173,
+    "ast_hash": "1f96da62bb8c5eadbed6d2962d9ea535",
+    "semantic_hash": "1f96da62bb8c5eadbed6d2962d9ea535"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\asset-type.vo.test.ts": {
+    "mtime": 1781196724.858173,
+    "ast_hash": "93c77af2fc28c7c6e027165d3b4f8a6a",
+    "semantic_hash": "93c77af2fc28c7c6e027165d3b4f8a6a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\asset-type.vo.ts": {
+    "mtime": 1781196724.859181,
+    "ast_hash": "94b38a013e15d66649372fb82c2f15cb",
+    "semantic_hash": "94b38a013e15d66649372fb82c2f15cb"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\pack-status.vo.test.ts": {
+    "mtime": 1781196724.8729444,
+    "ast_hash": "c4f09aa7bc3b5fdcc54413b84f5eb035",
+    "semantic_hash": "c4f09aa7bc3b5fdcc54413b84f5eb035"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\pack-status.vo.ts": {
+    "mtime": 1781196724.8729444,
+    "ast_hash": "17c7d34c3a5c95fc899899166c5d9038",
+    "semantic_hash": "17c7d34c3a5c95fc899899166c5d9038"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\pack-type.vo.test.ts": {
+    "mtime": 1781196724.8739443,
+    "ast_hash": "4a9abdccc4c4d1f791e83885b97f8438",
+    "semantic_hash": "4a9abdccc4c4d1f791e83885b97f8438"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\pack-type.vo.ts": {
+    "mtime": 1781196724.8739443,
+    "ast_hash": "8255cf76a6c6a8c824f57247fe80c6aa",
+    "semantic_hash": "8255cf76a6c6a8c824f57247fe80c6aa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\system-type.vo.test.ts": {
+    "mtime": 1781196724.8893025,
+    "ast_hash": "0af1c66b4753f8bc42f9d953591f4994",
+    "semantic_hash": "0af1c66b4753f8bc42f9d953591f4994"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\domain\\value-objects\\system-type.vo.ts": {
+    "mtime": 1781196724.8893025,
+    "ast_hash": "77875069097da90504df8c0fdaea287f",
+    "semantic_hash": "77875069097da90504df8c0fdaea287f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\drizzle\\asset.drizzle-repository.ts": {
+    "mtime": 1781214341.8291426,
+    "ast_hash": "dd9d8057aa2d3f926291829f2e897be5",
+    "semantic_hash": "dd9d8057aa2d3f926291829f2e897be5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\drizzle\\content-pack.drizzle-repository.ts": {
+    "mtime": 1781214341.83014,
+    "ast_hash": "6a177fb00b2f348cb49d526d386485cc",
+    "semantic_hash": "6a177fb00b2f348cb49d526d386485cc"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\mappers\\asset.mapper.ts": {
+    "mtime": 1781214341.83014,
+    "ast_hash": "9dd4e9309736b29c761ee94f4162cbac",
+    "semantic_hash": "9dd4e9309736b29c761ee94f4162cbac"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\mappers\\content-pack.mapper.ts": {
+    "mtime": 1781214341.8311396,
+    "ast_hash": "53840d008fae036a9d8a67f917990a7a",
+    "semantic_hash": "53840d008fae036a9d8a67f917990a7a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Ability-Scores.json": {
+    "mtime": 1781196724.8922966,
+    "ast_hash": "d27f830af85045f75f058cab957bfed5",
+    "semantic_hash": "d27f830af85045f75f058cab957bfed5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Alignments.json": {
+    "mtime": 1781196724.8922966,
+    "ast_hash": "ad9b1c90a7822e970ae83c6f816edc50",
+    "semantic_hash": "ad9b1c90a7822e970ae83c6f816edc50"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Backgrounds.json": {
+    "mtime": 1781196724.8947418,
+    "ast_hash": "d99e39e117b04eb61dc886326a5ea03c",
+    "semantic_hash": "d99e39e117b04eb61dc886326a5ea03c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Classes.json": {
+    "mtime": 1781196724.8959377,
+    "ast_hash": "d009d3a8aead1254c640376aa59e4adf",
+    "semantic_hash": "d009d3a8aead1254c640376aa59e4adf"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Conditions.json": {
+    "mtime": 1781196724.8963284,
+    "ast_hash": "3bb25cb783c9522e6842a0b426fd36d4",
+    "semantic_hash": "3bb25cb783c9522e6842a0b426fd36d4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Damage-Types.json": {
+    "mtime": 1781196724.8963284,
+    "ast_hash": "9ace4ccf40dd1d0d7411dd77a14ecc25",
+    "semantic_hash": "9ace4ccf40dd1d0d7411dd77a14ecc25"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Equipment-Categories.json": {
+    "mtime": 1781196724.897768,
+    "ast_hash": "b8a189bc4efa9e0e1f80e8403ffdc2b3",
+    "semantic_hash": "b8a189bc4efa9e0e1f80e8403ffdc2b3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Equipment.json": {
+    "mtime": 1781196724.899788,
+    "ast_hash": "5f5fdb66f8d64beea03bfeb9acfde3e2",
+    "semantic_hash": "5f5fdb66f8d64beea03bfeb9acfde3e2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Feats.json": {
+    "mtime": 1781196724.9011815,
+    "ast_hash": "b28d8769a98fd67c43ef1ce139e8feac",
+    "semantic_hash": "b28d8769a98fd67c43ef1ce139e8feac"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Features.json": {
+    "mtime": 1781196724.9031868,
+    "ast_hash": "c1fcde06497104a9a5e4b944d767e8fe",
+    "semantic_hash": "c1fcde06497104a9a5e4b944d767e8fe"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Languages.json": {
+    "mtime": 1781196724.9031868,
+    "ast_hash": "7e13119cbd60db2f07d685a4d0b8a2ae",
+    "semantic_hash": "7e13119cbd60db2f07d685a4d0b8a2ae"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Levels.json": {
+    "mtime": 1781196724.905694,
+    "ast_hash": "3def9715601b93e9be6dafe1065ce1df",
+    "semantic_hash": "3def9715601b93e9be6dafe1065ce1df"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Magic-Items.json": {
+    "mtime": 1781196724.9084802,
+    "ast_hash": "3306754161a90122085deb1858c7b192",
+    "semantic_hash": "3306754161a90122085deb1858c7b192"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Magic-Schools.json": {
+    "mtime": 1781196724.9084802,
+    "ast_hash": "fa014bb00406c8c2c016f59c4572a371",
+    "semantic_hash": "fa014bb00406c8c2c016f59c4572a371"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Monsters.json": {
+    "mtime": 1781196724.9179323,
+    "ast_hash": "d1d7ff289df1000c4bc7140ff3fd8e5c",
+    "semantic_hash": "d1d7ff289df1000c4bc7140ff3fd8e5c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Proficiencies.json": {
+    "mtime": 1781196724.9184687,
+    "ast_hash": "acf9cbeb690e89d581c6e6b63d18174e",
+    "semantic_hash": "acf9cbeb690e89d581c6e6b63d18174e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Races.json": {
+    "mtime": 1781196724.9192424,
+    "ast_hash": "e0a4fcd87629a221e87f262ad7888a17",
+    "semantic_hash": "e0a4fcd87629a221e87f262ad7888a17"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Rule-Sections.json": {
+    "mtime": 1781196724.9209442,
+    "ast_hash": "d0364c47e7f1c1965fd09d89b6ad965f",
+    "semantic_hash": "d0364c47e7f1c1965fd09d89b6ad965f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Rules.json": {
+    "mtime": 1781196724.9209442,
+    "ast_hash": "8fa857b37dde4384f1aa692250a66d07",
+    "semantic_hash": "8fa857b37dde4384f1aa692250a66d07"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Skills.json": {
+    "mtime": 1781196724.9230502,
+    "ast_hash": "56754ae4c58bb1e47316952d602c6cf9",
+    "semantic_hash": "56754ae4c58bb1e47316952d602c6cf9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Spells.json": {
+    "mtime": 1781196724.9273944,
+    "ast_hash": "32b730d8af3cb90509952a8a06b502cf",
+    "semantic_hash": "32b730d8af3cb90509952a8a06b502cf"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Subclasses.json": {
+    "mtime": 1781196724.9289348,
+    "ast_hash": "ff851a11f27c44b5c44fa502831b6284",
+    "semantic_hash": "ff851a11f27c44b5c44fa502831b6284"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Subraces.json": {
+    "mtime": 1781196724.929492,
+    "ast_hash": "8bf20239d6ebc19ac5bc4e24327139b9",
+    "semantic_hash": "8bf20239d6ebc19ac5bc4e24327139b9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Traits.json": {
+    "mtime": 1781196724.9306295,
+    "ast_hash": "a678bba40c424dc7e50f1ede02f19d22",
+    "semantic_hash": "a678bba40c424dc7e50f1ede02f19d22"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\5e-SRD-Weapon-Properties.json": {
+    "mtime": 1781196724.9311872,
+    "ast_hash": "3399c8110bb08d8143354622a3bd580c",
+    "semantic_hash": "3399c8110bb08d8143354622a3bd580c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\classes.json": {
+    "mtime": 1781196724.9315746,
+    "ast_hash": "4bfbd2ff80acf65bca0a34a07db489cc",
+    "semantic_hash": "4bfbd2ff80acf65bca0a34a07db489cc"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\races.json": {
+    "mtime": 1781196724.9321194,
+    "ast_hash": "0acda7239781426047fe19cf53307e4f",
+    "semantic_hash": "0acda7239781426047fe19cf53307e4f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2014\\spells.json": {
+    "mtime": 1781196724.9326518,
+    "ast_hash": "532e8cb54c3365658103bff3ac6a56ec",
+    "semantic_hash": "532e8cb54c3365658103bff3ac6a56ec"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Ability-Scores.json": {
+    "mtime": 1781196724.9326518,
+    "ast_hash": "a8c8cdb05d482feb84e4144aab8c4259",
+    "semantic_hash": "a8c8cdb05d482feb84e4144aab8c4259"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Alignments.json": {
+    "mtime": 1781196724.9326518,
+    "ast_hash": "86a0a9a3526f7c5c089c05bf736abb27",
+    "semantic_hash": "86a0a9a3526f7c5c089c05bf736abb27"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Backgrounds.json": {
+    "mtime": 1781196724.9326518,
+    "ast_hash": "9200b6ea458bcae1a88751b059d290b1",
+    "semantic_hash": "9200b6ea458bcae1a88751b059d290b1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Conditions.json": {
+    "mtime": 1781196724.934669,
+    "ast_hash": "57297251656c6639c12ae152e9d3d909",
+    "semantic_hash": "57297251656c6639c12ae152e9d3d909"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Damage-Types.json": {
+    "mtime": 1781196724.934669,
+    "ast_hash": "631a4f31dc8cdc3ff0153b7a8298dd02",
+    "semantic_hash": "631a4f31dc8cdc3ff0153b7a8298dd02"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Equipment-Categories.json": {
+    "mtime": 1781196724.935954,
+    "ast_hash": "da3ceef06c67abce959b3b3693873ca7",
+    "semantic_hash": "da3ceef06c67abce959b3b3693873ca7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Equipment.json": {
+    "mtime": 1781196724.935954,
+    "ast_hash": "c3c253781e44348e3584c8e040a60685",
+    "semantic_hash": "c3c253781e44348e3584c8e040a60685"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Feats.json": {
+    "mtime": 1781196724.937461,
+    "ast_hash": "1e3e22e7393d5275e0d17a0e42d00eae",
+    "semantic_hash": "1e3e22e7393d5275e0d17a0e42d00eae"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Languages.json": {
+    "mtime": 1781196724.9380856,
+    "ast_hash": "dbeb585044717ad89261df7e6f7139b6",
+    "semantic_hash": "dbeb585044717ad89261df7e6f7139b6"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Magic-Schools.json": {
+    "mtime": 1781196724.938418,
+    "ast_hash": "9c756156e1ab91c9e7e25898cb663872",
+    "semantic_hash": "9c756156e1ab91c9e7e25898cb663872"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Proficiencies.json": {
+    "mtime": 1781196724.9389238,
+    "ast_hash": "31ed80a1b586dd5d6d55da529198f812",
+    "semantic_hash": "31ed80a1b586dd5d6d55da529198f812"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Skills.json": {
+    "mtime": 1781196724.9389238,
+    "ast_hash": "50937c09d136f31dc69a8b9b0701e2fa",
+    "semantic_hash": "50937c09d136f31dc69a8b9b0701e2fa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Weapon-Mastery-Properties.json": {
+    "mtime": 1781196724.9401217,
+    "ast_hash": "37b21f477afc49d2accd7ff6521b4af3",
+    "semantic_hash": "37b21f477afc49d2accd7ff6521b4af3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\data\\dnd-5e-2024\\5e-SRD-Weapon-Properties.json": {
+    "mtime": 1781196724.9401217,
+    "ast_hash": "f003d0d4a05047ce68a1e736d18343eb",
+    "semantic_hash": "f003d0d4a05047ce68a1e736d18343eb"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\content\\infrastructure\\seeding\\srd-seeder.service.ts": {
+    "mtime": 1781394542.336388,
+    "ast_hash": "ab62d05c35c2d1731edc8a7dd84caf58",
+    "semantic_hash": "ab62d05c35c2d1731edc8a7dd84caf58"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\errors.ts": {
+    "mtime": 1781935795.2615752,
+    "ast_hash": "345ae6341a5e7553504a200eb773d438",
+    "semantic_hash": "345ae6341a5e7553504a200eb773d438"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\stream-turn.ts": {
+    "mtime": 1781196724.945999,
+    "ast_hash": "50a93e973f76e8688fbb76443d32fbe1",
+    "semantic_hash": "50a93e973f76e8688fbb76443d32fbe1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\create-dm-session.use-case.ts": {
+    "mtime": 1781935795.2615752,
+    "ast_hash": "1ede1653f6b019e90b00bf876f3371a7",
+    "semantic_hash": "1ede1653f6b019e90b00bf876f3371a7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\end-dm-session.use-case.ts": {
+    "mtime": 1781196724.9475677,
+    "ast_hash": "5583f7faced33e2169176b865b9288e9",
+    "semantic_hash": "5583f7faced33e2169176b865b9288e9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\get-dm-session.use-case.ts": {
+    "mtime": 1781196724.9475677,
+    "ast_hash": "9227ba88b8e90b286cafffa12262a4f7",
+    "semantic_hash": "9227ba88b8e90b286cafffa12262a4f7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\get-session-metrics.use-case.ts": {
+    "mtime": 1781196724.9485755,
+    "ast_hash": "f3eeadf2a65c887418a94f9a843a132f",
+    "semantic_hash": "f3eeadf2a65c887418a94f9a843a132f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\initialize-dm-session.use-case.ts": {
+    "mtime": 1781196724.9485755,
+    "ast_hash": "52118b2da2eb437ddd8167b3d07eb699",
+    "semantic_hash": "52118b2da2eb437ddd8167b3d07eb699"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\list-dm-sessions.use-case.ts": {
+    "mtime": 1781196724.9485755,
+    "ast_hash": "78c5c89597d0dbc33556f35fb0e876c5",
+    "semantic_hash": "78c5c89597d0dbc33556f35fb0e876c5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\send-player-turn.use-case.ts": {
+    "mtime": 1781196724.9498239,
+    "ast_hash": "7bd699ffc7fb7834a1dfc27099881d6f",
+    "semantic_hash": "7bd699ffc7fb7834a1dfc27099881d6f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\application\\use-cases\\soft-delete-dm-session.use-case.ts": {
+    "mtime": 1781935795.2625756,
+    "ast_hash": "647d8c1c3455f3f25f708cf0c7e4fb79",
+    "semantic_hash": "647d8c1c3455f3f25f708cf0c7e4fb79"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\domain\\entities\\dm-session.entity.ts": {
+    "mtime": 1781935795.2635796,
+    "ast_hash": "327feb86abfa4d3871a4ff10c622677c",
+    "semantic_hash": "327feb86abfa4d3871a4ff10c622677c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\domain\\entities\\dm-turn.entity.ts": {
+    "mtime": 1781196724.9518304,
+    "ast_hash": "bd6f84cdc30622ed74ea5ba2d6474abd",
+    "semantic_hash": "bd6f84cdc30622ed74ea5ba2d6474abd"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\domain\\ports\\dm-model.provider.ts": {
+    "mtime": 1781196724.9518304,
+    "ast_hash": "fe0ca6cb6d1114cd5386b99a5195e816",
+    "semantic_hash": "fe0ca6cb6d1114cd5386b99a5195e816"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\domain\\repositories\\dm-session.repository.ts": {
+    "mtime": 1781196724.9528968,
+    "ast_hash": "896eed708572732bfcb282f93087b0c7",
+    "semantic_hash": "896eed708572732bfcb282f93087b0c7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\domain\\repositories\\dm-turn.repository.ts": {
+    "mtime": 1781196724.9528968,
+    "ast_hash": "97cffabaf11c432a15d7726424594c57",
+    "semantic_hash": "97cffabaf11c432a15d7726424594c57"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\adapters\\runpod-dm-model.adapter.ts": {
+    "mtime": 1781546322.6215758,
+    "ast_hash": "cb86e7d22d90febb4079fe9efc8393fd",
+    "semantic_hash": "cb86e7d22d90febb4079fe9efc8393fd"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\adapters\\stub-dm-model.adapter.ts": {
+    "mtime": 1781196724.9542117,
+    "ast_hash": "488aad067fc1517baceb80657ffa4fd3",
+    "semantic_hash": "488aad067fc1517baceb80657ffa4fd3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\drizzle\\dm-session.drizzle-repository.ts": {
+    "mtime": 1781935795.2635796,
+    "ast_hash": "29e228e223f64b94a7567126e23774b0",
+    "semantic_hash": "29e228e223f64b94a7567126e23774b0"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\drizzle\\dm-turn.drizzle-repository.ts": {
+    "mtime": 1781214341.8331416,
+    "ast_hash": "e65be722d927e82e3fa067620f3c6e15",
+    "semantic_hash": "e65be722d927e82e3fa067620f3c6e15"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\mappers\\dm-session.mapper.ts": {
+    "mtime": 1781214341.8331416,
+    "ast_hash": "6cf69816b8f814adea2e48c0a155ef58",
+    "semantic_hash": "6cf69816b8f814adea2e48c0a155ef58"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\dm-session\\infrastructure\\mappers\\dm-turn.mapper.ts": {
+    "mtime": 1781214341.8341422,
+    "ast_hash": "d64a216ff1820dcca5530e7f8f5a481e",
+    "semantic_hash": "d64a216ff1820dcca5530e7f8f5a481e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\index.ts": {
+    "mtime": 1781935789.3679347,
+    "ast_hash": "092307a4933dc817b8e4e04734468c70",
+    "semantic_hash": "092307a4933dc817b8e4e04734468c70"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\auth\\guards.ts": {
+    "mtime": 1781559914.373675,
+    "ast_hash": "3a348ef89fad2b25954947bb9682171c",
+    "semantic_hash": "3a348ef89fad2b25954947bb9682171c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\auth\\jwt.ts": {
+    "mtime": 1781369784.345164,
+    "ast_hash": "18b212aea0613706d29e07874f95f378",
+    "semantic_hash": "18b212aea0613706d29e07874f95f378"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\auth\\types.ts": {
+    "mtime": 1781560486.7771082,
+    "ast_hash": "ac9d4ee774abe4e0953cd078adfc7c0b",
+    "semantic_hash": "ac9d4ee774abe4e0953cd078adfc7c0b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\container.ts": {
+    "mtime": 1781935795.2649524,
+    "ast_hash": "accbeb2ff2a2f30e337b82e4f803c1d7",
+    "semantic_hash": "accbeb2ff2a2f30e337b82e4f803c1d7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\db\\connection.ts": {
+    "mtime": 1781214341.8364987,
+    "ast_hash": "23990b3f6c5427d9ddf86bc5a2f02d8e",
+    "semantic_hash": "23990b3f6c5427d9ddf86bc5a2f02d8e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\db\\schema.ts": {
+    "mtime": 1781935795.265956,
+    "ast_hash": "a8cb430eeb72b0105e1496386eaa2157",
+    "semantic_hash": "a8cb430eeb72b0105e1496386eaa2157"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\storage\\index.ts": {
+    "mtime": 1781559917.4251883,
+    "ast_hash": "2e8bbce40456c4065e96e2d58e333df7",
+    "semantic_hash": "2e8bbce40456c4065e96e2d58e333df7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\infrastructure\\storage\\r2.ts": {
+    "mtime": 1781369784.395288,
+    "ast_hash": "ed833c229e5be0f47e2dd01f50b1b52e",
+    "semantic_hash": "ed833c229e5be0f47e2dd01f50b1b52e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\assets.routes.ts": {
+    "mtime": 1781369784.403811,
+    "ast_hash": "fe63fe8d8d07731257f8352f14fb5102",
+    "semantic_hash": "fe63fe8d8d07731257f8352f14fb5102"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\auth.routes.ts": {
+    "mtime": 1781560254.0461612,
+    "ast_hash": "afcf63978e2675080f3706e8548019ff",
+    "semantic_hash": "afcf63978e2675080f3706e8548019ff"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\avatar.routes.ts": {
+    "mtime": 1781560000.3829713,
+    "ast_hash": "c155cb0d4f1dce9d57ab6d36880fe37b",
+    "semantic_hash": "c155cb0d4f1dce9d57ab6d36880fe37b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\campaigns.routes.ts": {
+    "mtime": 1781559932.1292186,
+    "ast_hash": "27f2457ed3cc6c0fc809be05e0a1782b",
+    "semantic_hash": "27f2457ed3cc6c0fc809be05e0a1782b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\characters.routes.ts": {
+    "mtime": 1781394542.3832438,
+    "ast_hash": "d9cb4011248d0c513f93266e7185cce1",
+    "semantic_hash": "d9cb4011248d0c513f93266e7185cce1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\check-email.routes.ts": {
+    "mtime": 1781559920.6726348,
+    "ast_hash": "3e81c57cae9fc6665e794e9201249bb2",
+    "semantic_hash": "3e81c57cae9fc6665e794e9201249bb2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\dm-sessions.routes.ts": {
+    "mtime": 1781935795.265956,
+    "ast_hash": "9f2b552d31c3041e6b4dca26daae84dd",
+    "semantic_hash": "9f2b552d31c3041e6b4dca26daae84dd"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\packs.routes.ts": {
+    "mtime": 1781369784.4885123,
+    "ast_hash": "265c26376947e527cf9cdfde622282d3",
+    "semantic_hash": "265c26376947e527cf9cdfde622282d3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\rules.routes.ts": {
+    "mtime": 1781214341.8420181,
+    "ast_hash": "6219b588b8cbebc088f604e0f4d1379b",
+    "semantic_hash": "6219b588b8cbebc088f604e0f4d1379b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\username.routes.ts": {
+    "mtime": 1781214341.8430095,
+    "ast_hash": "0f3aad7a5172dfc14925023cd50e195e",
+    "semantic_hash": "0f3aad7a5172dfc14925023cd50e195e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\routes\\users.routes.ts": {
+    "mtime": 1781369784.506045,
+    "ast_hash": "d5655009796456f3baf377db08358eff",
+    "semantic_hash": "d5655009796456f3baf377db08358eff"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\application\\result.ts": {
+    "mtime": 1772502596.7259145,
+    "ast_hash": "ea20b6a6eaea2d4fe9c4c16b603edb7c",
+    "semantic_hash": "ea20b6a6eaea2d4fe9c4c16b603edb7c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\domain\\entities\\base.entity.ts": {
+    "mtime": 1772502596.7269127,
+    "ast_hash": "8e4dc3ae297e9e8ee2f93f9a9c3294d7",
+    "semantic_hash": "8e4dc3ae297e9e8ee2f93f9a9c3294d7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\domain\\value-objects\\slug.vo.test.ts": {
+    "mtime": 1772502596.7279127,
+    "ast_hash": "028841570f235c806e7b256c3c2ce22b",
+    "semantic_hash": "028841570f235c806e7b256c3c2ce22b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\domain\\value-objects\\slug.vo.ts": {
+    "mtime": 1772502596.7279127,
+    "ast_hash": "b3f31af9d0467353b9f4cfd3fe6e0981",
+    "semantic_hash": "b3f31af9d0467353b9f4cfd3fe6e0981"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\domain\\value-objects\\uuid.vo.test.ts": {
+    "mtime": 1772502596.7279127,
+    "ast_hash": "1e16a6c48fb5b6b736844619e23ed5ee",
+    "semantic_hash": "1e16a6c48fb5b6b736844619e23ed5ee"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\domain\\value-objects\\uuid.vo.ts": {
+    "mtime": 1781214341.8440087,
+    "ast_hash": "c4ac7b2109f5918ded2a1849d01245a0",
+    "semantic_hash": "c4ac7b2109f5918ded2a1849d01245a0"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\shared\\infrastructure\\logger.ts": {
+    "mtime": 1781214341.8440087,
+    "ast_hash": "4b74bdb9e16a0abbf8eccdbf1eabc6a8",
+    "semantic_hash": "4b74bdb9e16a0abbf8eccdbf1eabc6a8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\types\\bindings.ts": {
+    "mtime": 1781560258.8612473,
+    "ast_hash": "2d01387f3c091b146b118edd49ee27e7",
+    "semantic_hash": "2d01387f3c091b146b118edd49ee27e7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\application\\use-cases\\get-user-profile.use-case.test.ts": {
+    "mtime": 1781196725.1388202,
+    "ast_hash": "191471204cac3b61b34b2fde18f8ba80",
+    "semantic_hash": "191471204cac3b61b34b2fde18f8ba80"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\application\\use-cases\\get-user-profile.use-case.ts": {
+    "mtime": 1781196725.1559038,
+    "ast_hash": "bdd6620321f223aab074f4e820a5728d",
+    "semantic_hash": "bdd6620321f223aab074f4e820a5728d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\application\\use-cases\\search-users.use-case.ts": {
+    "mtime": 1781196725.172838,
+    "ast_hash": "9b9ee07112d425e0a9184ca1fe63ae2b",
+    "semantic_hash": "9b9ee07112d425e0a9184ca1fe63ae2b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\application\\use-cases\\update-user-profile.use-case.ts": {
+    "mtime": 1781196725.172838,
+    "ast_hash": "639ad4c8f9050d896e3b2dbf5c0f4cae",
+    "semantic_hash": "639ad4c8f9050d896e3b2dbf5c0f4cae"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\application\\use-cases\\update-user-role.use-case.ts": {
+    "mtime": 1781196725.1917942,
+    "ast_hash": "51025f9bff2f05389de0ad7ceeb255fa",
+    "semantic_hash": "51025f9bff2f05389de0ad7ceeb255fa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\domain\\entities\\user-profile.entity.test.ts": {
+    "mtime": 1781196725.203211,
+    "ast_hash": "f937a4263e76a1a0617b2e3930845641",
+    "semantic_hash": "f937a4263e76a1a0617b2e3930845641"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\domain\\entities\\user-profile.entity.ts": {
+    "mtime": 1781196725.211421,
+    "ast_hash": "98fd78eaa59e551864ebac095ed60e10",
+    "semantic_hash": "98fd78eaa59e551864ebac095ed60e10"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\domain\\repositories\\user-profile.repository.ts": {
+    "mtime": 1781196725.2287996,
+    "ast_hash": "27e72c95570390dac76c464f79ec7c7a",
+    "semantic_hash": "27e72c95570390dac76c464f79ec7c7a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\src\\users\\infrastructure\\drizzle\\user-profile.drizzle-repository.ts": {
+    "mtime": 1781214341.8467307,
+    "ast_hash": "47aac1a59d6c09f7e0b2bbcdc1869e22",
+    "semantic_hash": "47aac1a59d6c09f7e0b2bbcdc1869e22"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\test\\api.test.ts": {
+    "mtime": 1772502596.7289126,
+    "ast_hash": "e958edfef4fc608f87bebe80081823a4",
+    "semantic_hash": "e958edfef4fc608f87bebe80081823a4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\test\\security.test.ts": {
+    "mtime": 1772502596.7289126,
+    "ast_hash": "7eb7bbd0fa5589843d3e680b77d61c53",
+    "semantic_hash": "7eb7bbd0fa5589843d3e680b77d61c53"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC001_create_pack_with_valid_payload.py": {
+    "mtime": 1781196720.7147503,
+    "ast_hash": "090a07b423c536e172fa3f2776c6c3ec",
+    "semantic_hash": "090a07b423c536e172fa3f2776c6c3ec"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC002_create_pack_with_missing_required_field.py": {
+    "mtime": 1781196720.7167642,
+    "ast_hash": "d4a4013faa8f4df3fcd1989b0886a162",
+    "semantic_hash": "d4a4013faa8f4df3fcd1989b0886a162"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC003_create_pack_with_duplicate_slug.py": {
+    "mtime": 1781196720.7167642,
+    "ast_hash": "7dbd19e358f00aa0f0726a0dba5b591f",
+    "semantic_hash": "7dbd19e358f00aa0f0726a0dba5b591f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC004_update_existing_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "81f39eb2e97cb8a3761e5cb8e6dbdde7",
+    "semantic_hash": "81f39eb2e97cb8a3761e5cb8e6dbdde7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC005_update_non_existent_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "2b6e5021f2137c4e0f2177919c6c4def",
+    "semantic_hash": "2b6e5021f2137c4e0f2177919c6c4def"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC006_suspend_existing_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "c61de9b5517316784760b5e2fe1ef080",
+    "semantic_hash": "c61de9b5517316784760b5e2fe1ef080"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC007_unsuspend_existing_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "7ec4e5d878157aa53555779fa6bcc807",
+    "semantic_hash": "7ec4e5d878157aa53555779fa6bcc807"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC008_delete_existing_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "374e1f9a34ac4bff69c9a4b514946491",
+    "semantic_hash": "374e1f9a34ac4bff69c9a4b514946491"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC009_create_asset_in_existing_pack.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "f36d83bf51cccff66a30489bcfe60a51",
+    "semantic_hash": "f36d83bf51cccff66a30489bcfe60a51"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC010_resolve_asset_with_valid_selections.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "b8a99e2232b22e6c463d174eec6141cf",
+    "semantic_hash": "b8a99e2232b22e6c463d174eec6141cf"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\TC011_update_srd_pack_metadata.py": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "49527582671c017531593e267dffd58f",
+    "semantic_hash": "49527582671c017531593e267dffd58f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\standard_prd.json": {
+    "mtime": 1781196720.7147503,
+    "ast_hash": "dc5dfc5b61b11eb9a54b9582ca933abc",
+    "semantic_hash": "dc5dfc5b61b11eb9a54b9582ca933abc"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\testsprite_tests\\testsprite_backend_test_plan.json": {
+    "mtime": 1781196720.717773,
+    "ast_hash": "450c64cebae08678a75ef4f33621d8c2",
+    "semantic_hash": "450c64cebae08678a75ef4f33621d8c2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\tsconfig.build.json": {
+    "mtime": 1772502596.7383275,
+    "ast_hash": "d23fc4aff02c91ce9c424c15aea9b49b",
+    "semantic_hash": "d23fc4aff02c91ce9c424c15aea9b49b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\tsconfig.json": {
+    "mtime": 1781394542.3991508,
+    "ast_hash": "3ae6a1a17276a1a8fd30b472b6188e63",
+    "semantic_hash": "3ae6a1a17276a1a8fd30b472b6188e63"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\handler.py": {
+    "mtime": 1781638028.1294916,
+    "ast_hash": "85771f4db0d81f4b6838588b6120c3e3",
+    "semantic_hash": "85771f4db0d81f4b6838588b6120c3e3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\scripts\\download_base_model.py": {
+    "mtime": 1781920360.3338668,
+    "ast_hash": "695a7e2f2902bb3750de6748e4d6956a",
+    "semantic_hash": "695a7e2f2902bb3750de6748e4d6956a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\scripts\\pod_server.py": {
+    "mtime": 1781977851.3475108,
+    "ast_hash": "073d869c2a813c7d9d0736ea3df1fc52",
+    "semantic_hash": "073d869c2a813c7d9d0736ea3df1fc52"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\__init__.py": {
+    "mtime": 1781545506.9004512,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\agents\\__init__.py": {
+    "mtime": 1781545510.098544,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\agents\\arbiter.py": {
+    "mtime": 1781545870.2472963,
+    "ast_hash": "5a4736000e34e975293c2e754dcac93b",
+    "semantic_hash": "5a4736000e34e975293c2e754dcac93b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\agents\\memory_agent.py": {
+    "mtime": 1781545575.6480498,
+    "ast_hash": "a403a64bebcc6627b30fda5f1f051a96",
+    "semantic_hash": "a403a64bebcc6627b30fda5f1f051a96"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\agents\\narrator.py": {
+    "mtime": 1781545864.5975785,
+    "ast_hash": "4ee926d949910b72961df209356df814",
+    "semantic_hash": "4ee926d949910b72961df209356df814"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\agents\\npc.py": {
+    "mtime": 1781545876.802293,
+    "ast_hash": "fdd2172615a78b3f757d5c4952fa4712",
+    "semantic_hash": "fdd2172615a78b3f757d5c4952fa4712"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\blackboard.py": {
+    "mtime": 1781545524.68032,
+    "ast_hash": "cc4793852fccfc6b90db08f28f46b819",
+    "semantic_hash": "cc4793852fccfc6b90db08f28f46b819"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\config.py": {
+    "mtime": 1781920360.334874,
+    "ast_hash": "7b63ad7e9ab6bf27789341292a038094",
+    "semantic_hash": "7b63ad7e9ab6bf27789341292a038094"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\extraction.py": {
+    "mtime": 1781545567.3166866,
+    "ast_hash": "0cacad205b6b4a2704234aef70f9bf83",
+    "semantic_hash": "0cacad205b6b4a2704234aef70f9bf83"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\memory\\__init__.py": {
+    "mtime": 1781545507.927208,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\memory\\l2_episodic.py": {
+    "mtime": 1781545537.747934,
+    "ast_hash": "63cc95290231790e8965d8c7b81f25a1",
+    "semantic_hash": "63cc95290231790e8965d8c7b81f25a1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\memory\\l3_semantic.py": {
+    "mtime": 1781545544.2527142,
+    "ast_hash": "4b36de1bfb4745e1cfbb4a67cbb377f2",
+    "semantic_hash": "4b36de1bfb4745e1cfbb4a67cbb377f2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\memory\\l4_procedural.py": {
+    "mtime": 1781545546.5215597,
+    "ast_hash": "1bb188fbf2e7bbf8e871e10962070c18",
+    "semantic_hash": "1bb188fbf2e7bbf8e871e10962070c18"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\model_loader.py": {
+    "mtime": 1781920383.1007288,
+    "ast_hash": "53d79738da166ee009e10d79fd4c082f",
+    "semantic_hash": "53d79738da166ee009e10d79fd4c082f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\modes\\__init__.py": {
+    "mtime": 1781545508.9923239,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\modes\\mas.py": {
+    "mtime": 1781545611.0382965,
+    "ast_hash": "c055994d80b94d5e128cc06fca39d6b9",
+    "semantic_hash": "c055994d80b94d5e128cc06fca39d6b9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\modes\\monolithic.py": {
+    "mtime": 1781985272.1144102,
+    "ast_hash": "71f4c2df30509b54019fa4809f369158",
+    "semantic_hash": "71f4c2df30509b54019fa4809f369158"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\src\\schemas.py": {
+    "mtime": 1781935795.2679582,
+    "ast_hash": "0b78659a2765aa24adeb4290e31584b8",
+    "semantic_hash": "0b78659a2765aa24adeb4290e31584b8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\eslint.config.js": {
+    "mtime": 1772502596.7393284,
+    "ast_hash": "957218024dbfdaaccd46c509d5e3089f",
+    "semantic_hash": "957218024dbfdaaccd46c509d5e3089f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\package.json": {
+    "mtime": 1781935789.378107,
+    "ast_hash": "db4e24374d6555017478184ea782bf2f",
+    "semantic_hash": "db4e24374d6555017478184ea782bf2f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\postcss.config.js": {
+    "mtime": 1772502596.740328,
+    "ast_hash": "5b84f4567208c7c747079c0477373231",
+    "semantic_hash": "5b84f4567208c7c747079c0477373231"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\App.tsx": {
+    "mtime": 1781196725.2333524,
+    "ast_hash": "1af96acf9b48e0ea6e285d9be56d597a",
+    "semantic_hash": "1af96acf9b48e0ea6e285d9be56d597a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\campaigns\\ManagePacksModal.tsx": {
+    "mtime": 1781196725.2428248,
+    "ast_hash": "aff724187c2a04c9a83b8275fceced61",
+    "semantic_hash": "aff724187c2a04c9a83b8275fceced61"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\campaigns\\MemberCard.tsx": {
+    "mtime": 1781196725.2503848,
+    "ast_hash": "40ed756afd1a50d0b5b8a3972a4739db",
+    "semantic_hash": "40ed756afd1a50d0b5b8a3972a4739db"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\campaigns\\UserSearch.tsx": {
+    "mtime": 1781375318.680905,
+    "ast_hash": "e552db69c1c7b91220f8fdbe4592d724",
+    "semantic_hash": "e552db69c1c7b91220f8fdbe4592d724"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\characters\\AssetCard.tsx": {
+    "mtime": 1781394542.4128826,
+    "ast_hash": "5dfacfadb01f1f1d16179bbb2144afc5",
+    "semantic_hash": "5dfacfadb01f1f1d16179bbb2144afc5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\characters\\CharacterCard.tsx": {
+    "mtime": 1781196725.2590888,
+    "ast_hash": "9b3a573c4e146948b13f4f9333336222",
+    "semantic_hash": "9b3a573c4e146948b13f4f9333336222"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\characters\\CharacterCreationWizard.tsx": {
+    "mtime": 1781935795.2679582,
+    "ast_hash": "585894c3f40e72507306fb44350a0483",
+    "semantic_hash": "585894c3f40e72507306fb44350a0483"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\characters\\ConfirmModal.tsx": {
+    "mtime": 1781196725.2600956,
+    "ast_hash": "db630d956c6156420d0277f898d0417d",
+    "semantic_hash": "db630d956c6156420d0277f898d0417d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\characters\\StatCounter.tsx": {
+    "mtime": 1781394542.4410596,
+    "ast_hash": "19b7698785e84bdf193ebc3523d02808",
+    "semantic_hash": "19b7698785e84bdf193ebc3523d02808"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\dm-session\\SessionInitModal.tsx": {
+    "mtime": 1781990315.3928244,
+    "ast_hash": "967c88afa6f439ad388f93ba228f9c0d",
+    "semantic_hash": "967c88afa6f439ad388f93ba228f9c0d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\AddAssetModal.tsx": {
+    "mtime": 1772502596.7438338,
+    "ast_hash": "882507a7b151c58229143500ac7395e5",
+    "semantic_hash": "882507a7b151c58229143500ac7395e5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\AssetFormPanel.tsx": {
+    "mtime": 1772502596.7438338,
+    "ast_hash": "25b23a76ade38b0d43e8a68c0e381a2d",
+    "semantic_hash": "25b23a76ade38b0d43e8a68c0e381a2d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\PackCard.tsx": {
+    "mtime": 1772502596.7448423,
+    "ast_hash": "19d8ebbc5d373f66aa302a2dfa02b962",
+    "semantic_hash": "19d8ebbc5d373f66aa302a2dfa02b962"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\PackForm.tsx": {
+    "mtime": 1772502596.7448423,
+    "ast_hash": "a5391909e0f9bb003899060b7a0ae47d",
+    "semantic_hash": "a5391909e0f9bb003899060b7a0ae47d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\BackgroundForm.tsx": {
+    "mtime": 1772502596.7458384,
+    "ast_hash": "3bab2ba93ca59a21b16ed2e242b1508a",
+    "semantic_hash": "3bab2ba93ca59a21b16ed2e242b1508a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\ClassForm.tsx": {
+    "mtime": 1772502596.7458384,
+    "ast_hash": "536003afb5c331b8368c0d6459efa83c",
+    "semantic_hash": "536003afb5c331b8368c0d6459efa83c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\EquipmentForm.tsx": {
+    "mtime": 1772502596.7468393,
+    "ast_hash": "2ad903867a9e8e0df5bb9bb49cdc7af4",
+    "semantic_hash": "2ad903867a9e8e0df5bb9bb49cdc7af4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\FeatForm.tsx": {
+    "mtime": 1772502596.7468393,
+    "ast_hash": "13869dece8e22b85d39c5d7408343c8c",
+    "semantic_hash": "13869dece8e22b85d39c5d7408343c8c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\GenericAssetForm.tsx": {
+    "mtime": 1772502596.7468393,
+    "ast_hash": "ddd086167ec4f5a12717a7ab783c7f6c",
+    "semantic_hash": "ddd086167ec4f5a12717a7ab783c7f6c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\MagicItemForm.tsx": {
+    "mtime": 1772502596.7478373,
+    "ast_hash": "87da36a6a5d1f044bdfc732915eeca30",
+    "semantic_hash": "87da36a6a5d1f044bdfc732915eeca30"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\MonsterForm.tsx": {
+    "mtime": 1772502596.7478373,
+    "ast_hash": "0612a6293d9945639a45ce8e62faaa17",
+    "semantic_hash": "0612a6293d9945639a45ce8e62faaa17"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\RaceForm.tsx": {
+    "mtime": 1772502596.748849,
+    "ast_hash": "d380ba9eee0995aadd399d4c9b2ddff2",
+    "semantic_hash": "d380ba9eee0995aadd399d4c9b2ddff2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\SpellForm.tsx": {
+    "mtime": 1772502596.748849,
+    "ast_hash": "56d64d38dc95b4ab5ccd5f4ce2993261",
+    "semantic_hash": "56d64d38dc95b4ab5ccd5f4ce2993261"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\index.ts": {
+    "mtime": 1772502596.748849,
+    "ast_hash": "17c19d6765b988096ebe9d5456f97ba5",
+    "semantic_hash": "17c19d6765b988096ebe9d5456f97ba5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\asset-forms\\types.ts": {
+    "mtime": 1772502596.7498379,
+    "ast_hash": "59b48f48421c4b9a24f54aeafb64af4a",
+    "semantic_hash": "59b48f48421c4b9a24f54aeafb64af4a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\AbilityBonusList.tsx": {
+    "mtime": 1772502596.7498379,
+    "ast_hash": "415ea6fdbfdb82d05491621682237a3b",
+    "semantic_hash": "415ea6fdbfdb82d05491621682237a3b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\ActionEditor.tsx": {
+    "mtime": 1772502596.7508447,
+    "ast_hash": "055f7fedf131ec5b87e78c1e379f0453",
+    "semantic_hash": "055f7fedf131ec5b87e78c1e379f0453"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\CollapsibleSection.tsx": {
+    "mtime": 1772502596.7508447,
+    "ast_hash": "b23d9d6db5d2c1339749bb1783fb4fd8",
+    "semantic_hash": "b23d9d6db5d2c1339749bb1783fb4fd8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\CostField.tsx": {
+    "mtime": 1772502596.7508447,
+    "ast_hash": "de0b0d14c8d1819263616e41a56341f6",
+    "semantic_hash": "de0b0d14c8d1819263616e41a56341f6"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\DescriptionArrayField.tsx": {
+    "mtime": 1772502596.7518446,
+    "ast_hash": "b496ac476e7074ec64de334f30619f18",
+    "semantic_hash": "b496ac476e7074ec64de334f30619f18"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\DiceField.tsx": {
+    "mtime": 1772502596.7518446,
+    "ast_hash": "514484646d40a7fb5be2dd0560a6c0d8",
+    "semantic_hash": "514484646d40a7fb5be2dd0560a6c0d8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\FormField.tsx": {
+    "mtime": 1772502596.752839,
+    "ast_hash": "9968390dc286ed2caf3ae2c6d11a161c",
+    "semantic_hash": "9968390dc286ed2caf3ae2c6d11a161c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\NumberField.tsx": {
+    "mtime": 1772502596.752839,
+    "ast_hash": "9d021d7183f3db30362d65c094dc7f02",
+    "semantic_hash": "9d021d7183f3db30362d65c094dc7f02"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\ReferencePicker.tsx": {
+    "mtime": 1772502596.752839,
+    "ast_hash": "726b283c144b348dc62afa9f1f92f09d",
+    "semantic_hash": "726b283c144b348dc62afa9f1f92f09d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\SelectField.tsx": {
+    "mtime": 1772502596.7538388,
+    "ast_hash": "5a6460ded46262ffa7b1bf909fb12f0e",
+    "semantic_hash": "5a6460ded46262ffa7b1bf909fb12f0e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\TagInput.tsx": {
+    "mtime": 1772502596.7538388,
+    "ast_hash": "916a8d42b830ef37ad4a11001d6cb04e",
+    "semantic_hash": "916a8d42b830ef37ad4a11001d6cb04e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\TextAreaField.tsx": {
+    "mtime": 1772502596.7543604,
+    "ast_hash": "2059a454f05242634f4017491ba33ef1",
+    "semantic_hash": "2059a454f05242634f4017491ba33ef1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\packs\\form-fields\\index.ts": {
+    "mtime": 1772502596.7543604,
+    "ast_hash": "5b1b994d07bd0b9b2dec7247d7985db7",
+    "semantic_hash": "5b1b994d07bd0b9b2dec7247d7985db7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\features\\shared\\ImageCropModal.tsx": {
+    "mtime": 1781935789.387774,
+    "ast_hash": "354d3adf7644f469f744c54fff4e2da2",
+    "semantic_hash": "354d3adf7644f469f744c54fff4e2da2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\layout\\AppLayout.tsx": {
+    "mtime": 1781196725.2621815,
+    "ast_hash": "16af9b2628d22beefbf72f71d81b1891",
+    "semantic_hash": "16af9b2628d22beefbf72f71d81b1891"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\layout\\AuthActionGuard.tsx": {
+    "mtime": 1781196725.2779224,
+    "ast_hash": "f0a5f3a7f45145cf752583209f8f7c42",
+    "semantic_hash": "f0a5f3a7f45145cf752583209f8f7c42"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\layout\\GuestBanner.tsx": {
+    "mtime": 1781196725.2884374,
+    "ast_hash": "4f453850df67345987eb87f3cd3e7868",
+    "semantic_hash": "4f453850df67345987eb87f3cd3e7868"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\layout\\ProtectedRoute.tsx": {
+    "mtime": 1781369784.5401888,
+    "ast_hash": "ec12cb5644c1b25d4f98af87e8cd5f53",
+    "semantic_hash": "ec12cb5644c1b25d4f98af87e8cd5f53"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\components\\layout\\Sidebar.tsx": {
+    "mtime": 1781560424.1899276,
+    "ast_hash": "423332881dbfbccbc19b087af3ba2ac8",
+    "semantic_hash": "423332881dbfbccbc19b087af3ba2ac8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\contexts\\AuthContext.tsx": {
+    "mtime": 1781560269.1160543,
+    "ast_hash": "d00bbbb89d05e47ea48e967cc398c2e6",
+    "semantic_hash": "d00bbbb89d05e47ea48e967cc398c2e6"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\hooks\\useDraftPersistence.ts": {
+    "mtime": 1772502596.7553563,
+    "ast_hash": "8601438a6ae56d78727528a65433b469",
+    "semantic_hash": "8601438a6ae56d78727528a65433b469"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\api.ts": {
+    "mtime": 1781560261.4983244,
+    "ast_hash": "9cb3db56d81235d4d729eb40d1730de1",
+    "semantic_hash": "9cb3db56d81235d4d729eb40d1730de1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\auth.ts": {
+    "mtime": 1781560251.8863556,
+    "ast_hash": "2ad60e6b01ce058264efeeb715a47f9f",
+    "semantic_hash": "2ad60e6b01ce058264efeeb715a47f9f"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\crop-image.ts": {
+    "mtime": 1781935789.4024029,
+    "ast_hash": "683876041f0fc0434526efedd2f26e00",
+    "semantic_hash": "683876041f0fc0434526efedd2f26e00"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\dmSessionApi.ts": {
+    "mtime": 1781967414.9068885,
+    "ast_hash": "3aa3e92a8d1ae4a602c1644678c34c66",
+    "semantic_hash": "3aa3e92a8d1ae4a602c1644678c34c66"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\dnd-utils.ts": {
+    "mtime": 1772502596.7563558,
+    "ast_hash": "d9c213a47d601538a538afc00e783f8d",
+    "semantic_hash": "d9c213a47d601538a538afc00e783f8d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\resize-image.ts": {
+    "mtime": 1781196725.3092453,
+    "ast_hash": "068f5ca0eb03ba3693587d50f6b78471",
+    "semantic_hash": "068f5ca0eb03ba3693587d50f6b78471"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\lib\\utils.ts": {
+    "mtime": 1772502596.7563558,
+    "ast_hash": "e3f848f1b39f863e6164cf58b5a8e752",
+    "semantic_hash": "e3f848f1b39f863e6164cf58b5a8e752"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\main.tsx": {
+    "mtime": 1781196725.3102527,
+    "ast_hash": "3e232ecde2f02d42cee8410854ee13c2",
+    "semantic_hash": "3e232ecde2f02d42cee8410854ee13c2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\CampaignDetails.tsx": {
+    "mtime": 1781375316.0238736,
+    "ast_hash": "583496c22bed1260a248dce3096703e1",
+    "semantic_hash": "583496c22bed1260a248dce3096703e1"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Campaigns.tsx": {
+    "mtime": 1781196725.3190966,
+    "ast_hash": "1eb7b09a7158e386d3bac84900f4fd2b",
+    "semantic_hash": "1eb7b09a7158e386d3bac84900f4fd2b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\CharacterDetail.tsx": {
+    "mtime": 1781375309.522276,
+    "ast_hash": "e735224d567b05d03899714c4f1f3135",
+    "semantic_hash": "e735224d567b05d03899714c4f1f3135"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Characters.tsx": {
+    "mtime": 1781196725.3201027,
+    "ast_hash": "81c6a9f92bd6d6b38320f2bc68f49d19",
+    "semantic_hash": "81c6a9f92bd6d6b38320f2bc68f49d19"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\CreateCampaign.tsx": {
+    "mtime": 1781990588.2755756,
+    "ast_hash": "30da940bbcf3469ec9a455e0417fd8e7",
+    "semantic_hash": "30da940bbcf3469ec9a455e0417fd8e7"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\CreateCharacter.tsx": {
+    "mtime": 1781935789.4308467,
+    "ast_hash": "227c3f0779472e0dfc136ff5bf5c7443",
+    "semantic_hash": "227c3f0779472e0dfc136ff5bf5c7443"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\CreatePack.tsx": {
+    "mtime": 1772502596.7573638,
+    "ast_hash": "9c318b2ffeab7dda495d807c15078745",
+    "semantic_hash": "9c318b2ffeab7dda495d807c15078745"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\DmSession.tsx": {
+    "mtime": 1781990396.8520558,
+    "ast_hash": "0d19b6d1414b4fa85a9365c6705ff2dd",
+    "semantic_hash": "0d19b6d1414b4fa85a9365c6705ff2dd"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\DmSessions.tsx": {
+    "mtime": 1781935795.2709632,
+    "ast_hash": "88c8d47b86788517480ce1ef1dcfc266",
+    "semantic_hash": "88c8d47b86788517480ce1ef1dcfc266"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\EditCampaign.tsx": {
+    "mtime": 1781196725.3425064,
+    "ast_hash": "206bfe7a2ff882fdb6ac6ec1a0fbbd81",
+    "semantic_hash": "206bfe7a2ff882fdb6ac6ec1a0fbbd81"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\EditPack.tsx": {
+    "mtime": 1772502596.758364,
+    "ast_hash": "e2f2720f821b75a02d5a8a14ad99dee0",
+    "semantic_hash": "e2f2720f821b75a02d5a8a14ad99dee0"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Library.tsx": {
+    "mtime": 1781196725.3756835,
+    "ast_hash": "309804b2a62d5f03bcc8a83ef9160551",
+    "semantic_hash": "309804b2a62d5f03bcc8a83ef9160551"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Login.tsx": {
+    "mtime": 1781560430.2562084,
+    "ast_hash": "11a6b1531a8ba0c14c80f54a03735465",
+    "semantic_hash": "11a6b1531a8ba0c14c80f54a03735465"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Marketplace.tsx": {
+    "mtime": 1772502596.758364,
+    "ast_hash": "57ff37356170330950dbb8951b1a26e4",
+    "semantic_hash": "57ff37356170330950dbb8951b1a26e4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\PackDetails.tsx": {
+    "mtime": 1781375320.2485142,
+    "ast_hash": "69f27ae117eb88c0f0717177f9b3ec9d",
+    "semantic_hash": "69f27ae117eb88c0f0717177f9b3ec9d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Profile.tsx": {
+    "mtime": 1781935789.4457772,
+    "ast_hash": "0244b24171d65a6f839325a1bb81646d",
+    "semantic_hash": "0244b24171d65a6f839325a1bb81646d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\pages\\Register.tsx": {
+    "mtime": 1781560431.4636526,
+    "ast_hash": "12975a2ce60ac0799772b59e63db0d26",
+    "semantic_hash": "12975a2ce60ac0799772b59e63db0d26"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\router.tsx": {
+    "mtime": 1781196725.4140224,
+    "ast_hash": "391f8af17f25219040935d9f31d0f525",
+    "semantic_hash": "391f8af17f25219040935d9f31d0f525"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\services\\api.ts": {
+    "mtime": 1781196725.4220533,
+    "ast_hash": "d943a0e50392e7a6bdb70b19169cc481",
+    "semantic_hash": "d943a0e50392e7a6bdb70b19169cc481"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\services\\campaigns.api.ts": {
+    "mtime": 1781375073.8355856,
+    "ast_hash": "48e929f8f71a2395cb3c97af9eaff1b4",
+    "semantic_hash": "48e929f8f71a2395cb3c97af9eaff1b4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\services\\characters.api.ts": {
+    "mtime": 1781394542.4792147,
+    "ast_hash": "7f89456eebcee79d5351f651570861d9",
+    "semantic_hash": "7f89456eebcee79d5351f651570861d9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\tailwind.config.ts": {
+    "mtime": 1772502596.760358,
+    "ast_hash": "4159056e9ce29f37b514d48648d9ebfa",
+    "semantic_hash": "4159056e9ce29f37b514d48648d9ebfa"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\tsconfig.app.json": {
+    "mtime": 1772502596.762363,
+    "ast_hash": "89eb759c9b2174fc82eef0073f1e930a",
+    "semantic_hash": "89eb759c9b2174fc82eef0073f1e930a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\tsconfig.json": {
+    "mtime": 1772502596.762363,
+    "ast_hash": "852c3a5df14a4b43ac28e9554ebedf4a",
+    "semantic_hash": "852c3a5df14a4b43ac28e9554ebedf4a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\tsconfig.node.json": {
+    "mtime": 1772502596.762363,
+    "ast_hash": "c5c9cdf8e005158c0b05c527b5634360",
+    "semantic_hash": "c5c9cdf8e005158c0b05c527b5634360"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\vite.config.ts": {
+    "mtime": 1781987819.792784,
+    "ast_hash": "30a1df3f570efa14b92247034072651b",
+    "semantic_hash": "30a1df3f570efa14b92247034072651b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\content-assets.mjs": {
+    "mtime": 1772504196.3382688,
+    "ast_hash": "8aeea624d36ca2b4c7d0e0748b76ba28",
+    "semantic_hash": "8aeea624d36ca2b4c7d0e0748b76ba28"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\content-modules.mjs": {
+    "mtime": 1772504196.3387787,
+    "ast_hash": "8aeea624d36ca2b4c7d0e0748b76ba28",
+    "semantic_hash": "8aeea624d36ca2b4c7d0e0748b76ba28"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\content.d.ts": {
+    "mtime": 1772504196.3395283,
+    "ast_hash": "c03ceb67d4e5ac77031424c6e29a8000",
+    "semantic_hash": "c03ceb67d4e5ac77031424c6e29a8000"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\data-store.json": {
+    "mtime": 1781196725.4302075,
+    "ast_hash": "48f42c7d878520b1fec9971d89013856",
+    "semantic_hash": "48f42c7d878520b1fec9971d89013856"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\settings.json": {
+    "mtime": 1781196725.4302075,
+    "ast_hash": "d29d7af2df801d795567805359e4be77",
+    "semantic_hash": "d29d7af2df801d795567805359e4be77"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\.astro\\types.d.ts": {
+    "mtime": 1781987977.1415074,
+    "ast_hash": "72c584e3bd8b5f007b2beb870517b437",
+    "semantic_hash": "72c584e3bd8b5f007b2beb870517b437"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\astro.config.mjs": {
+    "mtime": 1772504196.3416631,
+    "ast_hash": "5e18d29dd062ae3a199f8fc779d73b61",
+    "semantic_hash": "5e18d29dd062ae3a199f8fc779d73b61"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\package.json": {
+    "mtime": 1781196725.4321048,
+    "ast_hash": "8599b41445ae0058691dc92257ab1563",
+    "semantic_hash": "8599b41445ae0058691dc92257ab1563"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\CTASection.astro": {
+    "mtime": 1772504196.3474042,
+    "ast_hash": "079ad61a03945003eb8cfe1bcc791505",
+    "semantic_hash": "079ad61a03945003eb8cfe1bcc791505"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\DemoSection.astro": {
+    "mtime": 1772504196.3479302,
+    "ast_hash": "0f7374b4852304db3110dbc98c9d53c4",
+    "semantic_hash": "0f7374b4852304db3110dbc98c9d53c4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\FAQSection.astro": {
+    "mtime": 1772504196.3484461,
+    "ast_hash": "ff82a447fb7bc3ce6d03e30f8e86b31e",
+    "semantic_hash": "ff82a447fb7bc3ce6d03e30f8e86b31e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\FeaturesSection.astro": {
+    "mtime": 1772504196.349025,
+    "ast_hash": "2bd6a27b42bceeab4190e0e0daac1e2a",
+    "semantic_hash": "2bd6a27b42bceeab4190e0e0daac1e2a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\Footer.astro": {
+    "mtime": 1772504196.349025,
+    "ast_hash": "fdb4d783ec1de06bcb6bc39cbb979943",
+    "semantic_hash": "fdb4d783ec1de06bcb6bc39cbb979943"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\HeroSection.astro": {
+    "mtime": 1772504196.34981,
+    "ast_hash": "34e7f08779d80ba172ac297a27439b6b",
+    "semantic_hash": "34e7f08779d80ba172ac297a27439b6b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\Navigation.astro": {
+    "mtime": 1772504196.3503227,
+    "ast_hash": "0ed5db8460894cb0c1d6e1dd347cdd3a",
+    "semantic_hash": "0ed5db8460894cb0c1d6e1dd347cdd3a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\PricingSection.astro": {
+    "mtime": 1772504196.3503227,
+    "ast_hash": "42aca8e3c13706c183828fede4073151",
+    "semantic_hash": "42aca8e3c13706c183828fede4073151"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\ProblemSolutionSection.astro": {
+    "mtime": 1772504196.351359,
+    "ast_hash": "20b9e09a557801fabfd87dd9aabce173",
+    "semantic_hash": "20b9e09a557801fabfd87dd9aabce173"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\TestimonialsSection.astro": {
+    "mtime": 1772504196.351359,
+    "ast_hash": "6655b7452d77f23d645913eabb181a8d",
+    "semantic_hash": "6655b7452d77f23d645913eabb181a8d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\components\\landing\\VisionSection.astro": {
+    "mtime": 1772504196.351359,
+    "ast_hash": "6960f69614d23f9ac49a6d10ebb9586d",
+    "semantic_hash": "6960f69614d23f9ac49a6d10ebb9586d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\layouts\\Layout.astro": {
+    "mtime": 1772504196.351359,
+    "ast_hash": "b5d4ad19e3ed9ee0716bc6f30331e018",
+    "semantic_hash": "b5d4ad19e3ed9ee0716bc6f30331e018"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\src\\pages\\index.astro": {
+    "mtime": 1772504196.3529055,
+    "ast_hash": "f18c118041441fa68eb4441d002f310d",
+    "semantic_hash": "f18c118041441fa68eb4441d002f310d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\tailwind.config.ts": {
+    "mtime": 1772504196.3539095,
+    "ast_hash": "cd1849a25dcdbdfaddb72d8d3bdfacbb",
+    "semantic_hash": "cd1849a25dcdbdfaddb72d8d3bdfacbb"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\tsconfig.json": {
+    "mtime": 1772504196.3539095,
+    "ast_hash": "c00462f26cfa157b3b5e5eff01a34df2",
+    "semantic_hash": "c00462f26cfa157b3b5e5eff01a34df2"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\context\\schema.sql": {
+    "mtime": 1781989349.8568947,
+    "ast_hash": "be89aeb4b89ca7f7cf99df26fdf4469d",
+    "semantic_hash": "be89aeb4b89ca7f7cf99df26fdf4469d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\package.json": {
+    "mtime": 1781991930.2630785,
+    "ast_hash": "b98fc38b1251813b5da935ae862e5dbe",
+    "semantic_hash": "b98fc38b1251813b5da935ae862e5dbe"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\eslint.config.mjs": {
+    "mtime": 1772502596.7760487,
+    "ast_hash": "d94be3bca836446d25343b15bb2ffe71",
+    "semantic_hash": "d94be3bca836446d25343b15bb2ffe71"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\package.json": {
+    "mtime": 1781988271.044242,
+    "ast_hash": "80872cf8894928756fae54d7771a4648",
+    "semantic_hash": "80872cf8894928756fae54d7771a4648"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\index.test.ts": {
+    "mtime": 1772502596.7760487,
+    "ast_hash": "3f336cfe6b2695a2900123a8233f8db3",
+    "semantic_hash": "3f336cfe6b2695a2900123a8233f8db3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\index.ts": {
+    "mtime": 1781196725.4577475,
+    "ast_hash": "b6499003437072ecc088c929abc9e2c5",
+    "semantic_hash": "b6499003437072ecc088c929abc9e2c5"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\point-buy.test.ts": {
+    "mtime": 1781196725.4668357,
+    "ast_hash": "6a09021dc559919e854ca401c1f0794c",
+    "semantic_hash": "6a09021dc559919e854ca401c1f0794c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\point-buy.ts": {
+    "mtime": 1781196725.4674613,
+    "ast_hash": "132f1e5a2c8ffc4b630c8524b03a8469",
+    "semantic_hash": "132f1e5a2c8ffc4b630c8524b03a8469"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\resolver.test.ts": {
+    "mtime": 1772502596.7770488,
+    "ast_hash": "3cb90cdadfd5533c690517c453bd37d3",
+    "semantic_hash": "3cb90cdadfd5533c690517c453bd37d3"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\resolver.ts": {
+    "mtime": 1772502596.778056,
+    "ast_hash": "094b1dada4884b59e5314e9ddfe8756c",
+    "semantic_hash": "094b1dada4884b59e5314e9ddfe8756c"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\validator.test.ts": {
+    "mtime": 1772502596.778056,
+    "ast_hash": "2a8d482286bc24d1ca0f7e6456b828da",
+    "semantic_hash": "2a8d482286bc24d1ca0f7e6456b828da"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\rules\\validator.ts": {
+    "mtime": 1772502596.778056,
+    "ast_hash": "669b63d9abfd64a9771f493f132fc7c4",
+    "semantic_hash": "669b63d9abfd64a9771f493f132fc7c4"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\types\\ability-scores.types.ts": {
+    "mtime": 1781196725.476536,
+    "ast_hash": "951b2b24d6830e7c7867b2b8feb8bbe8",
+    "semantic_hash": "951b2b24d6830e7c7867b2b8feb8bbe8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\types\\core.types.ts": {
+    "mtime": 1772502596.779048,
+    "ast_hash": "c2a95b8ee9babd9f89407c1d8a0292b6",
+    "semantic_hash": "c2a95b8ee9babd9f89407c1d8a0292b6"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\src\\types\\prerequisites.types.ts": {
+    "mtime": 1772502596.779048,
+    "ast_hash": "e7c352e22d04f70fa1c4f59e375faca8",
+    "semantic_hash": "e7c352e22d04f70fa1c4f59e375faca8"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\packages\\dnd-rules\\tsconfig.json": {
+    "mtime": 1781988018.2925458,
+    "ast_hash": "29090ad35b92579ebc797f64ff727ddc",
+    "semantic_hash": "29090ad35b92579ebc797f64ff727ddc"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\turbo.json": {
+    "mtime": 1772504196.3559995,
+    "ast_hash": "ed990d7d1039d980f2ba52db38e29d38",
+    "semantic_hash": "ed990d7d1039d980f2ba52db38e29d38"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\.claude\\CLAUDE.md": {
+    "mtime": 1781196724.4931006,
+    "ast_hash": "817fe671013b35ae0bc9301dfe449a87",
+    "semantic_hash": "817fe671013b35ae0bc9301dfe449a87"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\.github\\workflows\\ci.yml": {
+    "mtime": 1781577892.6267686,
+    "ast_hash": "2bd86bbca4fe3661c353b6de52125b5b",
+    "semantic_hash": "2bd86bbca4fe3661c353b6de52125b5b"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\CLAUDE.md": {
+    "mtime": 1781989435.9211433,
+    "ast_hash": "b3b00edd7832cc27da2ec7d62d6e9303",
+    "semantic_hash": "b3b00edd7832cc27da2ec7d62d6e9303"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\README.md": {
+    "mtime": 1781990172.20728,
+    "ast_hash": "30a7fcadd1ef9b91ef6ed0722e58975e",
+    "semantic_hash": "30a7fcadd1ef9b91ef6ed0722e58975e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\backend\\README.md": {
+    "mtime": 1781197005.1855147,
+    "ast_hash": "062f2b4f07f8af7b2a82f9dd5d12106e",
+    "semantic_hash": "062f2b4f07f8af7b2a82f9dd5d12106e"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\dm-orchestrator\\requirements.txt": {
+    "mtime": 1781920360.329039,
+    "ast_hash": "17027972edef6a15c041c57d86b0fe6a",
+    "semantic_hash": "17027972edef6a15c041c57d86b0fe6a"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\README.md": {
+    "mtime": 1772502596.7393284,
+    "ast_hash": "b11a4fc9d75ea5862efa40b2441c7c75",
+    "semantic_hash": "b11a4fc9d75ea5862efa40b2441c7c75"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\index.html": {
+    "mtime": 1772502596.7393284,
+    "ast_hash": "2b08b16e8d20e09fb97d346c67313158",
+    "semantic_hash": "2b08b16e8d20e09fb97d346c67313158"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\README.md": {
+    "mtime": 1781196996.550994,
+    "ast_hash": "f1b23532f7dccc0f12dc3a650b4783d9",
+    "semantic_hash": "f1b23532f7dccc0f12dc3a650b4783d9"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\context\\agent-context.md": {
+    "mtime": 1781196725.4356182,
+    "ast_hash": "61f3ece5ae6a33de035e1ad8a20b9198",
+    "semantic_hash": "61f3ece5ae6a33de035e1ad8a20b9198"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\context\\backlog.md": {
+    "mtime": 1781196725.4366243,
+    "ast_hash": "fc3afc9a3ee962ba90c7cb1cefd39252",
+    "semantic_hash": "fc3afc9a3ee962ba90c7cb1cefd39252"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\public\\vite.svg": {
+    "mtime": 1772502596.7413287,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": "8e3a10e157f75ada21ab742c022d5430"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\frontend\\src\\assets\\react.svg": {
+    "mtime": 1772502596.7423298,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\public\\favicon.svg": {
+    "mtime": 1772504196.3441997,
+    "ast_hash": "2e60239ba96db0b94a6fedcc58e5631d",
+    "semantic_hash": "2e60239ba96db0b94a6fedcc58e5631d"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\public\\images\\hero-icon.png": {
+    "mtime": 1772504196.3447087,
+    "ast_hash": "4b00ea134e6f696afe4b0ca9f3360d60",
+    "semantic_hash": "4b00ea134e6f696afe4b0ca9f3360d60"
+  },
+  "C:\\Users\\bertl_1ewevv8\\Documents\\GitHub\\questmasters-monorepo\\apps\\landing\\public\\images\\logo.png": {
+    "mtime": 1772504196.3458903,
+    "ast_hash": "48d020c23722c6241d582cfb56d718f4",
+    "semantic_hash": "48d020c23722c6241d582cfb56d718f4"
+  }
+}

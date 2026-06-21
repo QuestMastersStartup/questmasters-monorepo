@@ -60,7 +60,7 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 - Documentos de análisis o reportes como `.md` en la raíz — usar `context/` o no crearlos
 - Skills de Claude Code (`.agents/`, `.claude/skills/`) — van en `~/.claude/`, no en el repo
 - `WARP.md`, `skills-lock.json`, configuración personal de IDE — no son artefactos del proyecto
-- `graphify-out/`, `.codegraph/` — output generado, ya en `.gitignore`
+- `.codegraph/` — output generado, ya en `.gitignore`
 
 ### Disciplina al escribir código
 

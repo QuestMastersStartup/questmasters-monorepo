@@ -32,7 +32,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Generated / external tool output
-graphify-out/
+graphify-out/cache/
 .superpowers
 .codegraph/
 testsprite_tests/tmp/
