@@ -1,3 +1,4 @@
+import type { AbilityScores } from "@questmasters/dnd-rules";
 import { authFetch } from "./api";
 
 // ─── Tipos ────────────────────────────────────────────────────────────
@@ -14,6 +15,12 @@ export interface CharacterSnapshot {
   backstory: string;
   alignment: string;
   personalityTraits: string;
+  stats?: AbilityScores;
+  skillProficiencies?: string[];
+  expertiseSkills?: string[];
+  jackOfAllTrades?: boolean;
+  reliableTalent?: boolean;
+  subclass?: string;
 }
 
 export interface NarrativeNote {

@@ -27,6 +27,12 @@ function charToSnapshot(char: MyCharacter): CharacterSnapshot {
     backstory: char.backstory ?? "",
     alignment: (choices.alignment as string) ?? "",
     personalityTraits: (choices.personalityTraits as string) ?? "",
+    stats: char.stats,
+    skillProficiencies: choices.skillProficiencies as string[] ?? [],
+    expertiseSkills: choices.expertiseSkills as string[] ?? [],
+    jackOfAllTrades: (choices.jackOfAllTrades as boolean) ?? false,
+    reliableTalent: (choices.reliableTalent as boolean) ?? false,
+    subclass: (choices.subclassName as string) ?? "",
   };
 }
 

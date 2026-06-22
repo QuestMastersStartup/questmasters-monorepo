@@ -1,3 +1,4 @@
+import type { AbilityScores } from '@questmasters/dnd-rules';
 import { UUID } from '@shared/domain/value-objects/uuid.vo';
 
 export type ArchitectureType = 'mas' | 'monolithic';
@@ -13,6 +14,12 @@ export interface CharacterSnapshot {
   backstory: string;
   alignment: string;
   personalityTraits: string;
+  stats?: AbilityScores;
+  skillProficiencies?: string[];
+  expertiseSkills?: string[];
+  jackOfAllTrades?: boolean;
+  reliableTalent?: boolean;
+  subclass?: string;
 }
 
 export interface NarrativeNote {
@@ -137,12 +144,34 @@ export class DmSession {
       this.architectureType,
       this.status === 'initializing' ? 'active' : this.status,
       this.modelId,
-      outcome.memorySnapshot,
+      { ...this.memorySnapshot, ...outcome.memorySnapshot },
       [...this.narrativeNotes, ...outcome.narrativeNotesDelta],
       this.turnCount + 1,
       this.totalInputTokens + outcome.inputTokens,
       this.totalOutputTokens + outcome.outputTokens,
       this.totalLatencyMs + outcome.latencyMs,
+      this.createdAt,
+      new Date(),
+      this.deletedAt,
+    );
+  }
+
+  withMemory(partialSnapshot: Record<string, unknown>): DmSession {
+    return new DmSession(
+      this.id,
+      this.userId,
+      this.title,
+      this.campaignPrompt,
+      this.characters,
+      this.architectureType,
+      this.status,
+      this.modelId,
+      { ...this.memorySnapshot, ...partialSnapshot },
+      this.narrativeNotes,
+      this.turnCount,
+      this.totalInputTokens,
+      this.totalOutputTokens,
+      this.totalLatencyMs,
       this.createdAt,
       new Date(),
       this.deletedAt,
