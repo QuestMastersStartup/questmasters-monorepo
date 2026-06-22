@@ -15,7 +15,7 @@ bucket_name = "questmasters-avatars"
 
 [vars]
 NODE_ENV = "production"
-ALLOWED_ORIGINS = "https://questmasters.app"
+ALLOWED_ORIGINS = "https://questmasters.app,https://questmasters-frontend.pages.dev"
 R2_PUBLIC_URL = "https://pub-2a8ff7c2e671492c918d10c21a5a9939.r2.dev"
 
 # Secrets — configurar con: wrangler secret put <NAME>

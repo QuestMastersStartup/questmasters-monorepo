@@ -106,6 +106,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     const user = await requireUser(c);
     const isAdmin = await getIsAdmin(user.id);
     const body = await c.req.json();
+    console.log('[dm-session POST] chars:', body?.characters?.length, 'first_name:', body?.characters?.[0]?.name);
 
     const created = await container.createDmSessionUseCase.execute({
       userId: user.id,
