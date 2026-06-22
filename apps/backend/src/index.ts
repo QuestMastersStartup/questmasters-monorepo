@@ -17,6 +17,8 @@ import { authRoutes } from './routes/auth.routes';
 import { GroqAutoPlayerAdapter } from './dm-session/infrastructure/adapters/groq-auto-player.adapter';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
+// ponytail: module-scope flag — Workers share this across requests within the same instance
+let srdSeeded = false;
 
 app.use('*', async (c, next) => {
   const allowed = c.env.ALLOWED_ORIGINS?.split(',') ?? ['http://localhost:3001', 'http://localhost:3000'];
@@ -52,8 +54,10 @@ app.all('/api/*', async (c) => {
   const db = createDb(c.env.DB);
   const container = createContainer(db, c.env);
 
-  // Seed SRD data if not yet in D1 — no-op after first run (2 fast existsBySlug queries)
-  await container.srdSeederService.onApplicationBootstrap();
+  if (!srdSeeded) {
+    await container.srdSeederService.onApplicationBootstrap();
+    srdSeeded = true;
+  }
 
   const api = new Hono<{ Bindings: CloudflareBindings }>();
   api.get('/', (ctx) => ctx.text('QuestMasters API is running!'));
