@@ -30,6 +30,8 @@ import {
   ABILITY_SCORE_MAX,
 } from "@questmasters/dnd-rules";
 import { ImageCropModal } from "../components/features/shared/ImageCropModal";
+import { ALL_SKILLS } from "../lib/diceRoll";
+import { ABILITY_ABBREVIATIONS } from "@questmasters/dnd-rules";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -182,6 +184,10 @@ export const CreateCharacter: React.FC = () => {
   const [bgIdeals,      setBgIdeals]     = useState("");
   const [bgBonds,       setBgBonds]      = useState("");
   const [bgFlaws,       setBgFlaws]      = useState("");
+
+  // ── Skill proficiencies ────────────────────────────────────────────────────
+  const [selectedSkillProfs, setSelectedSkillProfs] = useState<string[]>([]);
+  const [expertiseSkills, setExpertiseSkills]       = useState<string[]>([]);
 
   // ── Additional info ───────────────────────────────────────────────────────
   const [alignment,  setAlignment]  = useState("");
@@ -344,19 +350,91 @@ export const CreateCharacter: React.FC = () => {
     sc => (sc.data as any)?.class?.index === selectedClass?.index
   );
 
+  // Class skill proficiency choices
+  const classData = selectedClass?.data as Record<string, any> | undefined;
+  const classSkillChoice = (classData?.proficiency_choices ?? []).find(
+    (c: any) => c.type === "proficiencies" && c.from?.options?.some((o: any) => o.item?.index?.startsWith("skill-")),
+  ) as { choose: number; from: { options: { item: { index: string; name: string } }[] } } | undefined;
+
+  const classAvailableSkills: string[] = classSkillChoice
+    ? classSkillChoice.from.options
+        .filter((o: any) => o.item?.index?.startsWith("skill-"))
+        .map((o: any) => o.item.name.replace("Skill: ", ""))
+    : [];
+  const classSkillCount = classSkillChoice?.choose ?? 0;
+
+  // Subclass level requirement
+  const selectedSubclass = assets.subclasses.find(s => s.id === subclassAssetId);
+  const subclassLevelMap: Record<string, number> = {
+    cleric: 1, sorcerer: 1, warlock: 1, druid: 2, wizard: 2,
+    barbarian: 3, bard: 3, fighter: 3, monk: 3, paladin: 3, ranger: 3, rogue: 3,
+  };
+  const classIndex = selectedClass?.index ?? "";
+  const subclassMinLevel = subclassLevelMap[classIndex] ?? 3;
+  const canSelectSubclass = level >= subclassMinLevel;
+
+  // Bard College of Lore: +3 bonus proficiencies at level 3
+  const isLoreBard = classIndex === "bard" && selectedSubclass?.index === "lore" && level >= 3;
+  const loreBonusCount = isLoreBard ? 3 : 0;
+
+  // Expertise (Bard level 3+ / Rogue level 1+)
+  const expertiseCount =
+    (classIndex === "bard" && level >= 3 ? 2 : 0) +
+    (classIndex === "bard" && level >= 10 ? 2 : 0) +
+    (classIndex === "rogue" && level >= 1 ? 2 : 0) +
+    (classIndex === "rogue" && level >= 6 ? 2 : 0);
+
+  // Warlock Beguiling Influence: +Deception, +Persuasion at level 2
+  const warlockBonusProfs = classIndex === "warlock" && level >= 2 ? ["Deception", "Persuasion"] : [];
+
+  // Jack of All Trades (Bard level 2+), Reliable Talent (Rogue level 11+)
+  const hasJackOfAllTrades = classIndex === "bard" && level >= 2;
+  const hasReliableTalent = classIndex === "rogue" && level >= 11;
+
   // Background proficiency display (vanilla/personalizado)
   const selectedBg   = assets.backgrounds.find(b => b.id === backgroundAssetId);
-  const bgSkillProfs = selectedBg
+  const bgSkillProfsArr = selectedBg
     ? ((selectedBg.data as any)?.starting_proficiencies ?? [])
         .filter((p: any) => p.name?.startsWith("Skill:"))
         .map((p: any) => p.name.replace("Skill: ", ""))
-        .join(", ")
-    : "";
+    : [];
+  const bgSkillProfs = bgSkillProfsArr.join(", ");
   const bgEquipment  = selectedBg
     ? ((selectedBg.data as any)?.starting_equipment ?? [])
         .map((e: any) => `${e.equipment?.name ?? "?"} ×${e.quantity ?? 1}`)
         .join(", ")
     : "";
+
+  // Reset skill selections when class changes
+  useEffect(() => {
+    setSelectedSkillProfs([]);
+    setExpertiseSkills([]);
+  }, [classAssetId]);
+
+  // All proficiencies combined (background + class + warlock bonus + lore bonus)
+  const allProficiencies = [
+    ...bgSkillProfsArr,
+    ...warlockBonusProfs,
+    ...selectedSkillProfs,
+  ];
+
+  const toggleSkillProf = (skill: string) => {
+    setSelectedSkillProfs(prev => {
+      if (prev.includes(skill)) return prev.filter(s => s !== skill);
+      const maxSelectable = classSkillCount + loreBonusCount;
+      if (prev.length >= maxSelectable) return prev;
+      return [...prev, skill];
+    });
+    setExpertiseSkills(prev => prev.filter(s => s !== skill));
+  };
+
+  const toggleExpertise = (skill: string) => {
+    setExpertiseSkills(prev => {
+      if (prev.includes(skill)) return prev.filter(s => s !== skill);
+      if (prev.length >= expertiseCount) return prev;
+      return [...prev, skill];
+    });
+  };
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const rollHp = () => {
@@ -429,6 +507,12 @@ export const CreateCharacter: React.FC = () => {
         ...(languages.trim()     && { languages:     languages.trim() }),
         ...(notes.trim()         && { notes:         notes.trim() }),
         ...(xp                   && { xp:            Number(xp) }),
+        // Skill proficiencies
+        skillProficiencies: allProficiencies,
+        ...(expertiseSkills.length > 0 && { expertiseSkills }),
+        ...(hasJackOfAllTrades && { jackOfAllTrades: true }),
+        ...(hasReliableTalent && { reliableTalent: true }),
+        ...(selectedSubclass && { subclassName: selectedSubclass.name }),
       };
 
       if (isEditMode) {
@@ -724,6 +808,148 @@ export const CreateCharacter: React.FC = () => {
               ))}
             </div>
           </section>
+
+          {/* 2.5 · Competencias de Habilidad */}
+          {(classAssetId || isLibre) && (
+            <Section title="Competencias de Habilidad" icon={<Award size={18} />}>
+              {!isLibre && classSkillCount > 0 && (
+                <p className="text-xs text-slate-400 mb-1">
+                  Clase: elige {classSkillCount}{loreBonusCount > 0 ? ` + ${loreBonusCount} (Lore)` : ""} de {classAvailableSkills.length > 0 ? classAvailableSkills.length : 18} disponibles
+                  {selectedSkillProfs.length > 0 && (
+                    <span className="ml-2 text-indigo-400 font-bold">
+                      ({selectedSkillProfs.length}/{classSkillCount + loreBonusCount})
+                    </span>
+                  )}
+                </p>
+              )}
+              {bgSkillProfsArr.length > 0 && (
+                <p className="text-xs text-slate-400 mb-1">
+                  Background: {bgSkillProfsArr.join(", ")} <span className="text-slate-600">(fijas)</span>
+                </p>
+              )}
+              {warlockBonusProfs.length > 0 && (
+                <p className="text-xs text-amber-400/70 mb-1">
+                  Beguiling Influence: Deception, Persuasion <span className="text-slate-600">(automáticas)</span>
+                </p>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-3">
+                {ALL_SKILLS.map((skill) => {
+                  const abilityScore = stats[skill.ability];
+                  const mod = calculateModifier(abilityScore);
+                  const isBgProf = bgSkillProfsArr.some((p: string) => p.toLowerCase() === skill.nameEN.toLowerCase());
+                  const isWarlockProf = warlockBonusProfs.some((p: string) => p.toLowerCase() === skill.nameEN.toLowerCase());
+                  const isClassProf = selectedSkillProfs.includes(skill.nameEN);
+                  const isProficient = isBgProf || isWarlockProf || isClassProf;
+                  const isExp = expertiseSkills.includes(skill.nameEN);
+                  const isFixed = isBgProf || isWarlockProf;
+
+                  const isClassAvailable = isLibre || classAvailableSkills.length === 0 ||
+                    classAvailableSkills.some(s => s.toLowerCase() === skill.nameEN.toLowerCase());
+                  const canToggle = isLibre
+                    ? !isFixed
+                    : !isFixed && (isClassProf || (isClassAvailable && selectedSkillProfs.length < classSkillCount + loreBonusCount));
+
+                  const profBonusVal = calculateProficiencyBonus(isEditMode ? level : 1);
+                  let totalMod = mod;
+                  if (isExp) totalMod += profBonusVal * 2;
+                  else if (isProficient) totalMod += profBonusVal;
+                  else if (hasJackOfAllTrades) totalMod += Math.floor(profBonusVal / 2);
+                  const totalSign = totalMod >= 0 ? "+" : "";
+
+                  const abbr = ABILITY_ABBREVIATIONS[skill.ability];
+
+                  return (
+                    <button
+                      key={skill.index}
+                      type="button"
+                      onClick={() => {
+                        if (isFixed) return;
+                        if (isLibre) {
+                          setSelectedSkillProfs(prev =>
+                            prev.includes(skill.nameEN)
+                              ? prev.filter(s => s !== skill.nameEN)
+                              : [...prev, skill.nameEN],
+                          );
+                        } else {
+                          toggleSkillProf(skill.nameEN);
+                        }
+                      }}
+                      disabled={!canToggle && !isClassProf}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs transition-all ${
+                        isProficient
+                          ? isFixed
+                            ? "bg-slate-700/40 border border-slate-600/30 cursor-default"
+                            : "bg-indigo-500/15 border border-indigo-500/30 hover:border-indigo-400/50"
+                          : "bg-slate-800/30 border border-slate-700/30 hover:border-slate-600/50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      }`}
+                    >
+                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        isExp ? "border-amber-400 bg-amber-400/20" :
+                        isProficient ? "border-indigo-400 bg-indigo-400/20" : "border-slate-600"
+                      }`}>
+                        {(isProficient || isExp) && (
+                          <span className={`w-1.5 h-1.5 rounded-full ${isExp ? "bg-amber-400" : "bg-indigo-400"}`} />
+                        )}
+                      </span>
+                      <span className="flex-1 text-slate-200 font-medium truncate">{skill.nameES}</span>
+                      <span className="text-[10px] text-slate-500 font-mono w-8 text-center">{abbr}</span>
+                      <span className={`font-bold font-mono w-8 text-right ${totalMod >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                        {totalSign}{totalMod}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Expertise */}
+              {expertiseCount > 0 && allProficiencies.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-slate-700/40">
+                  <p className="text-xs font-bold text-amber-400 mb-2">
+                    Expertise — Elige {expertiseCount} skills para duplicar proficiency
+                    <span className="ml-2 text-amber-400/60">({expertiseSkills.length}/{expertiseCount})</span>
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {allProficiencies.map((skill) => {
+                      const isSelected = expertiseSkills.includes(skill);
+                      const canSelect = isSelected || expertiseSkills.length < expertiseCount;
+                      return (
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() => toggleExpertise(skill)}
+                          disabled={!canSelect}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                            isSelected
+                              ? "bg-amber-500/20 border border-amber-500/40 text-amber-300"
+                              : "bg-slate-800/40 border border-slate-700/30 text-slate-400 hover:border-amber-500/30 disabled:opacity-40"
+                          }`}
+                        >
+                          {skill}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Passive indicators */}
+              {(hasJackOfAllTrades || hasReliableTalent) && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {hasJackOfAllTrades && (
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      Jack of All Trades (+{Math.floor(calculateProficiencyBonus(isEditMode ? level : 1) / 2)} a checks sin proficiency)
+                    </span>
+                  )}
+                  {hasReliableTalent && (
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      Reliable Talent (d20 mínimo 10 con proficiency)
+                    </span>
+                  )}
+                </div>
+              )}
+            </Section>
+          )}
 
           {/* 3 · Trasfondo */}
           <Section title="Trasfondo" icon={<ScrollText size={18} />} optional>
@@ -1106,9 +1332,18 @@ export const CreateCharacter: React.FC = () => {
               <h3 className="text-lg font-black text-white flex items-center gap-2">
                 <Sword className="text-violet-400" size={20} />
                 Subclase de {selectedClass?.name}
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500 border border-slate-700 normal-case tracking-normal">opcional</span>
+                {canSelectSubclass ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 normal-case tracking-normal">disponible</span>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-900/30 text-amber-400 border border-amber-500/20 normal-case tracking-normal">nivel {subclassMinLevel}+</span>
+                )}
               </h3>
-              <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+              {!canSelectSubclass && (
+                <p className="text-xs text-amber-400/60">
+                  {selectedClass?.name} elige subclase a nivel {subclassMinLevel}. Tu personaje es nivel {level}.
+                </p>
+              )}
+              <div className={`space-y-2 max-h-[280px] overflow-y-auto pr-1 ${!canSelectSubclass ? "opacity-40 pointer-events-none" : ""}`}>
                 {availSubclasses.map(asset => (
                   <AssetCard
                     key={asset.id}
