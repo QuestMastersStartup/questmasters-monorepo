@@ -68,6 +68,7 @@ nul
 
 # IDE configs (personal)
 .vscode/
+context/
 
 # Other AI agent / IDE configs (personal, not project)
 .agent/
