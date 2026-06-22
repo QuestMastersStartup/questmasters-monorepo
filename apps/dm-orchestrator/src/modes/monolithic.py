@@ -145,6 +145,8 @@ def _format_character(c: CharacterSnapshot) -> str:
     header = f"- {c.name}"
     if origin:
         header += f" ({origin})"
+    if c.subclass:
+        header += f", {c.subclass}"
     if c.background:
         header += f", {c.background}"
     lines = [header]
@@ -152,6 +154,12 @@ def _format_character(c: CharacterSnapshot) -> str:
         lines.append(f"  Alignment: {c.alignment}")
     if c.personality_traits:
         lines.append(f"  Personality: {c.personality_traits}")
+    if c.skill_proficiencies:
+        lines.append(f"  Proficient in: {', '.join(c.skill_proficiencies)}")
+    if c.expertise_skills:
+        lines.append(f"  Expertise: {', '.join(c.expertise_skills)}")
+    if c.jack_of_all_trades:
+        lines.append(f"  Jack of All Trades: +{max(1, c.level // 4 + 1)} to non-proficient checks")
     if c.backstory:
         lines.append(f"  Backstory: {c.backstory}")
     return "\n".join(lines)
@@ -164,15 +172,29 @@ def _is_opening_turn(request: DmModelRequest) -> bool:
 _SYSTEM_BASE = (
     "Eres un Dungeon Master de D&D 5e. Responde en español.\n\n"
     "REGLAS:\n"
-    "- Máximo 3 párrafos cortos por respuesta.\n"
-    "- Oraciones cortas. Máximo 20 palabras por oración.\n"
-    "- NO inventes palabras raras ni nombres absurdos.\n"
-    "- Usa \"tú\" para dirigirte al jugador. NO uses \"vosotros\".\n"
-    "- Solo hay los personajes listados abajo. NO inventes más.\n"
-    "- Sé concreto: describe lo que el personaje ve, oye y huele.\n"
-    "- Cuando crees un PNJ, dale un nombre propio y una descripción breve memorable.\n"
-    "- Mantén consistencia con PNJs y lugares ya establecidos.\n"
-    "- Termina con una pregunta clara: \"¿Qué haces?\" o similar."
+    "- Máximo 3 párrafos cortos.\n"
+    "- Oraciones cortas, máximo 20 palabras.\n"
+    "- Usa \"tú\" para el jugador.\n"
+    "- Solo los personajes listados abajo. NO inventes más PJs.\n"
+    "- Cuando crees un PNJ, dale nombre propio y descripción breve.\n"
+    "- Mantén consistencia con PNJs y lugares ya establecidos.\n\n"
+    "TIRADAS DE DADO:\n"
+    "SIEMPRE pide tirada cuando el jugador intente algo con esfuerzo o riesgo.\n"
+    "FORMATO: \"Haz una tirada de [Habilidad] (CD [número])\"\n"
+    "NUNCA escribas \"(Sabiduría)\" o \"(Fuerza)\". Escribe \"(CD 12)\" con un número entre 8 y 20.\n"
+    "Después de pedir tirada, NO narres el resultado. ESPERA.\n"
+    "Ejemplos: Atletismo (CD 12), Percepción (CD 13), Sigilo (CD 14), Persuasión (CD 15), Investigación (CD 10).\n\n"
+    "FORMATO DE RESPUESTA:\n"
+    "Alterna entre estos formatos. NO uses el mismo dos veces seguidas:\n"
+    "A) Pedir tirada y parar\n"
+    "B) PNJ habla con diálogo entre comillas\n"
+    "C) Algo inesperado ocurre\n"
+    "D) Opciones concretas\n"
+    "NO termines todos los turnos con pregunta.\n\n"
+    "TENSIÓN:\n"
+    "- No todo sale bien. Complicaciones, obstáculos, sorpresas.\n"
+    "- Los PNJs tienen sus propios objetivos.\n"
+    "- Consecuencias reales para las acciones del jugador."
 )
 
 _OPENING_EXTRA = (
@@ -184,10 +206,23 @@ _OPENING_EXTRA = (
 )
 
 _TURN_EXTRA = (
-    "\n- Responde directamente a lo que el jugador dijo.\n"
-    "- Describe lo que pasa en 2-3 oraciones.\n"
-    "- Si hay PNJs presentes, úsalos por su nombre.\n"
-    "- Pregunta qué hace el jugador."
+    "\nRESPONDE al jugador siguiendo EXACTAMENTE estas reglas:\n\n"
+    "REGLA 1 — TIRADAS: Si la acción necesita esfuerzo físico, mental o social, pide tirada ANTES de narrar resultado.\n"
+    "FORMATO OBLIGATORIO: \"Haz una tirada de [Habilidad] (CD [número])\"\n"
+    "NO uses \"(Sabiduría)\" ni \"(Fuerza)\". USA \"(CD 12)\" con un número.\n"
+    "Después de pedir la tirada, PARA. No narres qué pasa. Espera el resultado.\n\n"
+    "REGLA 2 — NO termines con pregunta si el turno anterior terminó con pregunta.\n\n"
+    "REGLA 3 — PNJs hablan con diálogo directo entre comillas.\n\n"
+    "EJEMPLOS de respuestas correctas:\n\n"
+    "Jugador: \"Empujo los barriles pesados hacia un lado.\"\n"
+    "DM: Los barriles son enormes y están pegados al suelo húmedo. Necesitarás fuerza bruta para moverlos.\n"
+    "Haz una tirada de Atletismo (CD 12)\n\n"
+    "Jugador: \"Examino la trampilla con cuidado buscando trampas.\"\n"
+    "DM: Te arrodillas junto a la trampilla oxidada. Notas marcas extrañas en los bordes.\n"
+    "Haz una tirada de Investigación (CD 13)\n\n"
+    "Jugador: \"Intento convencer a Bram de que me cuente la verdad.\"\n"
+    "DM: Bram aparta la mirada nervioso. No quiere hablar de eso.\n"
+    "Haz una tirada de Persuasión (CD 14)"
 )
 
 
@@ -271,9 +306,13 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
 
     _insert_turn(request.session_id, player_input, full_response, request.characters)
 
+    turn_num = _turn_counters.get(request.session_id, 0)
     latency_ms = int((time.monotonic() - t_start) * 1000)
     yield MetadataChunk(
-        memory_snapshot=MemorySnapshot(),
+        memory_snapshot=MemorySnapshot(
+            rag_context=rag_context,
+            turn_count=turn_num,
+        ),
         usage=UsageStats(prompt_tokens=0, completion_tokens=0, total_tokens=0),
         latency_ms=latency_ms,
     )

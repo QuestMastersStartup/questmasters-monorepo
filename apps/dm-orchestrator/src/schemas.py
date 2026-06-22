@@ -16,6 +16,12 @@ class CharacterSnapshot(BaseModel):
     backstory: str = ""
     alignment: str = ""
     personality_traits: str = Field(default="", alias="personalityTraits")
+    stats: dict[str, int] | None = None
+    skill_proficiencies: list[str] = Field(default_factory=list, alias="skillProficiencies")
+    expertise_skills: list[str] = Field(default_factory=list, alias="expertiseSkills")
+    jack_of_all_trades: bool = Field(default=False, alias="jackOfAllTrades")
+    reliable_talent: bool = Field(default=False, alias="reliableTalent")
+    subclass: str = ""
 
 
 class DmModelRequest(BaseModel):
@@ -37,6 +43,8 @@ class DeltaChunk(BaseModel):
 class MemorySnapshot(BaseModel):
     l2_episode_ids: list[str] = []
     l3_entity_ids: list[str] = []
+    rag_context: str = ""
+    turn_count: int = 0
 
 
 class UsageStats(BaseModel):
