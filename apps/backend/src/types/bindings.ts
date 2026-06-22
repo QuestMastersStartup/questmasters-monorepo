@@ -10,4 +10,5 @@ export type CloudflareBindings = {
   DM_USE_RUNPOD: string;
   RUNPOD_ENDPOINT_ID: string;
   RUNPOD_API_KEY: string;
+  GROQ_API_KEY: string;
 };

@@ -6,6 +6,8 @@ import { DmSessionMapper } from '../dm-session/infrastructure/mappers/dm-session
 import { DmTurnMapper } from '../dm-session/infrastructure/mappers/dm-turn.mapper';
 import { DmSessionError } from '../dm-session/application/errors';
 import type { DmModelChunk } from '../dm-session/domain/ports/dm-model.provider';
+import type { GroqAutoPlayerAdapter, SessionMemory } from '../dm-session/infrastructure/adapters/groq-auto-player.adapter';
+import { parseSkillCheck, autoRollSkillCheck } from '../dm-session/infrastructure/utils/dice-roll';
 
 function errorToStatus(error: DmSessionError): number {
   switch (error) {
@@ -65,22 +67,7 @@ function sseResponse(
   );
 }
 
-const STUB_PLAYER_ACTIONS = [
-  'Avanzamos con cautela y examinamos el entorno.',
-  'Intento hablar con quien esté cerca. ¿Qué podemos averiguar?',
-  'El grupo busca trampas y pistas ocultas en esta zona.',
-  'Decidimos explorar más a fondo y seguimos adelante.',
-  'Evaluamos la situación antes de actuar.',
-  'Intentamos movernos sin hacer ruido.',
-  'Preparamos una táctica conjunta antes de continuar.',
-  'Buscamos cualquier ventaja que nos dé el entorno.',
-];
-
-function buildAutoPlayerInput(): string {
-  return STUB_PLAYER_ACTIONS[Math.floor(Date.now() / 1000) % STUB_PLAYER_ACTIONS.length];
-}
-
-export function dmSessionsRoutes(container: Container) {
+export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlayerAdapter | null) {
   async function getIsAdmin(userId: string): Promise<boolean> {
     const profile = await container.getUserProfileUseCase.execute(userId);
     return profile.isAdmin;
@@ -203,7 +190,69 @@ export function dmSessionsRoutes(container: Container) {
     const isAdmin = await getIsAdmin(user.id);
     const id = c.req.param('id');
 
-    const playerInput = buildAutoPlayerInput();
+    const sessionResult = await container.getDmSessionUseCase.execute({
+      sessionId: id,
+      userId: user.id,
+      isAdmin,
+    });
+
+    if (sessionResult.isFailure) {
+      return c.json({ message: sessionResult.error }, errorToStatus(sessionResult.error) as any);
+    }
+
+    const { session, turns } = sessionResult.value;
+    const character = session.characters[0];
+
+    let playerInput: string;
+
+    const lastDmResponse = turns.length > 0 ? turns[turns.length - 1].dmResponse : '';
+    const skillCheck = parseSkillCheck(lastDmResponse);
+
+    const existingMemory: SessionMemory = {
+      npcs: (session.memorySnapshot as Record<string, unknown>)?.npcs as string[] ?? [],
+      locations: (session.memorySnapshot as Record<string, unknown>)?.locations as string[] ?? [],
+      events: (session.memorySnapshot as Record<string, unknown>)?.events as string[] ?? [],
+    };
+
+    if (autoPlayer && lastDmResponse) {
+      try {
+        const updatedMemory = await autoPlayer.extractFacts(lastDmResponse, existingMemory);
+        const hasNewFacts =
+          updatedMemory.npcs.length !== existingMemory.npcs.length ||
+          updatedMemory.locations.length !== existingMemory.locations.length ||
+          updatedMemory.events.length !== existingMemory.events.length;
+
+        if (hasNewFacts) {
+          const updated = session.withMemory(updatedMemory as unknown as Record<string, unknown>);
+          await container.dmSessionRepo.save(updated);
+          existingMemory.npcs = updatedMemory.npcs;
+          existingMemory.locations = updatedMemory.locations;
+          existingMemory.events = updatedMemory.events;
+        }
+      } catch {
+        // extraction failed, continue with existing memory
+      }
+    }
+
+    if (skillCheck && character?.stats) {
+      playerInput = autoRollSkillCheck(skillCheck, character);
+    } else if (autoPlayer && character) {
+      const conversationHistory: { role: 'player' | 'dm'; content: string }[] = [];
+      for (const turn of turns) {
+        if (turn.playerInput) conversationHistory.push({ role: 'player', content: turn.playerInput });
+        conversationHistory.push({ role: 'dm', content: turn.dmResponse });
+      }
+
+      playerInput = await autoPlayer.generatePlayerAction({
+        character,
+        campaignPrompt: session.campaignPrompt,
+        conversationHistory,
+        lastDmResponse,
+        sessionMemory: existingMemory,
+      });
+    } else {
+      playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
+    }
 
     const result = await container.sendPlayerTurnUseCase.execute({
       sessionId: id,

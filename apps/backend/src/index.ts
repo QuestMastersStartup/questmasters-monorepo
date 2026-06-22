@@ -14,6 +14,7 @@ import { charactersRoutes } from './routes/characters.routes';
 import { campaignsRoutes } from './routes/campaigns.routes';
 import { dmSessionsRoutes } from './routes/dm-sessions.routes';
 import { authRoutes } from './routes/auth.routes';
+import { GroqAutoPlayerAdapter } from './dm-session/infrastructure/adapters/groq-auto-player.adapter';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -63,7 +64,10 @@ app.all('/api/*', async (c) => {
   api.route('/users', avatarRoutes(container));
   api.route('/campaigns', campaignsRoutes(container));
   api.route('/characters', charactersRoutes(container));
-  api.route('/dm-sessions', dmSessionsRoutes(container));
+  const autoPlayer = c.env.GROQ_API_KEY
+    ? new GroqAutoPlayerAdapter(c.env.GROQ_API_KEY)
+    : null;
+  api.route('/dm-sessions', dmSessionsRoutes(container, autoPlayer));
   api.route('/packs', packsRoutes(container));
   api.route('/packs/:slug/assets', assetsRoutes(container));
   api.route('/rules', rulesRoutes(container));

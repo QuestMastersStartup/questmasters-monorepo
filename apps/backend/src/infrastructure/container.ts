@@ -166,6 +166,7 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
     assetRepo,
     campaignRepo,
     userProfileRepo,
+    dmSessionRepo,
     // Pack Use Cases
     createPackUseCase,
     getPackUseCase,

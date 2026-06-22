@@ -12,6 +12,7 @@ const BACKEND_KEYS = [
   "DM_USE_RUNPOD",
   "RUNPOD_ENDPOINT_ID",
   "RUNPOD_API_KEY",
+  "GROQ_API_KEY",
 ];
 
 function syncDevVars() {
