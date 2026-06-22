@@ -3,18 +3,15 @@ const WORKER_URL = "https://questmasters-api.questmastersstartup.workers.dev";
 export const onRequest = async (context: any) => {
   const url = new URL(context.request.url);
   const target = `${WORKER_URL}${url.pathname}${url.search}`;
-  const method = context.request.method;
+  const { method, headers } = context.request;
 
-  // Read body as text first — avoids ReadableStream transfer issues in Pages Functions
-  const bodyText = !['GET', 'HEAD'].includes(method)
-    ? await context.request.text()
-    : undefined;
+  // GET/HEAD: new Request() strips hop-by-hop headers (Connection, TE) automatically
+  if (method === 'GET' || method === 'HEAD') {
+    return fetch(new Request(target, { method, headers }));
+  }
 
-  console.log(`[proxy] ${method} ${url.pathname} body_len=${bodyText?.length ?? 0}`);
-
-  return fetch(target, {
-    method,
-    headers: context.request.headers,
-    body: bodyText || undefined,
-  });
+  // With body: read as text to avoid Pages Function ReadableStream passthrough issues
+  const body = await context.request.text();
+  console.log(`[proxy] ${method} ${url.pathname} body_len=${body.length}`);
+  return fetch(new Request(target, { method, headers, body: body || undefined }));
 };
