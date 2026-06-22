@@ -9,18 +9,8 @@ Sentry.init({
   environment: import.meta.env.MODE,
   // Solo activo en producción y preview para no contaminar con errores de dev
   enabled: import.meta.env.PROD,
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration({
-      maskAllText: false,
-      blockAllMedia: false,
-    }),
-  ],
-  // Tracing: 10% de requests en prod para no quemar cuota del free tier
+  integrations: [Sentry.browserTracingIntegration()],
   tracesSampleRate: import.meta.env.PROD ? 0.1 : 0,
-  // Session replay: solo errores
-  replaysSessionSampleRate: 0,
-  replaysOnErrorSampleRate: 1.0,
   sendDefaultPii: false,
 })
 

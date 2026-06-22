@@ -29,6 +29,20 @@ function errorToStatus(error: DmSessionError): number {
   }
 }
 
+function errorToMessage(error: DmSessionError): string {
+  switch (error) {
+    case DmSessionError.INVALID_CHARACTERS: return 'El personaje seleccionado no es válido o no tiene nombre';
+    case DmSessionError.INVALID_PROMPT: return 'El prompt de campaña es requerido';
+    case DmSessionError.NOT_FOUND: return 'Sesión no encontrada';
+    case DmSessionError.UNAUTHORIZED: return 'No tienes permiso para esta sesión';
+    case DmSessionError.NOT_INITIALIZING: return 'La sesión no está en estado de inicialización';
+    case DmSessionError.NOT_ACTIVE: return 'La sesión no está activa';
+    case DmSessionError.ALREADY_ENDED: return 'La sesión ya finalizó';
+    case DmSessionError.ALREADY_DELETED: return 'La sesión ya fue eliminada';
+    default: return 'Error interno del servidor';
+  }
+}
+
 const encoder = new TextEncoder();
 
 function sseEncode(payload: unknown): Uint8Array {
@@ -82,7 +96,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     const result = await container.listDmSessionsUseCase.execute({ userId: user.id, isAdmin });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any as any);
     }
 
     return c.json(result.value.map(DmSessionMapper.toSummaryResponse));
@@ -103,7 +117,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (created.isFailure) {
-      return c.json({ message: created.error }, errorToStatus(created.error) as any);
+      return c.json({ message: errorToMessage(created.error) }, errorToStatus(created.error) as any);
     }
 
     const session = created.value;
@@ -115,7 +129,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (initialized.isFailure) {
-      return c.json({ message: initialized.error }, errorToStatus(initialized.error) as any);
+      return c.json({ message: errorToMessage(initialized.error) }, errorToStatus(initialized.error) as any);
     }
 
     return sseResponse(initialized.value, [
@@ -135,7 +149,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any as any);
     }
 
     return c.json({
@@ -158,7 +172,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any as any);
     }
 
     return sseResponse(result.value);
@@ -176,7 +190,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any as any);
     }
 
     return c.json({
@@ -197,7 +211,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (sessionResult.isFailure) {
-      return c.json({ message: sessionResult.error }, errorToStatus(sessionResult.error) as any);
+      return c.json({ message: errorToMessage(sessionResult.error) }, errorToStatus(sessionResult.error) as any);
     }
 
     const { session, turns } = sessionResult.value;
@@ -262,7 +276,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any);
     }
 
     return sseResponse(result.value, [{ type: 'player_input', input: playerInput }]);
@@ -280,7 +294,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any);
     }
 
     return c.json(DmSessionMapper.toSummaryResponse(result.value));
@@ -298,7 +312,7 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     });
 
     if (result.isFailure) {
-      return c.json({ message: result.error }, errorToStatus(result.error) as any);
+      return c.json({ message: errorToMessage(result.error) }, errorToStatus(result.error) as any);
     }
 
     return c.json({ success: true });

@@ -1,7 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, UserPlus, X, Loader2 } from "lucide-react";
-import { debounce } from "lodash";
 import { authFetch } from "../../../lib/api";
+
+// ponytail: lodash dropped — single debounce use
+function debounce<T extends (...args: any[]) => any>(fn: T, ms: number) {
+  let id: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => { clearTimeout(id); id = setTimeout(() => fn(...args), ms); };
+}
 
 interface UserSearchResult {
   id: string;
