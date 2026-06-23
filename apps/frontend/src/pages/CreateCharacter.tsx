@@ -127,7 +127,6 @@ export const CreateCharacter: React.FC = () => {
   const navigate          = useNavigate();
   const [searchParams]    = useSearchParams();
   const fileInputRef      = useRef<HTMLInputElement>(null);
-  const skipBgAutoPopulateRef = useRef(false);
 
   const rawIds = searchParams.get("packIds");
   // In create mode these come from URL params; in edit mode overridden from character.choices
@@ -234,7 +233,6 @@ export const CreateCharacter: React.FC = () => {
             setSubraceAssetId((ch.subraceAssetId as string) ?? "");
             setClassAssetId(char.classAssetId ?? "");
             setSubclassAssetId((ch.subclassAssetId as string) ?? "");
-            skipBgAutoPopulateRef.current = true;
             setBackgroundAssetId(char.backgroundAssetId ?? "");
           } else {
             setLibreRace((ch.libreRace as string) ?? "");
@@ -278,55 +276,6 @@ export const CreateCharacter: React.FC = () => {
       }
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Auto-populate background narrative fields from asset data
-  useEffect(() => {
-    if (isLibre || !backgroundAssetId) return;
-    if (skipBgAutoPopulateRef.current) { skipBgAutoPopulateRef.current = false; return; }
-    const bg = assets.backgrounds.find(b => b.id === backgroundAssetId);
-    if (!bg) return;
-    const d = bg.data as any;
-
-    const featName = d?.feature?.name ?? "";
-    const featDesc = Array.isArray(d?.feature?.desc)
-      ? d.feature.desc.join(" ")
-      : (d?.feature?.desc ?? "");
-    setBgFeature(featName ? `${featName}: ${featDesc}`.substring(0, LONG_MAX) : "");
-
-    const traits = d?.personality_traits?.from?.options
-      ?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
-    setBgPersonality(traits.join("\n").substring(0, MEDIUM_MAX));
-
-    const ideals = d?.ideal?.from?.options
-      ?.slice(0, 2).map((o: any) => o.desc ?? o.string).filter(Boolean) ?? [];
-    setBgIdeals(ideals.join("\n").substring(0, MEDIUM_MAX));
-
-    const bonds = d?.bond?.from?.options
-      ?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
-    setBgBonds(bonds.join("\n").substring(0, MEDIUM_MAX));
-
-    const flaws = d?.flaw?.from?.options
-      ?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
-    setBgFlaws(flaws.join("\n").substring(0, MEDIUM_MAX));
-  }, [backgroundAssetId, assets.backgrounds, isLibre]);
-
-  // Reset subrace when race changes
-  useEffect(() => {
-    setSubraceAssetId("");
-  }, [raceAssetId]);
-
-  // Reset HP and subclass when class changes
-  useEffect(() => { setCustomHp(null); setSubclassAssetId(""); }, [classAssetId]);
-
-  // Clamp customHp to new max when CON changes (non-libre only)
-  useEffect(() => {
-    if (customHp !== null && !isLibre) {
-      const cls = assets.classes.find(c => c.id === classAssetId);
-      const die = (cls?.data as any)?.hit_die ?? 10;
-      const max = Math.max(1, die + calculateModifier(stats.constitution));
-      if (customHp > max) setCustomHp(max);
-    }
-  }, [stats.constitution]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const pbValidation   = validatePointBuy(stats);
@@ -405,12 +354,6 @@ export const CreateCharacter: React.FC = () => {
         .join(", ")
     : "";
 
-  // Reset skill selections when class changes
-  useEffect(() => {
-    setSelectedSkillProfs([]);
-    setExpertiseSkills([]);
-  }, [classAssetId]);
-
   // All proficiencies combined (background + class + warlock bonus + lore bonus)
   const allProficiencies = [
     ...bgSkillProfsArr,
@@ -437,6 +380,35 @@ export const CreateCharacter: React.FC = () => {
   };
 
   // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleBackgroundSelect = (assetId: string) => {
+    const newId = backgroundAssetId === assetId ? "" : assetId;
+    setBackgroundAssetId(newId);
+    if (!newId || isLibre) return;
+    const bg = assets.backgrounds.find(b => b.id === newId);
+    if (!bg) return;
+    const d = bg.data as any;
+    const featName = d?.feature?.name ?? "";
+    const featDesc = Array.isArray(d?.feature?.desc) ? d.feature.desc.join(" ") : (d?.feature?.desc ?? "");
+    setBgFeature(featName ? `${featName}: ${featDesc}`.substring(0, LONG_MAX) : "");
+    const traits = d?.personality_traits?.from?.options?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
+    setBgPersonality(traits.join("\n").substring(0, MEDIUM_MAX));
+    const ideals = d?.ideal?.from?.options?.slice(0, 2).map((o: any) => o.desc ?? o.string).filter(Boolean) ?? [];
+    setBgIdeals(ideals.join("\n").substring(0, MEDIUM_MAX));
+    const bonds = d?.bond?.from?.options?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
+    setBgBonds(bonds.join("\n").substring(0, MEDIUM_MAX));
+    const flaws = d?.flaw?.from?.options?.slice(0, 2).map((o: any) => o.string).filter(Boolean) ?? [];
+    setBgFlaws(flaws.join("\n").substring(0, MEDIUM_MAX));
+  };
+
+  const handleClassSelect = (assetId: string) => {
+    setClassAssetId(assetId);
+    setCustomHp(null);
+    setSubclassAssetId("");
+    setSelectedSkillProfs([]);
+    setExpertiseSkills([]);
+  };
+
   const rollHp = () => {
     const roll = Math.floor(Math.random() * hitDie) + 1;
     setCustomHp(Math.max(1, roll + conMod));
@@ -449,6 +421,12 @@ export const CreateCharacter: React.FC = () => {
       if (val < ABILITY_SCORE_MIN || val > ABILITY_SCORE_MAX) return;
     }
     setStats(prev => ({ ...prev, [stat]: val }));
+    if (stat === 'constitution' && customHp !== null && !isLibre) {
+      const cls = assets.classes.find(c => c.id === classAssetId);
+      const die = (cls?.data as any)?.hit_die ?? 10;
+      const max = Math.max(1, die + calculateModifier(val));
+      if (customHp > max) setCustomHp(max);
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -603,6 +581,10 @@ export const CreateCharacter: React.FC = () => {
               {/* Portrait */}
               <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                aria-label="Subir retrato del personaje"
                 className={`relative w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden group shrink-0 ${
                   portraitUrl ? "border-indigo-500/50 bg-indigo-500/5" : "border-slate-700 hover:border-indigo-500/40 bg-slate-900/30"
                 }`}
@@ -969,7 +951,7 @@ export const CreateCharacter: React.FC = () => {
                           key={asset.id}
                           asset={asset}
                           isSelected={backgroundAssetId === asset.id}
-                          onSelect={() => setBackgroundAssetId(backgroundAssetId === asset.id ? "" : asset.id)}
+                          onSelect={() => handleBackgroundSelect(asset.id)}
                           type="background"
                         />
                       ))}
@@ -1238,7 +1220,7 @@ export const CreateCharacter: React.FC = () => {
                           key={asset.id}
                           asset={asset}
                           isSelected={raceAssetId === asset.id}
-                          onSelect={() => setRaceAssetId(asset.id)}
+                          onSelect={() => { setRaceAssetId(asset.id); setSubraceAssetId(""); }}
                           type="race"
                         />
                       ))
@@ -1298,7 +1280,7 @@ export const CreateCharacter: React.FC = () => {
                         key={asset.id}
                         asset={asset}
                         isSelected={classAssetId === asset.id}
-                        onSelect={() => setClassAssetId(asset.id)}
+                        onSelect={() => handleClassSelect(asset.id)}
                         type="class"
                       />
                     ))

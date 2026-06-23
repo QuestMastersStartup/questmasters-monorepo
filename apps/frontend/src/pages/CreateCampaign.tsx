@@ -144,11 +144,15 @@ export const CreateCampaign: React.FC = () => {
             </label>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                aria-label="Subir imagen de portada"
                 className={`relative aspect-video rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden group ${
-                  formData.coverImageUrl 
-                  ? 'border-indigo-500/50 bg-indigo-500/5' 
+                  formData.coverImageUrl
+                  ? 'border-indigo-500/50 bg-indigo-500/5'
                   : 'border-slate-700 hover:border-indigo-500/40 bg-slate-900/30'
                 }`}
               >

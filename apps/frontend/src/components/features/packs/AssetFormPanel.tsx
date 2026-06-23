@@ -41,6 +41,10 @@ export function AssetFormPanel({
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
       />
       <div className="relative w-full max-w-2xl h-full bg-card border-l border-border shadow-2xl animate-slide-in-right flex flex-col">
         {/* Header */}

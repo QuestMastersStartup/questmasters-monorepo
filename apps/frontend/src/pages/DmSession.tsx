@@ -1076,6 +1076,10 @@ export const DmSession: React.FC = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
           onClick={() => setExpandedTurnId(null)}
+          onKeyDown={(e) => e.key === 'Escape' && setExpandedTurnId(null)}
+          role="button"
+          tabIndex={-1}
+          aria-label="Cerrar"
         >
           <div
             className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl max-h-[80vh] flex flex-col shadow-2xl"

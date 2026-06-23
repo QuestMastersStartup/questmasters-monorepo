@@ -184,6 +184,10 @@ export function AddAssetModal({
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
       />
       <div
         className={`relative bg-card border border-border rounded-xl w-full mx-4 shadow-2xl animate-fade-in overflow-hidden ${

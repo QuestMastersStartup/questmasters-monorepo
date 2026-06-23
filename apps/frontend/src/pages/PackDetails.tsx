@@ -190,6 +190,10 @@ export function PackDetails() {
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => !deleting && setShowDeleteModal(false)}
+            onKeyDown={(e) => e.key === 'Escape' && !deleting && setShowDeleteModal(false)}
+            role="button"
+            tabIndex={-1}
+            aria-label="Cerrar"
           />
           <div className="relative bg-card border border-border rounded-xl p-6 max-w-md w-full mx-4 space-y-4 animate-fade-in shadow-2xl">
             <h3 className="text-xl font-cinzel font-bold text-destructive">

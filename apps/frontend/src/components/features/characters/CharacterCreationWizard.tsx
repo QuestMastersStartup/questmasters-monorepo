@@ -179,6 +179,10 @@ export const CharacterCreationWizard: React.FC<Props> = ({
       <div
         className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-in fade-in-0 duration-150"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
       />
 
       {/* Panel */}

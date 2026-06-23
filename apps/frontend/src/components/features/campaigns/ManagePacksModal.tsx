@@ -69,9 +69,13 @@ export const ManagePacksModal: React.FC<ManagePacksModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" 
+      <div
+        className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
       />
       
       <div className="relative bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in zoom-in duration-300">

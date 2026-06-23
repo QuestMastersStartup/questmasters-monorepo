@@ -41,6 +41,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <div
         className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
         onClick={onCancel}
+        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
       />
       <div className="relative bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6">

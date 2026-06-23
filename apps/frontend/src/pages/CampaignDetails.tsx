@@ -542,6 +542,10 @@ export const CampaignDetails: React.FC = () => {
           <div
             className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
             onClick={() => setShowInviteModal(false)}
+            onKeyDown={(e) => e.key === 'Escape' && setShowInviteModal(false)}
+            role="button"
+            tabIndex={-1}
+            aria-label="Cerrar"
           />
           <div className="relative bg-slate-900 border border-slate-700 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
             <div className="p-6 md:p-8">

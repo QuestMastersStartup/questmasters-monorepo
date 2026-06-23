@@ -94,7 +94,14 @@ interface ConfirmDeleteModalProps {
 function ConfirmDeleteModal({ characterName, onConfirm, onCancel, deleting }: ConfirmDeleteModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={onCancel} />
+      <div
+        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        onClick={onCancel}
+        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar"
+      />
       <div className="relative bg-slate-900 border border-red-500/30 rounded-3xl shadow-2xl shadow-red-900/20 w-full max-w-sm p-6">
         <button onClick={onCancel} className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors">
           <X size={16} />
