@@ -1,0 +1,39 @@
+# QuestMasters
+
+> QuestMasters es una plataforma VTT (Virtual Tabletop) web para Dungeons & Dragons donde la IA actúa como copiloto del Dungeon Master. El DM humano siempre es el protagonista — la IA gestiona las tareas operativas para que el DM se concentre en la narrativa y la dirección creativa.
+
+## Qué es QuestMasters
+
+Asistente inteligente para Dungeon Masters de D&D 5e integrado en un VTT completo. A diferencia de soluciones que reemplazan al DM con IA, QuestMasters potencia al DM humano: genera contenido bajo demanda, gestiona información de campaña y asiste en sesiones en tiempo real, pero todas las decisiones narrativas permanecen en manos del DM.
+
+## Funcionalidades principales
+
+- Gestión de campañas de D&D con asistencia de IA
+- Creación y seguimiento de personajes y fichas D&D 5e
+- Generación y gestión de NPCs con historial de interacciones
+- Soporte de sesión en tiempo real con modelo Gemma 4 26B
+- Marketplace de packs de contenido: SRD oficial y homebrew
+- Contenido del System Reference Document (SRD) D&D 5e integrado
+
+## Filosofía de diseño
+
+- La IA actúa como copiloto, nunca como reemplazo del DM
+- El DM mantiene control total sobre narrativa y decisiones
+- Diseño 2D-first, accesible desde cualquier navegador sin plugins
+- Construido sobre Cloudflare Workers para baja latencia global
+
+## Tecnología
+
+- Backend: Hono + Cloudflare Workers
+- Frontend: React + Vite + TailwindCSS
+- Modelo de IA: Google Gemma 4 26B (base puro, sin LoRA)
+- Base de datos: Cloudflare D1 (SQLite)
+
+## Categoría de producto
+
+Virtual Tabletop (VTT) · Herramienta para Dungeon Masters · Asistente IA para D&D · TTRPG SaaS
+
+## Links
+
+- Plataforma: https://questmasters-frontend.pages.dev
+- Landing: https://questmasters-landing-d2v.pages.dev

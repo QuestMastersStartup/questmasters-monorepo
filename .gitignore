@@ -16,6 +16,7 @@ node_modules
 # Testing
 coverage
 testsprite_tests/tmp/
+.github
 
 # Python
 __pycache__/
@@ -42,6 +43,7 @@ docs/superpowers/
 
 # Claude Code artifacts (personal, not project)
 skills-lock.json
+.claude
 .claude/skills/
 .claude/settings.local.json
 
