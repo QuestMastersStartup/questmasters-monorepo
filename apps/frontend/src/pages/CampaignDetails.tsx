@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { marked } from "marked";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CharacterCreationWizard } from "../components/features/characters/CharacterCreationWizard";
 import {
@@ -306,10 +307,16 @@ export const CampaignDetails: React.FC = () => {
                 <h3 className="text-xl font-bold text-white flex items-center gap-2 border-l-4 border-indigo-500 pl-3">
                   Acerca de la Campaña
                 </h3>
-                <p className="text-slate-400 leading-relaxed whitespace-pre-line text-lg">
-                  {campaign.description ||
-                    "Esta aventura aún no tiene una descripción detallada."}
-                </p>
+                {campaign.description ? (
+                  <div
+                    className="prose prose-invert prose-sm max-w-none text-slate-400"
+                    dangerouslySetInnerHTML={{ __html: marked.parse(campaign.description) as string }}
+                  />
+                ) : (
+                  <p className="text-slate-400 leading-relaxed text-lg italic">
+                    Esta aventura aún no tiene una descripción detallada.
+                  </p>
+                )}
               </section>
 
               {/* Stats Grid */}
