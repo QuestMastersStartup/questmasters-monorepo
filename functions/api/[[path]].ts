@@ -10,8 +10,10 @@ export const onRequest = async (context: any) => {
     return fetch(new Request(target, { method, headers }));
   }
 
-  // With body: read as text to avoid Pages Function ReadableStream passthrough issues
-  const body = await context.request.text();
-  console.log(`[proxy] ${method} ${url.pathname} body_len=${body.length}`);
-  return fetch(new Request(target, { method, headers, body: body || undefined }));
+  const ct = context.request.headers.get('content-type') ?? '';
+  const body = ct.includes('multipart/form-data')
+    ? await context.request.arrayBuffer()
+    : (await context.request.text()) || undefined;
+  console.log(`[proxy] ${method} ${url.pathname}`);
+  return fetch(new Request(target, { method, headers, body }));
 };
