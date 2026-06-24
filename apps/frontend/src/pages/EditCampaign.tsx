@@ -1,18 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { fetchCampaign, updateCampaign, uploadCampaignPortrait } from "../services/campaigns.api";
-import { ArrowLeft, Save, AlertCircle, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
+import {
+  fetchCampaign,
+  updateCampaign,
+  uploadCampaignPortrait,
+} from "../services/campaigns.api";
+import {
+  ArrowLeft,
+  Save,
+  AlertCircle,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
+} from "lucide-react";
 import { resizeImageToWebP } from "../lib/resize-image";
+import { MarkdownEditor } from "../components/ui/MarkdownEditor";
 
 export const EditCampaign: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [fetching, setFetching] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingPortrait, setPendingPortrait] = useState<Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,38 +52,39 @@ export const EditCampaign: React.FC = () => {
     loadCampaign();
   }, [id]);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setUploading(true);
-    setError(null);
-
+    if (fileInputRef.current) fileInputRef.current.value = "";
     try {
-      const resizedBlob = await resizeImageToWebP(file, 800);
-      const portraitUrl = await uploadCampaignPortrait(resizedBlob);
-      setFormData({ ...formData, coverImageUrl: portraitUrl });
+      const blob = await resizeImageToWebP(file, 800);
+      setPendingPortrait(blob);
+      setPreviewUrl(URL.createObjectURL(blob));
     } catch (err: any) {
-      setError(err.message || "Error al subir la imagen");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setError(err.message || "Error al procesar la imagen");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (uploading || !id) return;
-    
+    if (!id) return;
     setLoading(true);
     setError(null);
 
     try {
-      const payload = { ...formData };
-      // Allow null if empty string was pasted (to clear image)
-      if (payload.coverImageUrl === "") payload.coverImageUrl = null;
+      let coverImageUrl = formData.coverImageUrl;
+      if (pendingPortrait) {
+        coverImageUrl = await uploadCampaignPortrait(pendingPortrait);
+      }
+      if (coverImageUrl === "") coverImageUrl = null;
 
-      await updateCampaign(id, payload);
+      await updateCampaign(id, { ...formData, coverImageUrl });
       navigate(`/campaigns/${id}`);
     } catch (err: any) {
       setError(err.message || "Error al actualizar la campaña");
@@ -87,6 +101,11 @@ export const EditCampaign: React.FC = () => {
     );
   }
 
+  const displayUrl = previewUrl || formData.coverImageUrl || "";
+  const nameLen = formData.name.length;
+  const nameCounterColor =
+    nameLen >= 80 ? "text-red-400" : nameLen >= 70 ? "text-amber-400" : "text-slate-500";
+
   return (
     <div className="container mx-auto max-w-2xl p-4 md:p-8">
       <Link
@@ -102,7 +121,9 @@ export const EditCampaign: React.FC = () => {
           <h1 className="text-3xl font-extrabold text-white mb-2 bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
             Editar Ajustes
           </h1>
-          <p className="text-slate-400">Modifica los detalles generales de tu campaña.</p>
+          <p className="text-slate-400">
+            Modifica los detalles generales de tu campaña.
+          </p>
         </div>
 
         {error && (
@@ -114,14 +135,23 @@ export const EditCampaign: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2 group">
-            <label htmlFor="edit-campaign-name" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
-              Nombre de la Campaña
-            </label>
+            <div className="flex items-center justify-between ml-1">
+              <label
+                htmlFor="edit-campaign-name"
+                className="text-sm font-semibold text-slate-300 block group-focus-within:text-indigo-400 transition-colors"
+              >
+                Nombre de la Campaña
+              </label>
+              <span className={`text-xs ${nameCounterColor}`}>
+                {nameLen}/80
+              </span>
+            </div>
             <input
               id="edit-campaign-name"
               name="edit-campaign-name"
               type="text"
               required
+              maxLength={80}
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
               placeholder="Ej: Las Crónicas de Icewind Dale"
               value={formData.name}
@@ -130,40 +160,48 @@ export const EditCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-2 group">
-            <label htmlFor="edit-campaign-description" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Descripción
             </label>
-            <textarea
-              id="edit-campaign-description"
-              name="edit-campaign-description"
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none h-32"
-              placeholder="Resume de qué tratará la aventura..."
+            <MarkdownEditor
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, description: val })}
+              maxLength={2000}
+              placeholder="Resume de qué tratará la aventura..."
             />
           </div>
 
           <div className="space-y-4 pt-2">
-            <label htmlFor="edit-campaign-cover-url" className="text-sm font-semibold text-slate-300 ml-1 block">
+            <label
+              htmlFor="edit-campaign-cover-url"
+              className="text-sm font-semibold text-slate-300 ml-1 block"
+            >
               Imagen de Portada (Opcional)
             </label>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileInputRef.current?.click()}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") &&
+                  fileInputRef.current?.click()
+                }
                 role="button"
                 tabIndex={0}
                 aria-label="Subir imagen de portada"
                 className={`relative aspect-video rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden group ${
-                  formData.coverImageUrl
-                  ? 'border-indigo-500/50 bg-indigo-500/5'
-                  : 'border-slate-700 hover:border-indigo-500/40 bg-slate-900/30'
+                  displayUrl
+                    ? "border-indigo-500/50 bg-indigo-500/5"
+                    : "border-slate-700 hover:border-indigo-500/40 bg-slate-900/30"
                 }`}
               >
-                {formData.coverImageUrl ? (
+                {displayUrl ? (
                   <>
-                    <img src={formData.coverImageUrl} className="w-full h-full object-cover" alt="Preview" />
+                    <img
+                      src={displayUrl}
+                      className="w-full h-full object-cover"
+                      alt="Preview"
+                    />
                     <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <p className="text-white text-sm font-bold flex items-center gap-2">
                         <Upload size={18} /> Cambiar Foto
@@ -172,18 +210,20 @@ export const EditCampaign: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <div className={`p-3 rounded-full mb-3 transition-colors ${uploading ? 'bg-slate-800' : 'bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20'}`}>
-                      {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload size={24} />}
+                    <div className="p-3 rounded-full mb-3 bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors">
+                      <Upload size={24} />
                     </div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Subir Imagen</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Subir Imagen
+                    </p>
                   </>
                 )}
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileUpload} 
-                  className="hidden" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  accept="image/*"
                 />
               </div>
 
@@ -199,17 +239,23 @@ export const EditCampaign: React.FC = () => {
                     className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                     placeholder="O pega una URL directa..."
                     value={formData.coverImageUrl || ""}
-                    onChange={(e) => setFormData({ ...formData, coverImageUrl: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, coverImageUrl: e.target.value })
+                    }
                   />
                 </div>
-                {formData.coverImageUrl && (
-                   <button 
+                {displayUrl && (
+                  <button
                     type="button"
-                    onClick={() => setFormData({ ...formData, coverImageUrl: null })}
+                    onClick={() => {
+                      setFormData({ ...formData, coverImageUrl: null });
+                      setPendingPortrait(null);
+                      setPreviewUrl("");
+                    }}
                     className="text-[10px] text-red-500 hover:text-red-400 font-bold uppercase tracking-tighter text-left ml-1"
-                   >
-                     Quitar Imagen
-                   </button>
+                  >
+                    Quitar Imagen
+                  </button>
                 )}
                 <p className="text-[10px] text-slate-500 leading-relaxed px-1">
                   Recomendado: 800px o superior. Se aplicará optimización automática (WebP) al subir.
@@ -220,7 +266,7 @@ export const EditCampaign: React.FC = () => {
 
           <button
             type="submit"
-            disabled={loading || uploading}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
           >
             {loading ? (
