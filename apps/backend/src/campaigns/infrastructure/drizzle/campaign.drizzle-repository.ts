@@ -46,18 +46,19 @@ export class CampaignDrizzleRepository implements CampaignRepository {
       packId: packId.toString(),
     }));
 
-    await this.db.transaction(async (tx) => {
-      await tx
+    const stmts: any[] = [
+      this.db
         .insert(campaigns)
         .values(data)
-        .onConflictDoUpdate({ target: campaigns.id, set: data });
-      await tx
+        .onConflictDoUpdate({ target: campaigns.id, set: data }),
+      this.db
         .delete(campaignInstalledPacks)
-        .where(eq(campaignInstalledPacks.campaignId, data.id));
-      if (packRows.length > 0) {
-        await tx.insert(campaignInstalledPacks).values(packRows);
-      }
-    });
+        .where(eq(campaignInstalledPacks.campaignId, data.id)),
+    ];
+    if (packRows.length > 0) {
+      stmts.push(this.db.insert(campaignInstalledPacks).values(packRows));
+    }
+    await (this.db as any).batch(stmts);
   }
 
   async findById(id: UUID): Promise<Campaign | null> {

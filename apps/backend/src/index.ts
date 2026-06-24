@@ -60,6 +60,12 @@ app.all('/api/*', async (c) => {
   }
 
   const api = new Hono<{ Bindings: CloudflareBindings }>();
+  api.onError((err, c) => {
+    if (err.message === 'Unauthorized') return c.json({ message: 'Unauthorized' }, 401);
+    if ((err as any).status === 403) return c.json({ message: 'Forbidden' }, 403);
+    console.error('[api] unhandled error:', err);
+    return c.json({ message: 'Internal server error' }, 500);
+  });
   api.get('/', (ctx) => ctx.text('QuestMasters API is running!'));
   api.route('/users', usersRoutes(container));
   api.route('/users', usernameRoutes(container));
