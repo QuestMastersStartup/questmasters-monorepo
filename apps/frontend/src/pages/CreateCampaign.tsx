@@ -237,6 +237,20 @@ export const CreateCampaign: React.FC = () => {
                     }
                   />
                 </div>
+                {displayUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, coverImageUrl: "" });
+                      setPendingPortrait(null);
+                      if (previewUrl) URL.revokeObjectURL(previewUrl);
+                      setPreviewUrl("");
+                    }}
+                    className="text-[10px] text-red-500 hover:text-red-400 font-bold uppercase tracking-tighter text-left ml-1"
+                  >
+                    Quitar Imagen
+                  </button>
+                )}
                 <p className="text-[10px] text-slate-500 leading-relaxed px-1">
                   Recomendado: 800px o superior. Se aplicará optimización automática (WebP) al subir.
                 </p>
