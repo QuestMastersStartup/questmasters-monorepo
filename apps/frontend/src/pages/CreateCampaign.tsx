@@ -1,16 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { createCampaign, uploadCampaignPortrait, type CreateCampaignRequest } from "../services/campaigns.api";
+import {
+  createCampaign,
+  uploadCampaignPortrait,
+  type CreateCampaignRequest,
+} from "../services/campaigns.api";
 import { ArrowLeft, Send, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
 import { ImageCropModal } from "../components/features/shared/ImageCropModal";
+import { MarkdownEditor } from "../components/ui/MarkdownEditor";
 
 export const CreateCampaign: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cropFile, setCropFile] = useState<File | null>(null);
+  const [pendingPortrait, setPendingPortrait] = useState<Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,6 +25,12 @@ export const CreateCampaign: React.FC = () => {
     coverImageUrl: "",
   });
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -26,43 +38,45 @@ export const CreateCampaign: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleCropConfirm = async (blob: Blob) => {
+  const handleCropConfirm = (blob: Blob) => {
     setCropFile(null);
-    setUploading(true);
-    setError(null);
-    try {
-      const portraitUrl = await uploadCampaignPortrait(blob);
-      setFormData({ ...formData, coverImageUrl: portraitUrl });
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al subir la imagen");
-    } finally {
-      setUploading(false);
-    }
+    setPendingPortrait(blob);
+    setPreviewUrl(URL.createObjectURL(blob));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (uploading) return;
-    
     setLoading(true);
     setError(null);
 
     try {
+      let coverImageUrl = formData.coverImageUrl;
+      if (pendingPortrait) {
+        coverImageUrl = await uploadCampaignPortrait(pendingPortrait);
+      }
+
       const payload: CreateCampaignRequest = {
         name: formData.name,
         system: formData.system,
         ...(formData.description && { description: formData.description }),
-        ...(formData.coverImageUrl && { coverImageUrl: formData.coverImageUrl }),
+        ...(coverImageUrl && { coverImageUrl }),
       };
 
       const newCampaign = await createCampaign(payload);
       navigate(`/campaigns/${newCampaign.id}`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al crear la campaña");
+      setError(
+        err instanceof Error ? err.message : "Error al crear la campaña"
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  const displayUrl = previewUrl || formData.coverImageUrl;
+  const nameLen = formData.name.length;
+  const nameCounterColor =
+    nameLen >= 80 ? "text-red-400" : nameLen >= 70 ? "text-amber-400" : "text-slate-500";
 
   return (
     <div className="container mx-auto max-w-2xl p-4 md:p-8">
@@ -79,7 +93,9 @@ export const CreateCampaign: React.FC = () => {
           <h1 className="text-3xl font-extrabold text-white mb-2 bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
             Nueva Campaña
           </h1>
-          <p className="text-slate-400">Personaliza tu aventura y prepárate para dirigir a tus jugadores.</p>
+          <p className="text-slate-400">
+            Personaliza tu aventura y prepárate para dirigir a tus jugadores.
+          </p>
         </div>
 
         {error && (
@@ -91,14 +107,23 @@ export const CreateCampaign: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2 group">
-            <label htmlFor="campaign-name" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
-              Nombre de la Campaña
-            </label>
+            <div className="flex items-center justify-between ml-1">
+              <label
+                htmlFor="campaign-name"
+                className="text-sm font-semibold text-slate-300 block group-focus-within:text-indigo-400 transition-colors"
+              >
+                Nombre de la Campaña
+              </label>
+              <span className={`text-xs ${nameCounterColor}`}>
+                {nameLen}/80
+              </span>
+            </div>
             <input
               id="campaign-name"
               name="campaign-name"
               type="text"
               required
+              maxLength={80}
               className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
               placeholder="Ej: Las Crónicas de Icewind Dale"
               value={formData.name}
@@ -107,7 +132,10 @@ export const CreateCampaign: React.FC = () => {
           </div>
 
           <div className="space-y-2 group">
-            <label htmlFor="campaign-system" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label
+              htmlFor="campaign-system"
+              className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors"
+            >
               Sistema de Juego
             </label>
             <select
@@ -117,48 +145,56 @@ export const CreateCampaign: React.FC = () => {
               value={formData.system}
               onChange={(e) => setFormData({ ...formData, system: e.target.value })}
             >
-              <option value="dnd-5e-2014">D&D 5e (2014)</option>
-              <option value="dnd-5e-2024">D&D 5e (2024)</option>
-              <option value="dnd-3.5">D&D 3.5</option>
+              <option value="dnd-5e-2014">D&amp;D 5e (2014)</option>
+              <option value="dnd-5e-2024">D&amp;D 5e (2024)</option>
+              <option value="dnd-3.5">D&amp;D 3.5</option>
               <option value="universal">Universal / Homebrew</option>
             </select>
           </div>
 
           <div className="space-y-2 group">
-            <label htmlFor="campaign-description" className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
+            <label className="text-sm font-semibold text-slate-300 ml-1 block group-focus-within:text-indigo-400 transition-colors">
               Descripción
             </label>
-            <textarea
-              id="campaign-description"
-              name="campaign-description"
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none h-32"
-              placeholder="Resume de qué tratará la aventura..."
+            <MarkdownEditor
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, description: val })}
+              maxLength={2000}
+              placeholder="Resume de qué tratará la aventura..."
             />
           </div>
 
           <div className="space-y-4 pt-2">
-            <label htmlFor="campaign-cover-url" className="text-sm font-semibold text-slate-300 ml-1 block">
+            <label
+              htmlFor="campaign-cover-url"
+              className="text-sm font-semibold text-slate-300 ml-1 block"
+            >
               Imagen de Portada (Opcional)
             </label>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileInputRef.current?.click()}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") &&
+                  fileInputRef.current?.click()
+                }
                 role="button"
                 tabIndex={0}
                 aria-label="Subir imagen de portada"
                 className={`relative aspect-video rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden group ${
-                  formData.coverImageUrl
-                  ? 'border-indigo-500/50 bg-indigo-500/5'
-                  : 'border-slate-700 hover:border-indigo-500/40 bg-slate-900/30'
+                  displayUrl
+                    ? "border-indigo-500/50 bg-indigo-500/5"
+                    : "border-slate-700 hover:border-indigo-500/40 bg-slate-900/30"
                 }`}
               >
-                {formData.coverImageUrl ? (
+                {displayUrl ? (
                   <>
-                    <img src={formData.coverImageUrl} className="w-full h-full object-cover" alt="Preview" />
+                    <img
+                      src={displayUrl}
+                      className="w-full h-full object-cover"
+                      alt="Preview"
+                    />
                     <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <p className="text-white text-xs font-bold flex items-center gap-2">
                         <Upload size={14} /> Cambiar Foto
@@ -167,18 +203,20 @@ export const CreateCampaign: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <div className={`p-3 rounded-full mb-3 transition-colors ${uploading ? 'bg-slate-800' : 'bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20'}`}>
-                      {uploading ? <div className="w-5 h-5 border-2 border-indigo-400/30 border-t-indigo-400 rounded-full animate-spin" /> : <Upload size={22} />}
+                    <div className="p-3 rounded-full mb-3 bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors">
+                      <Upload size={22} />
                     </div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Subir Imagen</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      Subir Imagen
+                    </p>
                   </>
                 )}
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileUpload} 
-                  className="hidden" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  accept="image/*"
                 />
               </div>
 
@@ -194,7 +232,9 @@ export const CreateCampaign: React.FC = () => {
                     className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                     placeholder="O pega una URL directa..."
                     value={formData.coverImageUrl}
-                    onChange={(e) => setFormData({ ...formData, coverImageUrl: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, coverImageUrl: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-[10px] text-slate-500 leading-relaxed px-1">
@@ -206,7 +246,7 @@ export const CreateCampaign: React.FC = () => {
 
           <button
             type="submit"
-            disabled={loading || uploading}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
           >
             {loading ? (
@@ -222,6 +262,7 @@ export const CreateCampaign: React.FC = () => {
           </button>
         </form>
       </div>
+
       {cropFile && (
         <ImageCropModal
           file={cropFile}
