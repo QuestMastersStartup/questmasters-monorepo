@@ -59,15 +59,20 @@ export function campaignsRoutes(container: Container) {
   });
 
   app.post('/', async (c) => {
-    const user = await requireUser(c);
-    const body = await c.req.json();
-    body.dmId = user.id;
+    try {
+      const user = await requireUser(c);
+      const body = await c.req.json();
+      body.dmId = user.id;
 
-    const result = await container.createCampaignUseCase.execute(body);
+      const result = await container.createCampaignUseCase.execute(body);
 
-    if (result.isFailure) return c.json({ message: result.error }, 400);
+      if (result.isFailure) return c.json({ message: result.error }, 400);
 
-    return c.json(CampaignMapper.toResponse(result.value), 201);
+      return c.json(CampaignMapper.toResponse(result.value), 201);
+    } catch (err) {
+      console.error('[campaigns] POST / failed:', err);
+      throw err;
+    }
   });
 
   app.put('/:id', async (c) => {
