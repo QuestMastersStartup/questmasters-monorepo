@@ -175,7 +175,8 @@ export const CreateCharacter: React.FC = () => {
   const [libreSubrace,    setLibreSubrace]   = useState("");
   const [libreClass,      setLibreClass]     = useState("");
   const [libreSubclass,   setLibreSubclass]  = useState("");
-  const [libreBackground, setLibreBackground]= useState("");
+  const [libreBackground,       setLibreBackground]      = useState("");
+  const [customBackgroundName,  setCustomBackgroundName] = useState("");
 
   // ── Background narrative fields ───────────────────────────────────────────
   const [bgFeature,     setBgFeature]    = useState("");
@@ -234,6 +235,7 @@ export const CreateCharacter: React.FC = () => {
             setClassAssetId(char.classAssetId ?? "");
             setSubclassAssetId((ch.subclassAssetId as string) ?? "");
             setBackgroundAssetId(char.backgroundAssetId ?? "");
+            setCustomBackgroundName((ch.customBackgroundName as string) ?? "");
           } else {
             setLibreRace((ch.libreRace as string) ?? "");
             setLibreSubrace((ch.libreSubrace as string) ?? "");
@@ -384,9 +386,10 @@ export const CreateCharacter: React.FC = () => {
   const handleBackgroundSelect = (assetId: string) => {
     const newId = backgroundAssetId === assetId ? "" : assetId;
     setBackgroundAssetId(newId);
-    if (!newId || isLibre) return;
+    if (!newId || isLibre) { if (!newId) setCustomBackgroundName(""); return; }
     const bg = assets.backgrounds.find(b => b.id === newId);
     if (!bg) return;
+    setCustomBackgroundName(bg.name ?? "");
     const d = bg.data as any;
     const featName = d?.feature?.name ?? "";
     const featDesc = Array.isArray(d?.feature?.desc) ? d.feature.desc.join(" ") : (d?.feature?.desc ?? "");
@@ -469,6 +472,7 @@ export const CreateCharacter: React.FC = () => {
         ...(isLibre && libreSubrace.trim() && { libreSubrace: libreSubrace.trim() }),
         ...(isLibre && libreSubclass.trim() && { libreSubclass: libreSubclass.trim() }),
         ...(isLibre && libreBackground.trim() && { libreBackground: libreBackground.trim() }),
+        ...(!isLibre && customBackgroundName.trim() && { customBackgroundName: customBackgroundName.trim() }),
         // Subrace / subclass (vanilla/personalizado)
         ...(subraceAssetId && { subraceAssetId }),
         ...(subclassAssetId && { subclassAssetId }),
@@ -963,6 +967,19 @@ export const CreateCharacter: React.FC = () => {
                       {bgEquipment && <p><span className="font-bold text-slate-300">Equipo inicial:</span> {bgEquipment}</p>}
                     </div>
                   )}
+                  <Field label="Nombre del trasfondo" required={false}>
+                    <input
+                      type="text"
+                      maxLength={LIBRE_MAX}
+                      value={customBackgroundName}
+                      onChange={e => setCustomBackgroundName(e.target.value)}
+                      placeholder="Ej: Acólito, Noble arruinado, Cazador de bestias..."
+                      className={inputCls}
+                    />
+                    <p className={`text-right text-[10px] font-mono mt-1 ${customBackgroundName.length >= LIBRE_MAX ? "text-red-400" : "text-slate-700"}`}>
+                      {customBackgroundName.length}/{LIBRE_MAX}
+                    </p>
+                  </Field>
                 </div>
               ) : null
             ) : (

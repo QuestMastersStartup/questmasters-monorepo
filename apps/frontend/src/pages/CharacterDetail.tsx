@@ -218,7 +218,7 @@ export const CharacterDetail: React.FC = () => {
 
   const displayRace       = character.raceName       ?? (ch.libreRace as string);
   const displayClass      = character.className      ?? (ch.libreClass as string);
-  const displayBackground = character.backgroundName ?? (ch.libreBackground as string);
+  const displayBackground = character.backgroundName ?? (ch.libreBackground as string) ?? (ch.customBackgroundName as string);
   const libreSubrace      = ch.libreSubrace  as string | undefined;
 
   const bgFeature     = ch.bgFeature     as string | undefined;
