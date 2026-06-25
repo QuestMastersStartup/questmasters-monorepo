@@ -56,6 +56,9 @@ apps/landing/package-lock.json
 # Vercel
 .vercel
 
+# Astro auto-generated
+.astro/
+
 # Build Outputs
 .next/
 out/
