@@ -27,6 +27,10 @@ def _retrieve_l4(blackboard: Blackboard) -> list[dict]:
 
 
 def run_memory_agent(blackboard: Blackboard) -> dict[str, Any]:
+    route = blackboard.get("route_decision", {})
+    if not route.get("needs_memory", True):
+        return {"l2_context": [], "l3_context": [], "l4_context": []}
+
     return {
         "l2_context": _retrieve_l2(blackboard),
         "l3_context": _retrieve_l3(blackboard),

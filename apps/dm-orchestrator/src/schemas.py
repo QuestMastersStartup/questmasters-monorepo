@@ -24,6 +24,13 @@ class CharacterSnapshot(BaseModel):
     subclass: str = ""
 
 
+class RouteDecision(BaseModel):
+    needs_memory: bool = False
+    needs_arbiter: bool = False
+    needs_npc: bool = False
+    needs_world: bool = False
+
+
 class DmModelRequest(BaseModel):
     session_id: str
     architecture_type: Literal["monolithic", "mas"]
@@ -33,6 +40,13 @@ class DmModelRequest(BaseModel):
     conversation_history: list[dict]
     player_input: str | None = None
     current_memory_snapshot: dict
+    route_decision: RouteDecision | None = None
+
+
+class ThinkingChunk(BaseModel):
+    type: Literal["thinking"] = "thinking"
+    agent: str
+    summary: str
 
 
 class DeltaChunk(BaseModel):
@@ -69,4 +83,4 @@ class ErrorChunk(BaseModel):
     message: str
 
 
-SseChunk = DeltaChunk | MetadataChunk | DoneChunk | ErrorChunk
+SseChunk = ThinkingChunk | DeltaChunk | MetadataChunk | DoneChunk | ErrorChunk
