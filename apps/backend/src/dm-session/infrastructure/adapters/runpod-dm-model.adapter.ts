@@ -185,7 +185,7 @@ export class RunpodDmModelAdapter implements DmModelProvider {
 
   /** Convierte el request camelCase de TypeScript al snake_case que espera Python. */
   private toSnakeCase(r: DmModelRequest): Record<string, unknown> {
-    return {
+    const payload: Record<string, unknown> = {
       session_id: r.sessionId,
       architecture_type: r.architectureType,
       model_id: r.modelId,
@@ -195,5 +195,9 @@ export class RunpodDmModelAdapter implements DmModelProvider {
       player_input: r.playerInput,
       current_memory_snapshot: r.currentMemorySnapshot,
     };
+    if (r.routeDecision) {
+      payload.route_decision = r.routeDecision;
+    }
+    return payload;
   }
 }

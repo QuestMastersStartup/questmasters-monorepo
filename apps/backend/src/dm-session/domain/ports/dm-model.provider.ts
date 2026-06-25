@@ -26,6 +26,13 @@ export interface DmModelRequest {
   /** null = arrancar sesión (primer turno del DM). */
   playerInput: string | null;
   currentMemorySnapshot: Record<string, any>;
+  /** Pre-computed por Workers AI en el backend. Si viene, el orquestador lo usa directo. */
+  routeDecision?: {
+    needs_memory: boolean;
+    needs_arbiter: boolean;
+    needs_npc: boolean;
+    needs_world: boolean;
+  };
 }
 
 export interface DmModelChunk {

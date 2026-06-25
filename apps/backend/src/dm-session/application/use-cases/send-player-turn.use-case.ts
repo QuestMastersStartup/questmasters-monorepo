@@ -6,7 +6,9 @@ import { DmTurnRepository } from '../../domain/repositories/dm-turn.repository';
 import type {
   DmModelChunk,
   DmModelProvider,
+  DmModelRequest,
 } from '../../domain/ports/dm-model.provider';
+import type { IntentRouterService } from '../../infrastructure/adapters/intent-router.service';
 import { DmSessionError } from '../errors';
 import { streamAndPersistTurn } from '../stream-turn';
 
@@ -22,6 +24,7 @@ export class SendPlayerTurnUseCase {
     private readonly sessionRepo: DmSessionRepository,
     private readonly turnRepo: DmTurnRepository,
     private readonly modelProviders: Record<ArchitectureType, DmModelProvider>,
+    private readonly intentRouter?: IntentRouterService,
   ) {}
 
   async execute(
@@ -41,7 +44,6 @@ export class SendPlayerTurnUseCase {
     if (session.status === 'ended') return Result.fail(DmSessionError.ALREADY_ENDED);
     if (session.status !== 'active') return Result.fail(DmSessionError.NOT_ACTIVE);
 
-    // Historial de conversación a partir de los turnos previos
     const previousTurns = await this.turnRepo.findBySessionId(session.id);
     const conversationHistory: { role: 'player' | 'dm'; content: string }[] = [];
     for (const turn of previousTurns) {
@@ -52,20 +54,35 @@ export class SendPlayerTurnUseCase {
     }
 
     const provider = this.modelProviders[session.architectureType];
+    const playerInput = dto.playerInput.trim();
+
+    const request: DmModelRequest = {
+      sessionId: session.id.toString(),
+      architectureType: session.architectureType,
+      modelId: session.modelId,
+      campaignPrompt: session.campaignPrompt,
+      characters: session.characters,
+      conversationHistory,
+      playerInput,
+      currentMemorySnapshot: session.memorySnapshot,
+    };
+
+    if (this.intentRouter && session.architectureType === 'mas') {
+      try {
+        request.routeDecision = await this.intentRouter.classify(
+          playerInput,
+          session.campaignPrompt,
+          conversationHistory.length,
+        );
+      } catch {
+        // Workers AI falló → el orquestador usará Groq → keywords
+      }
+    }
 
     const stream = streamAndPersistTurn({
       session,
       role: 'player',
-      request: {
-        sessionId: session.id.toString(),
-        architectureType: session.architectureType,
-        modelId: session.modelId,
-        campaignPrompt: session.campaignPrompt,
-        characters: session.characters,
-        conversationHistory,
-        playerInput: dto.playerInput.trim(),
-        currentMemorySnapshot: session.memorySnapshot,
-      },
+      request,
       provider,
       sessionRepo: this.sessionRepo,
       turnRepo: this.turnRepo,
