@@ -258,13 +258,17 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
         conversationHistory.push({ role: 'dm', content: turn.dmResponse });
       }
 
-      playerInput = await autoPlayer.generatePlayerAction({
-        character,
-        campaignPrompt: session.campaignPrompt,
-        conversationHistory,
-        lastDmResponse,
-        sessionMemory: existingMemory,
-      });
+      try {
+        playerInput = await autoPlayer.generatePlayerAction({
+          character,
+          campaignPrompt: session.campaignPrompt,
+          conversationHistory,
+          lastDmResponse,
+          sessionMemory: existingMemory,
+        });
+      } catch {
+        playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
+      }
     } else {
       playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
     }
