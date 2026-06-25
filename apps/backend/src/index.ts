@@ -74,9 +74,7 @@ app.all('/api/*', async (c) => {
   api.route('/users', avatarRoutes(container));
   api.route('/campaigns', campaignsRoutes(container));
   api.route('/characters', charactersRoutes(container));
-  const autoPlayer = c.env.GROQ_API_KEY
-    ? new GroqAutoPlayerAdapter(c.env.GROQ_API_KEY)
-    : null;
+  const autoPlayer = new GroqAutoPlayerAdapter(c.env.AI);
   api.route('/dm-sessions', dmSessionsRoutes(container, autoPlayer));
   api.route('/packs', packsRoutes(container));
   api.route('/packs/:slug/assets', assetsRoutes(container));

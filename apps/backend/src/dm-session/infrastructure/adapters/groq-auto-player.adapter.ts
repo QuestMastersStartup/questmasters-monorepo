@@ -1,14 +1,7 @@
 import type { CharacterSnapshot } from '../../domain/entities/dm-session.entity';
 import { logger } from '../../../shared/infrastructure/logger';
 
-interface GroqMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
-interface GroqResponse {
-  choices: { message: { content: string } }[];
-}
+type AiMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
 export interface SessionMemory {
   npcs: string[];
@@ -24,19 +17,18 @@ export interface AutoPlayerContext {
   sessionMemory?: SessionMemory;
 }
 
-export class GroqAutoPlayerAdapter {
-  private readonly baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
-  private readonly model = 'llama-3.1-8b-instant';
+export class GeminiAutoPlayerAdapter {
+  private readonly model = '@cf/meta/llama-3.2-3b-instruct';
 
-  constructor(private readonly apiKey: string) {}
+  constructor(private readonly ai: Ai) {}
 
   async generatePlayerAction(ctx: AutoPlayerContext): Promise<string> {
     const messages = this.buildMessages(ctx);
-    return this.callGroq(messages, 120, 0.6);
+    return this.callAI(messages, 120, 0.6);
   }
 
   async extractFacts(dmResponse: string, existing: SessionMemory): Promise<SessionMemory> {
-    const messages: GroqMessage[] = [
+    const messages: AiMessage[] = [
       {
         role: 'system',
         content: [
@@ -44,7 +36,7 @@ export class GroqAutoPlayerAdapter {
           'Dado un texto del DM, extrae PNJs, lugares y eventos clave.',
           'Responde SOLO con JSON válido, sin texto adicional.',
           'Formato: {"npcs":["nombre - descripción breve"],"locations":["nombre - descripción breve"],"events":["evento breve"]}',
-          'Si no hay información nueva de alguna categoría, devuelve un array vacío para esa categoría.',
+          'Si no hay información nueva de alguna categoría, devuelve un array vacío.',
           'No repitas información que ya está en el contexto existente.',
         ].join('\n'),
       },
@@ -55,7 +47,7 @@ export class GroqAutoPlayerAdapter {
     ];
 
     try {
-      const raw = await this.callGroq(messages, 200, 0.1);
+      const raw = await this.callAI(messages, 200, 0.1);
       const parsed = JSON.parse(raw) as Partial<SessionMemory>;
       return {
         npcs: [...existing.npcs, ...(parsed.npcs ?? [])],
@@ -68,48 +60,23 @@ export class GroqAutoPlayerAdapter {
     }
   }
 
-  private async callGroq(messages: GroqMessage[], maxTokens: number, temperature: number): Promise<string> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages,
-        max_tokens: maxTokens,
-        temperature,
-      }),
-    });
+  private async callAI(messages: AiMessage[], maxTokens: number, temperature: number): Promise<string> {
+    const result = await this.ai.run(this.model as Parameters<Ai['run']>[0], {
+      messages,
+      max_tokens: maxTokens,
+      temperature,
+    } as never);
 
-    if (!response.ok) {
-      const err = await response.text().catch(() => '');
-      logger.error('Groq request failed', {
-        status: response.status,
-        body: err.slice(0, 300),
-      });
-      throw new Error(`Groq API error: ${response.status}`);
-    }
-
-    const data = (await response.json()) as GroqResponse;
-    const content = data.choices[0]?.message?.content?.trim();
-
-    if (!content) {
-      throw new Error('Groq returned empty response');
-    }
-
-    return content;
+    const raw = (result as { response?: unknown }).response;
+    const text = (Array.isArray(raw) ? raw.join('') : String(raw ?? '')).trim();
+    if (!text) throw new Error('Workers AI returned empty response');
+    return text;
   }
 
   private buildProficiencySection(ch: CharacterSnapshot): string {
     const parts: string[] = [];
-    if (ch.skillProficiencies?.length) {
-      parts.push(`Competente en: ${ch.skillProficiencies.join(', ')}`);
-    }
-    if (ch.expertiseSkills?.length) {
-      parts.push(`Expertise en: ${ch.expertiseSkills.join(', ')}`);
-    }
+    if (ch.skillProficiencies?.length) parts.push(`Competente en: ${ch.skillProficiencies.join(', ')}`);
+    if (ch.expertiseSkills?.length) parts.push(`Expertise en: ${ch.expertiseSkills.join(', ')}`);
     if (parts.length === 0) return '';
     return parts.join('. ') + '. Usa tus fortalezas cuando tenga sentido.';
   }
@@ -124,13 +91,9 @@ export class GroqAutoPlayerAdapter {
     return '\n\nLO QUE TU PERSONAJE SABE (no inventes nada fuera de esto):\n' + parts.join('\n');
   }
 
-  private buildMessages(ctx: AutoPlayerContext): GroqMessage[] {
+  private buildMessages(ctx: AutoPlayerContext): AiMessage[] {
     const { character: ch } = ctx;
-    const MAX_RECENT = 20;
-
-    const memorySection = this.buildMemorySection(ctx.sessionMemory);
-
-    const profSection = this.buildProficiencySection(ch);
+    const MAX_RECENT = 6;
 
     const system = [
       `Eres ${ch.name}, un/a ${ch.race} ${ch.class} de nivel ${ch.level}.`,
@@ -138,29 +101,25 @@ export class GroqAutoPlayerAdapter {
       `Trasfondo: ${ch.background}. Alineamiento: ${ch.alignment}.`,
       `Personalidad: ${ch.personalityTraits}`,
       ch.backstory ? `Historia: ${ch.backstory}` : '',
-      profSection,
+      this.buildProficiencySection(ch),
       '',
       'REGLAS ESTRICTAS:',
       '- Responde SIEMPRE en primera persona como tu personaje.',
       '- Máximo 1-2 oraciones cortas y directas.',
-      '- Describe SOLO tu acción o diálogo. NO narres pensamientos internos, sensaciones ni monólogos.',
-      '- NO inventes hechos, personas, conversaciones ni eventos que el DM no haya mencionado.',
+      '- Describe SOLO tu acción o diálogo. NO narres pensamientos internos.',
+      '- NO inventes hechos, personas ni eventos que el DM no haya mencionado.',
       '- Solo reacciona a lo que el DM describió en su último mensaje.',
       '- NO narres consecuencias de tu acción. El DM decide qué pasa.',
-      '- Si el DM te presenta opciones o alternativas, elige UNA basándote en tu personalidad.',
-      '- Si el DM te hace una pregunta directa, respóndela en personaje.',
+      '- Si el DM te presenta opciones, elige UNA basándote en tu personalidad.',
       '- Habla como un jugador de D&D real, no como un novelista.',
-      memorySection,
+      this.buildMemorySection(ctx.sessionMemory),
     ].filter(Boolean).join('\n');
 
-    const messages: GroqMessage[] = [{ role: 'system', content: system }];
+    const messages: AiMessage[] = [{ role: 'system', content: system }];
 
     const recent = ctx.conversationHistory.slice(-MAX_RECENT);
     for (const msg of recent) {
-      messages.push({
-        role: msg.role === 'player' ? 'user' : 'assistant',
-        content: msg.content,
-      });
+      messages.push({ role: msg.role === 'player' ? 'user' : 'assistant', content: msg.content });
     }
 
     if (ctx.lastDmResponse && messages[messages.length - 1]?.role !== 'assistant') {
@@ -175,3 +134,5 @@ export class GroqAutoPlayerAdapter {
     return messages;
   }
 }
+
+export { GeminiAutoPlayerAdapter as GroqAutoPlayerAdapter };

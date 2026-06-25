@@ -56,6 +56,16 @@ const ABILITY_NAME_ES: Record<string, AbilityName> = {
   carisma: 'charisma',
 };
 
+// Attack rolls: always proficient, ability varies by type
+const ATTACK_ABILITY: Record<string, AbilityName> = {
+  'ataque con arma': 'dexterity',
+  'ataque a distancia': 'dexterity',
+  'ataque cuerpo a cuerpo': 'strength',
+  'ataque con arma de cuerpo a cuerpo': 'strength',
+  'ataque con arma a distancia': 'dexterity',
+  'ataque': 'dexterity',
+};
+
 const SKILL_EN_TO_ES: Record<string, string> = {
   athletics: 'atletismo',
   acrobatics: 'acrobacia',
@@ -81,6 +91,7 @@ export interface SkillCheckRequest {
   skillName: string;
   ability: AbilityName;
   dc: number;
+  alwaysProficient?: boolean;
 }
 
 export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
@@ -88,6 +99,11 @@ export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
   if (matchCD) {
     const rawSkill = matchCD[1].trim().toLowerCase();
     const dc = parseInt(matchCD[2], 10);
+
+    // Attack rolls take priority
+    const attackAbility = ATTACK_ABILITY[rawSkill];
+    if (attackAbility) return { skillName: matchCD[1].trim(), ability: attackAbility, dc, alwaysProficient: true };
+
     const ability = SKILL_TO_ABILITY[rawSkill] ?? ABILITY_NAME_ES[rawSkill];
     if (ability) return { skillName: matchCD[1].trim(), ability, dc };
   }
@@ -134,7 +150,7 @@ export function autoRollSkillCheck(
   let profBonus = 0;
   if (isExpertise) {
     profBonus = profBase * 2;
-  } else if (isProficient) {
+  } else if (isProficient || check.alwaysProficient) {
     profBonus = profBase;
   } else if (character.jackOfAllTrades) {
     profBonus = Math.floor(profBase / 2);

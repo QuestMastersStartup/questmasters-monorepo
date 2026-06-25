@@ -266,7 +266,8 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
           lastDmResponse,
           sessionMemory: existingMemory,
         });
-      } catch {
+      } catch (err) {
+        console.error('[auto-turn] generatePlayerAction failed:', String(err));
         playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
       }
     } else {

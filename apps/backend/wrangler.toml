@@ -13,6 +13,9 @@ migrations_dir = "drizzle"
 binding = "AVATARS_BUCKET"
 bucket_name = "questmasters-avatars"
 
+[ai]
+binding = "AI"
+
 [vars]
 NODE_ENV = "production"
 ALLOWED_ORIGINS = "https://questmasters.app,https://questmasters-frontend.pages.dev"
