@@ -30,7 +30,6 @@ import {
   type SessionMetrics,
 } from "../lib/dmSessionApi";
 import {
-  parseSkillCheck,
   parseSkillCheckOptions,
   rollSkillCheck,
   formatRollResult,
