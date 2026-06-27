@@ -108,7 +108,7 @@ export class StubDmModelAdapter implements DmModelProvider {
         endpoint: this.endpoint,
         error: String(e),
       });
-      yield { type: 'error', error: 'Model endpoint unreachable' };
+      yield { type: 'error', error: 'MODEL_OFFLINE' };
       return;
     }
 
@@ -117,7 +117,7 @@ export class StubDmModelAdapter implements DmModelProvider {
         endpoint: this.endpoint,
         status: response.status,
       });
-      yield { type: 'error', error: `Model endpoint returned status ${response.status}` };
+      yield { type: 'error', error: 'MODEL_OFFLINE' };
       return;
     }
 

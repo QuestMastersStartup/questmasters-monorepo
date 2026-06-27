@@ -96,22 +96,20 @@ export class GeminiAutoPlayerAdapter {
     const MAX_RECENT = 6;
 
     const system = [
-      `Eres ${ch.name}, un/a ${ch.race} ${ch.class} de nivel ${ch.level}.`,
+      `Eres un jugador de D&D 5e. Juegas como un/a ${ch.race} ${ch.class} de nivel ${ch.level}.`,
       ch.subclass ? `Subclase: ${ch.subclass}.` : '',
       `Trasfondo: ${ch.background}. Alineamiento: ${ch.alignment}.`,
       `Personalidad: ${ch.personalityTraits}`,
       ch.backstory ? `Historia: ${ch.backstory}` : '',
       this.buildProficiencySection(ch),
       '',
-      'REGLAS ESTRICTAS:',
-      '- Responde SIEMPRE en primera persona como tu personaje.',
-      '- Máximo 1-2 oraciones cortas y directas.',
-      '- Describe SOLO tu acción o diálogo. NO narres pensamientos internos.',
-      '- NO inventes hechos, personas ni eventos que el DM no haya mencionado.',
-      '- Solo reacciona a lo que el DM describió en su último mensaje.',
-      '- NO narres consecuencias de tu acción. El DM decide qué pasa.',
-      '- Si el DM te presenta opciones, elige UNA basándote en tu personalidad.',
-      '- Habla como un jugador de D&D real, no como un novelista.',
+      'FORMATO OBLIGATORIO:',
+      '- Responde en primera persona: "Examino la puerta." "Le digo: ¿quién eres?"',
+      '- Máximo 1-2 oraciones cortas.',
+      '- NO uses nombres propios para referirte a ti mismo.',
+      '- NO narres en tercera persona.',
+      '- NO inventes información que el DM no mencionó.',
+      '- NO narres consecuencias. El DM decide qué pasa.',
       this.buildMemorySection(ctx.sessionMemory),
     ].filter(Boolean).join('\n');
 
@@ -119,16 +117,16 @@ export class GeminiAutoPlayerAdapter {
 
     const recent = ctx.conversationHistory.slice(-MAX_RECENT);
     for (const msg of recent) {
-      messages.push({ role: msg.role === 'player' ? 'user' : 'assistant', content: msg.content });
+      messages.push({ role: msg.role === 'dm' ? 'user' : 'assistant', content: msg.content });
     }
 
-    if (ctx.lastDmResponse && messages[messages.length - 1]?.role !== 'assistant') {
-      messages.push({ role: 'assistant', content: ctx.lastDmResponse });
+    if (ctx.lastDmResponse && messages[messages.length - 1]?.role !== 'user') {
+      messages.push({ role: 'user', content: ctx.lastDmResponse });
     }
 
     messages.push({
       role: 'user',
-      content: '¿Qué hace tu personaje? Responde con una acción corta en primera persona. No inventes información nueva.',
+      content: '¿Qué haces? Responde como: "Examino la puerta." o "Me acerco al guardia y le pregunto por el camino."',
     });
 
     return messages;
