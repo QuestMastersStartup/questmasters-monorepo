@@ -32,15 +32,17 @@ def generate_agent_response(
         return_dict=False,
     ).to(device)
 
-    output_ids = model.generate(
-        input_ids=input_ids,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=do_sample,
-        top_p=0.9,
-        top_k=40,
-        repetition_penalty=1.3,
-    )
+    use_sampling = do_sample and temperature > 1e-5
+    gen_kwargs: dict = {
+        "input_ids": input_ids,
+        "max_new_tokens": max_new_tokens,
+        "do_sample": use_sampling,
+        "repetition_penalty": 1.3,
+    }
+    if use_sampling:
+        gen_kwargs.update(temperature=temperature, top_p=0.9, top_k=40)
+
+    output_ids = model.generate(**gen_kwargs)
 
     return tokenizer.decode(
         output_ids[0][input_ids.shape[1]:],
@@ -73,16 +75,16 @@ def stream_agent_response(
     streamer = TextIteratorStreamer(
         tokenizer, skip_prompt=True, skip_special_tokens=True,
     )
-    gen_kwargs = {
+    use_sampling = temperature > 1e-5
+    gen_kwargs: dict = {
         "input_ids": input_ids,
         "max_new_tokens": max_new_tokens,
-        "temperature": temperature,
-        "do_sample": True,
-        "top_p": 0.9,
-        "top_k": 40,
+        "do_sample": use_sampling,
         "repetition_penalty": 1.3,
         "streamer": streamer,
     }
+    if use_sampling:
+        gen_kwargs.update(temperature=temperature, top_p=0.9, top_k=40)
 
     Thread(target=model.generate, kwargs=gen_kwargs, daemon=True).start()
 
