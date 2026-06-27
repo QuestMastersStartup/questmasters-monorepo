@@ -57,7 +57,6 @@ import { SoftDeleteDmSessionUseCase } from '../dm-session/application/use-cases/
 // DM Model Providers
 import { StubDmModelAdapter } from '../dm-session/infrastructure/adapters/stub-dm-model.adapter';
 import { RunpodDmModelAdapter } from '../dm-session/infrastructure/adapters/runpod-dm-model.adapter';
-import { IntentRouterService } from '../dm-session/infrastructure/adapters/intent-router.service';
 import type { DmModelProvider } from '../dm-session/domain/ports/dm-model.provider';
 import type { ArchitectureType } from '../dm-session/domain/entities/dm-session.entity';
 
@@ -124,12 +123,10 @@ export function createContainer(db: AppDb, env: CloudflareBindings) {
     dmTurnRepo,
     dmModelProviders,
   );
-  const intentRouter = env.AI ? new IntentRouterService(env.AI) : undefined;
   const sendPlayerTurnUseCase = new SendPlayerTurnUseCase(
     dmSessionRepo,
     dmTurnRepo,
     dmModelProviders,
-    intentRouter,
   );
   const getDmSessionUseCase = new GetDmSessionUseCase(dmSessionRepo, dmTurnRepo);
   const listDmSessionsUseCase = new ListDmSessionsUseCase(dmSessionRepo);

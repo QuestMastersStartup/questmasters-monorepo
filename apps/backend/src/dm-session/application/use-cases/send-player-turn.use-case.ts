@@ -8,7 +8,6 @@ import type {
   DmModelProvider,
   DmModelRequest,
 } from '../../domain/ports/dm-model.provider';
-import type { IntentRouterService } from '../../infrastructure/adapters/intent-router.service';
 import { DmSessionError } from '../errors';
 import { streamAndPersistTurn } from '../stream-turn';
 
@@ -24,7 +23,6 @@ export class SendPlayerTurnUseCase {
     private readonly sessionRepo: DmSessionRepository,
     private readonly turnRepo: DmTurnRepository,
     private readonly modelProviders: Record<ArchitectureType, DmModelProvider>,
-    private readonly intentRouter?: IntentRouterService,
   ) {}
 
   async execute(
@@ -66,18 +64,6 @@ export class SendPlayerTurnUseCase {
       playerInput,
       currentMemorySnapshot: session.memorySnapshot,
     };
-
-    if (this.intentRouter && session.architectureType === 'mas') {
-      try {
-        request.routeDecision = await this.intentRouter.classify(
-          playerInput,
-          session.campaignPrompt,
-          conversationHistory.length,
-        );
-      } catch {
-        // Workers AI falló → el orquestador usará Groq → keywords
-      }
-    }
 
     const stream = streamAndPersistTurn({
       session,
