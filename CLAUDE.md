@@ -71,8 +71,14 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 - No crear carpetas nuevas en la raíz del monorepo sin confirmar con el usuario
 - No duplicar lógica que ya existe en `packages/dnd-rules` — consultarla antes de reimplementar
 
+### Regla de modelo único para orquestación DM
+
+**Todo lo que ocurre dentro de una sesión de DM (MAS o monolítica) DEBE usar exclusivamente el modelo Gemma 4 (`google/gemma-4-26B-A4B-it`).** Esto incluye: router de intenciones, agentes (arbiter, npc, world, narrator), extracción post-turno (L2/L3), y memoria de trabajo (L1/LightRAG). No usar APIs externas (Groq, Workers AI, OpenAI, etc.) para ninguna parte de la orquestación del DM.
+
+**Excepción:** el auto-player (simulación de jugador para testing) SÍ puede usar Workers AI (`@cf/meta/llama-3.2-3b-instruct`) porque no es parte de la orquestación del DM — es una herramienta de desarrollo.
+
 ### Contexto del dominio
 
 Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`, `dm-session`. Antes de añadir un módulo nuevo, verificar si ya existe con `graphify query "<concepto>"`. Las entidades god node son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
 
-El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `RunpodDmModelAdapter` — activado con `DM_USE_RUNPOD=true` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` (sin LoRA, base puro). Para dev local se usa Google Colab con ngrok.
+El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `StubDmModelAdapter` (dev) o `RunpodDmModelAdapter` (prod) — seleccionado con `DM_USE_RUNPOD` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` (sin LoRA, base puro). Para dev local se usa Google Colab con ngrok.
