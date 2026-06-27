@@ -94,25 +94,35 @@ export interface SkillCheckRequest {
   alwaysProficient?: boolean;
 }
 
+function resolveSkill(raw: string): { skillName: string; ability: AbilityName } | null {
+  const normalized = raw.trim().toLowerCase();
+  const candidates = normalized.includes(' o ')
+    ? normalized.split(' o ').map((s) => s.trim())
+    : [normalized];
+  for (const candidate of candidates) {
+    const attackAbility = ATTACK_ABILITY[candidate];
+    if (attackAbility) return { skillName: candidate.charAt(0).toUpperCase() + candidate.slice(1), ability: attackAbility };
+    const ability = SKILL_TO_ABILITY[candidate] ?? ABILITY_NAME_ES[candidate];
+    if (ability) return { skillName: candidate.charAt(0).toUpperCase() + candidate.slice(1), ability };
+  }
+  return null;
+}
+
 export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
   const matchCD = dmText.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
   if (matchCD) {
-    const rawSkill = matchCD[1].trim().toLowerCase();
     const dc = parseInt(matchCD[2], 10);
-
-    // Attack rolls take priority
-    const attackAbility = ATTACK_ABILITY[rawSkill];
-    if (attackAbility) return { skillName: matchCD[1].trim(), ability: attackAbility, dc, alwaysProficient: true };
-
-    const ability = SKILL_TO_ABILITY[rawSkill] ?? ABILITY_NAME_ES[rawSkill];
-    if (ability) return { skillName: matchCD[1].trim(), ability, dc };
+    const resolved = resolveSkill(matchCD[1]);
+    if (resolved) {
+      const attackAbility = ATTACK_ABILITY[matchCD[1].trim().toLowerCase()];
+      return { ...resolved, dc, alwaysProficient: !!attackAbility };
+    }
   }
 
   const matchAbility = dmText.match(/tirada de ([^(]+)\((?:Sabiduría|Fuerza|Destreza|Constitución|Inteligencia|Carisma)\)/i);
   if (matchAbility) {
-    const rawSkill = matchAbility[1].trim().toLowerCase();
-    const ability = SKILL_TO_ABILITY[rawSkill] ?? ABILITY_NAME_ES[rawSkill];
-    if (ability) return { skillName: matchAbility[1].trim(), ability, dc: 12 };
+    const resolved = resolveSkill(matchAbility[1]);
+    if (resolved) return { ...resolved, dc: 12 };
   }
 
   return null;

@@ -81,6 +81,22 @@ function sseResponse(
   );
 }
 
+const FALLBACK_ACTIONS = [
+  (name: string) => `${name} observa la escena con atención, buscando detalles que otros pasarían por alto.`,
+  (name: string) => `${name} se acerca con cautela a lo más interesante que ve.`,
+  (name: string) => `${name} revisa sus pertenencias y se prepara para lo que venga.`,
+  (name: string) => `${name} intenta escuchar conversaciones cercanas o sonidos inusuales.`,
+  (name: string) => `${name} busca una posición estratégica desde donde evaluar la situación.`,
+  (name: string) => `${name} se dirige hacia la persona más cercana para entablar conversación.`,
+  (name: string) => `${name} examina el terreno en busca de pistas o caminos ocultos.`,
+  (name: string) => `${name} aguarda un momento, evaluando si hay peligro antes de actuar.`,
+];
+
+function randomFallbackAction(characterName: string): string {
+  const fn = FALLBACK_ACTIONS[Math.floor(Math.random() * FALLBACK_ACTIONS.length)];
+  return fn(characterName);
+}
+
 export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlayerAdapter | null) {
   async function getIsAdmin(userId: string): Promise<boolean> {
     const profile = await container.getUserProfileUseCase.execute(userId);
@@ -136,6 +152,24 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
     return sseResponse(initialized.value, [
       { type: 'session', session: DmSessionMapper.toResponse(session) },
     ]);
+  });
+
+  app.post('/:id/initialize', async (c) => {
+    const user = await requireUser(c);
+    const isAdmin = await getIsAdmin(user.id);
+    const id = c.req.param('id');
+
+    const initialized = await container.initializeDmSessionUseCase.execute({
+      sessionId: id,
+      userId: user.id,
+      isAdmin,
+    });
+
+    if (initialized.isFailure) {
+      return c.json({ message: errorToMessage(initialized.error) }, errorToStatus(initialized.error) as any);
+    }
+
+    return sseResponse(initialized.value);
   });
 
   app.get('/:id', async (c) => {
@@ -268,10 +302,10 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
         });
       } catch (err) {
         console.error('[auto-turn] generatePlayerAction failed:', String(err));
-        playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
+        playerInput = randomFallbackAction(character.name);
       }
     } else {
-      playerInput = 'Examino los alrededores con cautela y decido qué hacer.';
+      playerInput = randomFallbackAction(character.name);
     }
 
     const result = await container.sendPlayerTurnUseCase.execute({
