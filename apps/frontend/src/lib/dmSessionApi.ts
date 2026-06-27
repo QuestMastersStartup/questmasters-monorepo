@@ -246,6 +246,20 @@ export async function sendTurn(
   return streamDmResponse(response);
 }
 
+export async function retryInitialize(
+  id: string,
+  signal?: AbortSignal,
+): Promise<AsyncGenerator<DmModelChunk>> {
+  const response = await authFetch(`/api/dm-sessions/${id}/initialize`, {
+    method: "POST",
+    signal,
+  });
+
+  if (!response.ok) await throwApiError(response, "Error al reiniciar la sesión");
+
+  return streamDmResponse(response);
+}
+
 export async function getMetrics(id: string): Promise<SessionMetrics> {
   const response = await authFetch(`/api/dm-sessions/${id}/metrics`);
   if (!response.ok) await throwApiError(response, "Error al obtener métricas");

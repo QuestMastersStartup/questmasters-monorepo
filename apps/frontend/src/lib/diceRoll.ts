@@ -113,23 +113,39 @@ export interface RollResult {
   isReliable: boolean;
 }
 
-export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
+function resolveSkills(raw: string): { skillName: string; ability: AbilityName }[] {
+  const normalized = raw.trim().toLowerCase();
+  const candidates = normalized.includes(" o ")
+    ? normalized.split(" o ").map((s) => s.trim())
+    : [normalized];
+  const results: { skillName: string; ability: AbilityName }[] = [];
+  for (const candidate of candidates) {
+    const ability = SKILL_TO_ABILITY[candidate] ?? ABILITY_NAME_ES[candidate];
+    if (ability) results.push({ skillName: candidate.charAt(0).toUpperCase() + candidate.slice(1), ability });
+  }
+  return results;
+}
+
+export function parseSkillCheckOptions(dmText: string): SkillCheckRequest[] {
   const matchCD = dmText.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
   if (matchCD) {
-    const rawSkill = matchCD[1].trim().toLowerCase();
     const dc = parseInt(matchCD[2], 10);
-    const ability = SKILL_TO_ABILITY[rawSkill] ?? ABILITY_NAME_ES[rawSkill];
-    if (ability) return { skillName: matchCD[1].trim(), ability, dc };
+    const skills = resolveSkills(matchCD[1]);
+    return skills.map((s) => ({ ...s, dc }));
   }
 
   const matchAbility = dmText.match(/tirada de ([^(]+)\((?:Sabiduría|Fuerza|Destreza|Constitución|Inteligencia|Carisma)\)/i);
   if (matchAbility) {
-    const rawSkill = matchAbility[1].trim().toLowerCase();
-    const ability = SKILL_TO_ABILITY[rawSkill] ?? ABILITY_NAME_ES[rawSkill];
-    if (ability) return { skillName: matchAbility[1].trim(), ability, dc: 12 };
+    const skills = resolveSkills(matchAbility[1]);
+    return skills.map((s) => ({ ...s, dc: 12 }));
   }
 
-  return null;
+  return [];
+}
+
+export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
+  const options = parseSkillCheckOptions(dmText);
+  return options[0] ?? null;
 }
 
 export function matchSkill(

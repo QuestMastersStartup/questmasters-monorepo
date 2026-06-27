@@ -21,6 +21,7 @@ import {
   sendTurn,
   simulateTurn,
   endSession,
+  retryInitialize,
   takePendingInitialStream,
   type DmModelChunk,
   type DmSessionDetail,
@@ -30,6 +31,7 @@ import {
 } from "../lib/dmSessionApi";
 import {
   parseSkillCheck,
+  parseSkillCheckOptions,
   rollSkillCheck,
   formatRollResult,
   matchSkill,
@@ -331,20 +333,67 @@ function PlayerBubble({
   );
 }
 
-function DmBubble({ text, streaming = false }: { text: string; streaming?: boolean }) {
+function formatLatency(ms: number): string {
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
+}
+
+function ElapsedTimer({ since }: { since: number }) {
+  const [elapsed, setElapsed] = useState(Date.now() - since);
+
+  useEffect(() => {
+    const id = setInterval(() => setElapsed(Date.now() - since), 100);
+    return () => clearInterval(id);
+  }, [since]);
+
+  return <span>{(elapsed / 1000).toFixed(1)}s</span>;
+}
+
+function DmBubble({
+  text,
+  streaming = false,
+  streamStartedAt,
+  latencyMs,
+  inputTokens,
+  outputTokens,
+}: {
+  text: string;
+  streaming?: boolean;
+  streamStartedAt?: number;
+  latencyMs?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+}) {
+  const hasMetrics = latencyMs !== undefined && latencyMs > 0;
+
   return (
     <div className="flex justify-start">
-      <div className="max-w-[85%] bg-purple-950/50 border border-purple-500/20 rounded-2xl rounded-bl-sm px-4 py-3">
-        <div className="flex items-center gap-1.5 mb-1">
-          <Sparkles size={11} className="text-purple-400" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400">
-            Dungeon Master
-          </span>
+      <div className="max-w-[85%]">
+        <div className="bg-purple-950/50 border border-purple-500/20 rounded-2xl rounded-bl-sm px-4 py-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Sparkles size={11} className="text-purple-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400">
+              Dungeon Master
+            </span>
+          </div>
+          <p className="text-sm text-slate-100 whitespace-pre-wrap leading-relaxed">
+            {text}
+            {streaming && <span className="animate-pulse text-purple-300">▊</span>}
+          </p>
         </div>
-        <p className="text-sm text-slate-100 whitespace-pre-wrap leading-relaxed">
-          {text}
-          {streaming && <span className="animate-pulse text-purple-300">▊</span>}
-        </p>
+        {streaming && streamStartedAt && (
+          <div className="flex items-center gap-2 mt-1 pl-2 text-[10px] text-slate-500">
+            <Loader2 size={9} className="animate-spin" />
+            <ElapsedTimer since={streamStartedAt} />
+          </div>
+        )}
+        {!streaming && hasMetrics && (
+          <div className="flex items-center gap-3 mt-1 pl-2 text-[10px] text-slate-500">
+            <span>{formatLatency(latencyMs)}</span>
+            {(inputTokens !== undefined && outputTokens !== undefined && (inputTokens > 0 || outputTokens > 0)) && (
+              <span>{inputTokens.toLocaleString("es")} + {outputTokens.toLocaleString("es")} tokens</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -416,24 +465,33 @@ function downloadMarkdown(session: DmSessionDetail): void {
 // ─── Barra de progreso de inicialización ─────────────────────────────
 
 const INIT_STEPS = [
-  "Conectando con el Dungeon Master...",
-  "Preparando el escenario...",
-  "Generando la escena inicial...",
-  "Casi listo...",
+  "Conectando con el modelo de IA...",
+  "Cargando el router de intenciones...",
+  "Preparando la escena inicial...",
+  "Generando narración...",
+  "El modelo sigue trabajando...",
 ];
 
 function SessionProgressBar() {
   const [progress, setProgress] = useState(5);
   const [stepIdx, setStepIdx] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setElapsed(Date.now() - startRef.current), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => { setProgress(20); setStepIdx(0); }, 400),
-      setTimeout(() => { setProgress(40); setStepIdx(1); }, 2500),
-      setTimeout(() => { setProgress(60); setStepIdx(2); }, 5000),
-      setTimeout(() => { setProgress(78); setStepIdx(3); }, 9000),
-      setTimeout(() => { setProgress(88); }, 14000),
-      setTimeout(() => { setProgress(93); }, 20000),
+      setTimeout(() => { setProgress(15); setStepIdx(0); }, 400),
+      setTimeout(() => { setProgress(30); setStepIdx(1); }, 3000),
+      setTimeout(() => { setProgress(50); setStepIdx(2); }, 6000),
+      setTimeout(() => { setProgress(70); setStepIdx(3); }, 10000),
+      setTimeout(() => { setProgress(80); setStepIdx(4); }, 20000),
+      setTimeout(() => { setProgress(88); }, 30000),
+      setTimeout(() => { setProgress(93); }, 45000),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -455,7 +513,10 @@ function SessionProgressBar() {
           style={{ width: `${progress}%` }}
         />
       </div>
-      <p className="text-xs text-slate-500">Esto puede tomar unos segundos</p>
+      <div className="flex items-center gap-2 text-xs text-slate-500">
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+        <span>{Math.floor(elapsed / 1000)}s — conexión activa</span>
+      </div>
     </div>
   );
 }
@@ -489,7 +550,8 @@ export const DmSession: React.FC = () => {
   const [simTurnsTotal, setSimTurnsTotal] = useState(0);
   const [initializing, setInitializing] = useState(false);
   const [incompleteTurn, setIncompleteTurn] = useState<string | null>(null);
-  const [pendingCheck, setPendingCheck] = useState<SkillCheckRequest | null>(null);
+  const [pendingCheckOptions, setPendingCheckOptions] = useState<SkillCheckRequest[]>([]);
+  const [streamStartedAt, setStreamStartedAt] = useState<number | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const simConfigRef = useRef<HTMLDivElement>(null);
 
@@ -506,7 +568,8 @@ export const DmSession: React.FC = () => {
     async (stream: AsyncGenerator<DmModelChunk>, playerInput: string | null, isAuto = false) => {
       setPendingPlayerInput(playerInput);
       setPendingIsAuto(isAuto);
-      setPendingCheck(null);
+      setPendingCheckOptions([]);
+      setStreamStartedAt(Date.now());
       setStreamingText("");
       let aborted = false;
       let accumulated = "";
@@ -520,12 +583,16 @@ export const DmSession: React.FC = () => {
             accumulated += chunk.delta;
             setStreamingText((prev) => (prev ?? "") + chunk.delta);
           } else if (chunk.type === "error") {
-            setError(chunk.error ?? "El DM no pudo generar la respuesta");
+            if (chunk.error === "MODEL_OFFLINE") {
+              setError("MODEL_OFFLINE");
+            } else {
+              setError(chunk.error ?? "El DM no pudo generar la respuesta");
+            }
           }
         }
         await refresh();
-        const check = parseSkillCheck(accumulated);
-        if (check) setPendingCheck(check);
+        const options = parseSkillCheckOptions(accumulated);
+        if (options.length > 0) setPendingCheckOptions(options);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           aborted = true;
@@ -535,6 +602,7 @@ export const DmSession: React.FC = () => {
         }
       } finally {
         setStreamingText(null);
+        setStreamStartedAt(null);
         setPendingPlayerInput(null);
         setPendingIsAuto(false);
         setInitializing(false);
@@ -572,8 +640,8 @@ export const DmSession: React.FC = () => {
             setIncompleteTurn(lastTurn.playerInput);
             setInput(lastTurn.playerInput);
           }
-          const check = parseSkillCheck(lastTurn.dmResponse);
-          if (check) setPendingCheck(check);
+          const options = parseSkillCheckOptions(lastTurn.dmResponse);
+          if (options.length > 0) setPendingCheckOptions(options);
         }
       } catch (err) {
         if (!cancelled) {
@@ -668,7 +736,7 @@ export const DmSession: React.FC = () => {
     if (!overrideInput) setInput("");
     setError(null);
     setIncompleteTurn(null);
-    setPendingCheck(null);
+    setPendingCheckOptions([]);
     const controller = new AbortController();
     abortControllerRef.current = controller;
     try {
@@ -682,8 +750,8 @@ export const DmSession: React.FC = () => {
     }
   };
 
-  const handleDiceRoll = () => {
-    if (!pendingCheck || !session) return;
+  const handleDiceRoll = (check: SkillCheckRequest) => {
+    if (!session) return;
     const ch = session.characters[0];
     if (!ch?.stats) return;
     const ctx = {
@@ -694,8 +762,8 @@ export const DmSession: React.FC = () => {
       jackOfAllTrades: ch.jackOfAllTrades ?? false,
       reliableTalent: ch.reliableTalent ?? false,
     };
-    const roll = rollSkillCheck(pendingCheck.ability, ctx, pendingCheck.skillName);
-    const result = formatRollResult(pendingCheck, roll);
+    const roll = rollSkillCheck(check.ability, ctx, check.skillName);
+    const result = formatRollResult(check, roll);
     handleSend(result);
   };
 
@@ -844,7 +912,12 @@ export const DmSession: React.FC = () => {
             {session.turns.map((turn) => (
               <React.Fragment key={turn.id}>
                 {turn.playerInput && <PlayerBubble text={turn.playerInput} characterName={characterName} />}
-                <DmBubble text={turn.dmResponse} />
+                <DmBubble
+                  text={turn.dmResponse}
+                  latencyMs={turn.latencyMs}
+                  inputTokens={turn.inputTokens}
+                  outputTokens={turn.outputTokens}
+                />
               </React.Fragment>
             ))}
 
@@ -853,15 +926,7 @@ export const DmSession: React.FC = () => {
 
             {/* Turno en streaming */}
             {pendingPlayerInput && <PlayerBubble text={pendingPlayerInput} characterName={characterName} isAuto={pendingIsAuto} />}
-            {isStreaming && <DmBubble text={streamingText ?? ""} streaming />}
-
-            {/* Indicador de typing */}
-            {isStreaming && !initializing && (
-              <div className="flex items-center gap-2 pl-4 text-xs text-purple-400/60">
-                <Loader2 size={12} className="animate-spin" />
-                El DM está escribiendo...
-              </div>
-            )}
+            {isStreaming && <DmBubble text={streamingText ?? ""} streaming streamStartedAt={streamStartedAt ?? undefined} />}
 
             {/* Inicializando sin stream activo (recarga de página) */}
             {isInitializing && !initializing && <SessionProgressBar />}
@@ -874,11 +939,44 @@ export const DmSession: React.FC = () => {
               </div>
             )}
 
-            {error && (
+            {error && error === "MODEL_OFFLINE" ? (
+              <div className="flex flex-col items-center gap-3 p-5 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-sm font-semibold text-amber-300">Modelo no disponible</span>
+                </div>
+                <p className="text-xs text-slate-400 text-center max-w-sm">
+                  La orquestación de IA no está conectada. Asegurate de que el servidor del modelo (Colab / RunPod) esté corriendo y que la URL esté configurada.
+                </p>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!id || !session) return;
+                    setError(null);
+                    if (session.status === "initializing" && session.turns.length === 0) {
+                      setInitializing(true);
+                      try {
+                        const stream = await retryInitialize(id);
+                        await consumeStream(stream, null);
+                      } catch {
+                        setError("MODEL_OFFLINE");
+                      } finally {
+                        setInitializing(false);
+                      }
+                    } else {
+                      await refresh();
+                    }
+                  }}
+                  className="text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors px-3 py-1.5 border border-amber-500/30 rounded-lg hover:bg-amber-500/10"
+                >
+                  Reintentar conexión
+                </button>
+              </div>
+            ) : error ? (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-sm">
                 {error}
               </div>
-            )}
+            ) : null}
 
             <div ref={messagesEndRef} />
           </div>
@@ -902,22 +1000,27 @@ export const DmSession: React.FC = () => {
               </div>
             )}
 
-            {pendingCheck && !isEnded && !isStreaming && !simulationActive && session?.characters[0]?.stats && (
+            {pendingCheckOptions.length > 0 && !isEnded && !isStreaming && !simulationActive && session?.characters[0]?.stats && (
               <div className="px-5 py-3 bg-indigo-900/20 border-b border-indigo-500/20 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <Dices size={16} className="text-indigo-400 shrink-0" />
                   <span className="text-sm text-indigo-300 font-semibold truncate">
-                    El DM pide: Tirada de {pendingCheck.skillName} (CD {pendingCheck.dc})
+                    El DM pide: Tirada de {pendingCheckOptions.map((o) => o.skillName).join(" o ")} (CD {pendingCheckOptions[0].dc})
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleDiceRoll}
-                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl transition-colors font-semibold text-sm shrink-0"
-                >
-                  <Dices size={14} />
-                  Tirar dado
-                </button>
+                <div className="flex gap-2 shrink-0">
+                  {pendingCheckOptions.map((option) => (
+                    <button
+                      key={option.skillName}
+                      type="button"
+                      onClick={() => handleDiceRoll(option)}
+                      className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl transition-colors font-semibold text-sm"
+                    >
+                      <Dices size={14} />
+                      {pendingCheckOptions.length > 1 ? option.skillName : "Tirar dado"}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 

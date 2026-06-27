@@ -280,7 +280,7 @@ export const SessionInitModal: React.FC<SessionInitModalProps> = ({ onClose }) =
               {(
                 [
                   { value: "monolithic" as const, label: "Monolítico", detail: "Modelo único con memoria integrada", disabled: false },
-                  { value: "mas" as const, label: "MAS", detail: "Orquestación multi-agente (WIP)", disabled: true },
+                  { value: "mas" as const, label: "MAS", detail: "Orquestación multi-agente con memoria de 4 capas", disabled: false },
                 ]
               ).map((option) => (
                 <label
