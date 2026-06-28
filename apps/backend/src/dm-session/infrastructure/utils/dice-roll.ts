@@ -31,6 +31,7 @@ const SKILL_TO_ABILITY: Record<string, AbilityName> = {
   persuasion: 'charisma',
   // EN fallback
   athletics: 'strength',
+  acrobatics: 'dexterity',
   stealth: 'dexterity',
   'sleight of hand': 'dexterity',
   arcana: 'intelligence',

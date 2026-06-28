@@ -30,6 +30,7 @@ const SKILL_TO_ABILITY: Record<string, AbilityName> = {
   persuasion: "charisma",
   // EN fallback (por si Gemma responde en inglés)
   athletics: "strength",
+  acrobatics: "dexterity",
   stealth: "dexterity",
   "sleight of hand": "dexterity",
   arcana: "intelligence",
