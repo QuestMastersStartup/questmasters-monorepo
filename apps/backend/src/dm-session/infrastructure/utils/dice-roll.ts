@@ -94,8 +94,12 @@ export interface SkillCheckRequest {
   alwaysProficient?: boolean;
 }
 
+function stripMarkdown(s: string): string {
+  return s.replace(/\*{1,2}/g, '').replace(/_{1,2}/g, '').replace(/`/g, '');
+}
+
 function resolveSkill(raw: string): { skillName: string; ability: AbilityName } | null {
-  const normalized = raw.trim().toLowerCase();
+  const normalized = stripMarkdown(raw).trim().toLowerCase();
   const candidates = normalized.includes(' o ')
     ? normalized.split(' o ').map((s) => s.trim())
     : [normalized];
