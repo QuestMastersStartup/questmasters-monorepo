@@ -761,7 +761,7 @@ export const DmSession: React.FC = () => {
       jackOfAllTrades: ch.jackOfAllTrades ?? false,
       reliableTalent: ch.reliableTalent ?? false,
     };
-    const roll = rollSkillCheck(check.ability, ctx, check.skillName);
+    const roll = rollSkillCheck(check.ability, ctx, check.skillName, check.isSavingThrow);
     const result = formatRollResult(check, roll);
     handleSend(result);
   };

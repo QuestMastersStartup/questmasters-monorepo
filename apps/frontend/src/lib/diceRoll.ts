@@ -102,6 +102,7 @@ export interface SkillCheckRequest {
   skillName: string;
   ability: AbilityName;
   dc: number;
+  isSavingThrow?: boolean;
 }
 
 export interface RollResult {
@@ -131,7 +132,21 @@ function resolveSkills(raw: string): { skillName: string; ability: AbilityName }
   return results;
 }
 
+function parseSavingThrow(dmText: string): SkillCheckRequest | null {
+  const match = dmText.match(/(?:tirada de )?[Ss]alvaci[oó]n de (\w+)\s*\(CD\s*(\d+)\)/i);
+  if (!match) return null;
+  const abilityName = match[1].toLowerCase();
+  const ability = ABILITY_NAME_ES[abilityName];
+  if (!ability) return null;
+  const dc = parseInt(match[2], 10);
+  const displayName = `Salvación de ${abilityName.charAt(0).toUpperCase() + abilityName.slice(1)}`;
+  return { skillName: displayName, ability, dc, isSavingThrow: true };
+}
+
 export function parseSkillCheckOptions(dmText: string): SkillCheckRequest[] {
+  const savingThrow = parseSavingThrow(dmText);
+  if (savingThrow) return [savingThrow];
+
   const matchCD = dmText.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
   if (matchCD) {
     const dc = parseInt(matchCD[2], 10);
@@ -183,9 +198,23 @@ export function rollSkillCheck(
   ability: AbilityName,
   ctx: CharacterRollContext,
   skillNameEs: string,
+  isSavingThrow = false,
 ): RollResult {
   let d20 = Math.floor(Math.random() * 20) + 1;
   const modifier = calculateModifier(ctx.stats[ability]);
+
+  if (isSavingThrow) {
+    return {
+      d20,
+      modifier,
+      proficiencyBonus: 0,
+      total: d20 + modifier,
+      isProficient: false,
+      isExpertise: false,
+      isReliable: false,
+    };
+  }
+
   const isProficient = matchSkill(skillNameEs, ctx.skillProficiencies);
   const isExpertise = matchSkill(skillNameEs, ctx.expertiseSkills);
   const profBase = calculateProficiencyBonus(ctx.level);

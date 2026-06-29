@@ -93,6 +93,7 @@ export interface SkillCheckRequest {
   ability: AbilityName;
   dc: number;
   alwaysProficient?: boolean;
+  isSavingThrow?: boolean;
 }
 
 function stripMarkdown(s: string): string {
@@ -113,7 +114,21 @@ function resolveSkill(raw: string): { skillName: string; ability: AbilityName } 
   return null;
 }
 
+function parseSavingThrow(dmText: string): SkillCheckRequest | null {
+  const match = dmText.match(/(?:tirada de )?[Ss]alvaci[oó]n de (\w+)\s*\(CD\s*(\d+)\)/i);
+  if (!match) return null;
+  const abilityName = match[1].toLowerCase();
+  const ability = ABILITY_NAME_ES[abilityName];
+  if (!ability) return null;
+  const dc = parseInt(match[2], 10);
+  const displayName = `Salvación de ${abilityName.charAt(0).toUpperCase() + abilityName.slice(1)}`;
+  return { skillName: displayName, ability, dc, isSavingThrow: true };
+}
+
 export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
+  const savingThrow = parseSavingThrow(dmText);
+  if (savingThrow) return savingThrow;
+
   const matchCD = dmText.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
   if (matchCD) {
     const dc = parseInt(matchCD[2], 10);
@@ -152,12 +167,21 @@ export function autoRollSkillCheck(
   character: CharacterSnapshot,
 ): string {
   const stats = character.stats!;
+  const d20 = Math.floor(Math.random() * 20) + 1;
+  const modifier = calculateModifier(stats[check.ability]);
+
+  if (check.isSavingThrow) {
+    const total = d20 + modifier;
+    const modSign = modifier >= 0 ? '+' : '';
+    const pass = total >= check.dc;
+    return `[Tirada de ${check.skillName}: d20(${d20}) ${modSign}${modifier} = ${total} vs CD ${check.dc} — ${pass ? 'Éxito' : 'Fallo'}]`;
+  }
+
   const proficiencies = character.skillProficiencies ?? [];
   const expertise = character.expertiseSkills ?? [];
   const profBase = calculateProficiencyBonus(character.level);
 
-  let d20 = Math.floor(Math.random() * 20) + 1;
-  const modifier = calculateModifier(stats[check.ability]);
+  let adjustedD20 = d20;
   const skillEs = check.skillName.toLowerCase();
   const isProficient = matchSkill(skillEs, proficiencies);
   const isExpertise = matchSkill(skillEs, expertise);
@@ -171,12 +195,12 @@ export function autoRollSkillCheck(
     profBonus = Math.floor(profBase / 2);
   }
 
-  const isReliable = character.reliableTalent && isProficient && d20 < 10;
-  if (isReliable) d20 = 10;
+  const isReliable = character.reliableTalent && isProficient && adjustedD20 < 10;
+  if (isReliable) adjustedD20 = 10;
 
-  const total = d20 + modifier + profBonus;
+  const total = adjustedD20 + modifier + profBonus;
   const modSign = modifier >= 0 ? '+' : '';
-  const parts = [`d20(${d20})`, `${modSign}${modifier}`];
+  const parts = [`d20(${adjustedD20})`, `${modSign}${modifier}`];
   if (isExpertise) {
     parts.push(`+${profBonus} expertise`);
   } else if (isProficient) {
