@@ -183,15 +183,20 @@ export class RunpodDmModelAdapter implements DmModelProvider {
     return null;
   }
 
+  private static readonly MAX_HISTORY_TURNS = 10;
+
   /** Convierte el request camelCase de TypeScript al snake_case que espera Python. */
   private toSnakeCase(r: DmModelRequest): Record<string, unknown> {
+    const history = r.conversationHistory.slice(
+      -RunpodDmModelAdapter.MAX_HISTORY_TURNS,
+    );
     const payload: Record<string, unknown> = {
       session_id: r.sessionId,
       architecture_type: r.architectureType,
       model_id: r.modelId,
       campaign_prompt: r.campaignPrompt,
       characters: r.characters,
-      conversation_history: r.conversationHistory,
+      conversation_history: history,
       player_input: r.playerInput,
       current_memory_snapshot: r.currentMemorySnapshot,
     };
