@@ -46,6 +46,8 @@ _ARBITER_KW = {
     "conjuro", "magia", "intento", "intentar", "escalo", "salto", "nado",
     "fuerzo", "empujo", "trepo", "escondo", "examino", "investigo", "busco",
     "tirada", "dado", "teléfono", "celular", "pistola", "computadora",
+    "mato", "matar", "apuñalo", "acuchillo", "corto", "degüello",
+    "revivo", "resucito", "curo", "sano", "invoco", "conjurar",
 }
 _NPC_KW = {
     "hablo", "hablar", "digo", "decir", "pregunto", "preguntar",

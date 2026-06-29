@@ -13,6 +13,7 @@ from src.agents.world import run_world
 from src.blackboard import Blackboard
 from src.extraction import run_extraction
 from src.memory import l1_working
+from src.postprocess import clean_agent_response, clean_narrator_response, is_meta_response
 from src.model_loader import get_input_device, get_model, get_tokenizer
 from src.schemas import (
     DmModelRequest,
@@ -126,6 +127,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
             summary="Evaluando reglas y coherencia (L1+L4)...",
         )
         updates = run_arbiter(state)
+        updates["arbiter_ruling"] = clean_agent_response(updates["arbiter_ruling"])
         state.update(updates)
 
         ruling_preview = state["arbiter_ruling"][:120]
@@ -138,6 +140,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
             summary="Determinando reacciones de PNJs (L1+L2+L3)...",
         )
         updates = run_npc(state)
+        updates["npc_responses"] = [clean_agent_response(r) for r in updates["npc_responses"]]
         state.update(updates)
 
         npc_preview = (
@@ -154,6 +157,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
             summary="Evaluando cambios en el mundo (L1+L2+L3)...",
         )
         updates = run_world(state)
+        updates["world_state"] = clean_agent_response(updates["world_state"])
         state.update(updates)
 
         world_preview = (
@@ -171,6 +175,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
         full_response += chunk.content
         yield chunk
 
+    full_response = clean_narrator_response(full_response)
     state["narrator_draft"] = full_response
 
     # ── 7. Post-turno: extracción → L2+L3, inserción → L1 ──
