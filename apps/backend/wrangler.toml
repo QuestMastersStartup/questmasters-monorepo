@@ -40,6 +40,9 @@ migrations_dir = "drizzle"
 binding = "AVATARS_BUCKET"
 bucket_name = "questmasters-avatars"
 
+[env.preview.ai]
+binding = "AI"
+
 [env.preview.vars]
 NODE_ENV = "development"
 ALLOWED_ORIGINS = "http://localhost:3001,http://localhost:3000"
