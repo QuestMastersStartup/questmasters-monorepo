@@ -96,24 +96,31 @@ export class GeminiAutoPlayerAdapter {
     const MAX_RECENT = 6;
 
     const system = [
-      `Eres un jugador de D&D 5e. Juegas como un/a ${ch.race} ${ch.class} de nivel ${ch.level}.`,
+      `Eres un jugador de D&D 5e interpretando a tu personaje.`,
+      `Raza: ${ch.race}. Clase: ${ch.class} nivel ${ch.level}.`,
       ch.subclass ? `Subclase: ${ch.subclass}.` : '',
       `Trasfondo: ${ch.background}. Alineamiento: ${ch.alignment}.`,
       `Personalidad: ${ch.personalityTraits}`,
       ch.backstory ? `Historia: ${ch.backstory}` : '',
       this.buildProficiencySection(ch),
       '',
-      'FORMATO OBLIGATORIO:',
-      '- Responde en primera persona: "Examino la puerta." "Le digo: ¿quién eres?"',
-      '- Máximo 1-2 oraciones cortas.',
-      '- NO uses nombres propios para referirte a ti mismo.',
-      '- NO narres en tercera persona.',
-      '- NO inventes información que el DM no mencionó.',
-      '- NO narres consecuencias. El DM decide qué pasa.',
+      'CÓMO RESPONDER:',
+      '1. Escribe lo que HACES (acción) + lo que DICES o PIENSAS (interpretación).',
+      '2. Primera persona siempre. Nunca escribas tu nombre.',
+      '3. Máximo 2 oraciones.',
       this.buildMemorySection(ctx.sessionMemory),
     ].filter(Boolean).join('\n');
 
     const messages: AiMessage[] = [{ role: 'system', content: system }];
+
+    messages.push({
+      role: 'user',
+      content: 'Llegas a una taberna oscura. Un hombre encapuchado te mira desde la esquina.',
+    });
+    messages.push({
+      role: 'assistant',
+      content: 'Me siento en la barra sin darle la espalda al encapuchado. "Cerveza", le digo al tabernero mientras lo vigilo de reojo.',
+    });
 
     const recent = ctx.conversationHistory.slice(-MAX_RECENT);
     for (const msg of recent) {
@@ -126,7 +133,7 @@ export class GeminiAutoPlayerAdapter {
 
     messages.push({
       role: 'user',
-      content: '¿Qué haces? Responde como: "Examino la puerta." o "Me acerco al guardia y le pregunto por el camino."',
+      content: '¿Qué haces? (acción + interpretación, primera persona, máximo 2 oraciones)',
     });
 
     return messages;

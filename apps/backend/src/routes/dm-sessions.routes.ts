@@ -87,9 +87,11 @@ const FALLBACK_ACTIONS = [
   (name: string) => `${name} revisa sus pertenencias y se prepara para lo que venga.`,
   (name: string) => `${name} intenta escuchar conversaciones cercanas o sonidos inusuales.`,
   (name: string) => `${name} busca una posición estratégica desde donde evaluar la situación.`,
-  (name: string) => `${name} se dirige hacia la persona más cercana para entablar conversación.`,
-  (name: string) => `${name} examina el terreno en busca de pistas o caminos ocultos.`,
-  (name: string) => `${name} aguarda un momento, evaluando si hay peligro antes de actuar.`,
+  (_name: string) => 'Me acerco a la persona más cercana. "Disculpa, ¿qué está pasando aquí?"',
+  (_name: string) => 'Examino el terreno con cuidado, buscando pistas o caminos ocultos.',
+  (_name: string) => 'Me detengo un momento y observo los alrededores. Algo no me da buena espina.',
+  (_name: string) => 'Reviso mi equipo y avanzo con cautela hacia lo que más llama mi atención.',
+  (_name: string) => 'Me agacho y examino el suelo. "Veamos qué nos dice este lugar."',
 ];
 
 function randomFallbackAction(characterName: string): string {
