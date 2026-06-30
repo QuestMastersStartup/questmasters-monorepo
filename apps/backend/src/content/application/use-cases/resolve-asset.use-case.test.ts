@@ -17,10 +17,19 @@ describe('ResolveAssetUseCase', () => {
         {
           choose: 2,
           type: 'proficiencies',
-          from: [
-            { index: 'skill-athletics', name: 'Athletics' },
-            { index: 'skill-acrobatics', name: 'Acrobatics' },
-          ],
+          from: {
+            option_set_type: 'options_array',
+            options: [
+              {
+                option_type: 'reference',
+                item: { index: 'skill-athletics', name: 'Athletics', url: '' },
+              },
+              {
+                option_type: 'reference',
+                item: { index: 'skill-acrobatics', name: 'Acrobatics', url: '' },
+              },
+            ],
+          },
         },
       ],
     },
