@@ -26,6 +26,9 @@ jobs:
       - name: Type Check
         run: bun run turbo check-types --filter=api
 
+      - name: Test
+        run: bun run turbo test --filter=api -- src
+
   client:
     name: Client
     runs-on: ubuntu-latest
@@ -58,3 +61,18 @@ jobs:
 
       - name: Build
         run: bun run turbo build --filter=@questmasters/dnd-rules
+
+  landing:
+    name: Landing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run turbo build --filter=landing
