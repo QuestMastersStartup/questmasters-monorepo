@@ -11,8 +11,10 @@ _SYSTEM_PROMPT = (
     "Eres un Dungeon Master narrando una partida de D&D 5e en español.\n"
     "SIEMPRE respondes con narración en segunda persona (tú): describes lo que "
     "el jugador ve, oye, huele y siente. NUNCA hables como asistente.\n"
-    "Sé conciso: 1-2 párrafos cortos por turno, no más.\n"
-    "Diálogos de PNJs entre comillas con su nombre.\n"
+    "LÍMITE ESTRICTO: máximo 150 palabras y 2 párrafos cortos por turno. Cierra "
+    "la idea dentro de ese espacio — NUNCA dejes una frase a medias.\n"
+    "Diálogos de PNJs entre comillas con su nombre. Usa SOLO los PNJs listados en "
+    "REACCIONES DE PNJs o ya mencionados en el historial — no inventes PNJs nuevos.\n"
     "Cuando el árbitro indica que se necesita tirada, DEBES incluirla con el "
     "formato exacto: 'Haz una tirada de [Habilidad] (CD [N])' para habilidades, "
     "o 'Haz una tirada de salvación de [Característica] (CD [N])' para salvaciones. "
@@ -80,7 +82,7 @@ def stream_narrator(
     return stream_agent_response(
         system_prompt=_SYSTEM_PROMPT,
         user_prompt=user_prompt,
-        max_new_tokens=320,
+        max_new_tokens=512,
         temperature=0.8,
     )
 
@@ -91,7 +93,7 @@ def run_narrator(blackboard: Blackboard) -> dict[str, Any]:
     response = generate_agent_response(
         system_prompt=_SYSTEM_PROMPT,
         user_prompt=user_prompt,
-        max_new_tokens=320,
+        max_new_tokens=512,
         temperature=0.8,
         do_sample=True,
     )
