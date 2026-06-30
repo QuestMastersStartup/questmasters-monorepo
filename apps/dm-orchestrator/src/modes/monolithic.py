@@ -14,6 +14,7 @@ from transformers import AutoModel, AutoTokenizer, TextIteratorStreamer
 
 from src.config import SESSIONS_DIR
 from src.model_loader import get_input_device, get_model, get_tokenizer, switch_adapter
+from src.postprocess import clean_narrator_response
 from src.schemas import (
     CharacterSnapshot,
     DeltaChunk,
@@ -180,10 +181,16 @@ _SYSTEM_BASE = (
     "- Mantén consistencia con PNJs y lugares ya establecidos.\n\n"
     "TIRADAS DE DADO:\n"
     "SIEMPRE pide tirada cuando el jugador intente algo con esfuerzo o riesgo.\n"
-    "FORMATO: \"Haz una tirada de [Habilidad] (CD [número])\"\n"
+    "MECÁNICAS SOPORTADAS: tiradas de habilidad y tiradas de salvación. SOLO estas dos.\n"
+    "FORMATO: \"Haz una tirada de [Habilidad] (CD [número])\" o "
+    "\"Haz una tirada de salvación de [Característica] (CD [número])\"\n"
     "NUNCA escribas \"(Sabiduría)\" o \"(Fuerza)\". Escribe \"(CD 12)\" con un número entre 8 y 20.\n"
+    "NUNCA pidas Iniciativa ni tirada de Ataque ni de Daño: no están implementadas. Si la acción "
+    "desencadena un enfrentamiento físico, resuélvelo narrativamente o con una tirada de habilidad "
+    "(Atletismo, Acrobacias, Sigilo, etc.).\n"
     "Después de pedir tirada, NO narres el resultado. ESPERA.\n"
-    "Ejemplos: Atletismo (CD 12), Percepción (CD 13), Sigilo (CD 14), Persuasión (CD 15), Investigación (CD 10).\n\n"
+    "Ejemplos: Atletismo (CD 12), Percepción (CD 13), Sigilo (CD 14), Persuasión (CD 15), "
+    "Investigación (CD 10), salvación de Destreza (CD 13), salvación de Constitución (CD 14).\n\n"
     "FORMATO DE RESPUESTA:\n"
     "Alterna entre estos formatos. NO uses el mismo dos veces seguidas:\n"
     "A) Pedir tirada y parar\n"
@@ -208,8 +215,11 @@ _OPENING_EXTRA = (
 _TURN_EXTRA = (
     "\nRESPONDE al jugador siguiendo EXACTAMENTE estas reglas:\n\n"
     "REGLA 1 — TIRADAS: Si la acción necesita esfuerzo físico, mental o social, pide tirada ANTES de narrar resultado.\n"
-    "FORMATO OBLIGATORIO: \"Haz una tirada de [Habilidad] (CD [número])\"\n"
+    "FORMATO OBLIGATORIO: \"Haz una tirada de [Habilidad] (CD [número])\" o "
+    "\"Haz una tirada de salvación de [Característica] (CD [número])\"\n"
     "NO uses \"(Sabiduría)\" ni \"(Fuerza)\". USA \"(CD 12)\" con un número.\n"
+    "NUNCA pidas Iniciativa ni tirada de Ataque: el combate se resuelve narrativamente o con "
+    "una tirada de habilidad.\n"
     "Después de pedir la tirada, PARA. No narres qué pasa. Espera el resultado.\n\n"
     "REGLA 2 — NO termines con pregunta si el turno anterior terminó con pregunta.\n\n"
     "REGLA 3 — PNJs hablan con diálogo directo entre comillas.\n\n"
@@ -304,6 +314,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
         full_response += chunk.content
         yield chunk
 
+    full_response = clean_narrator_response(full_response)
     _insert_turn(request.session_id, player_input, full_response, request.characters)
 
     turn_num = _turn_counters.get(request.session_id, 0)
