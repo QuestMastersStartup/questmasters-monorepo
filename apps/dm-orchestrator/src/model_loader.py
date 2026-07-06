@@ -57,7 +57,11 @@ def _load_model() -> tuple[PreTrainedModel, PreTrainedTokenizerBase]:
         bnb_4bit_quant_type="nf4",
     )
 
-    if free_vram_gb >= 12:
+    # google/gemma-4-26B-A4B-it tiene 26B parámetros totales (MoE: solo 4B activos
+    # por token, pero los pesos de todos los expertos igual deben caber en VRAM).
+    # En float16 eso son ~52GB solo de pesos, así que hace falta bastante más de
+    # 52GB libres para dejar margen a activaciones/KV cache; si no, usar 4-bit NF4.
+    if free_vram_gb >= 60:
         log.info("[1/2] VRAM suficiente (%.1fGB) — float16 en GPU", free_vram_gb)
         model = AutoModelForCausalLM.from_pretrained(
             str(BASE_MODEL_LOCAL),
