@@ -933,6 +933,12 @@ export const DmSession: React.FC = () => {
               <h1 className="text-lg font-bold text-white truncate">{session.title}</h1>
               <ArchitectureBadge type={session.architectureType} />
               <StatusBadge status={session.status} />
+              <span
+                title="Turnos totales de la sesión"
+                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700 uppercase tracking-wide shrink-0"
+              >
+                {session.turns.length} {session.turns.length === 1 ? "turno" : "turnos"}
+              </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {session.turns.length > 0 && (
