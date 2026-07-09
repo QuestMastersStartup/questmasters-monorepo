@@ -631,6 +631,9 @@ export const DmSession: React.FC = () => {
   const simTurnsLeftRef = useRef(0);
   const [simTurnsLeft, setSimTurnsLeft] = useState(0);
   const [simTurnsTotal, setSimTurnsTotal] = useState(0);
+  const simConsecutiveFailuresRef = useRef(0);
+  const MAX_SIM_CONSECUTIVE_FAILURES = 3;
+  const [simRetryTick, setSimRetryTick] = useState(0);
   const [initializing, setInitializing] = useState(false);
   const [incompleteTurn, setIncompleteTurn] = useState<string | null>(null);
   const [pendingCheckOptions, setPendingCheckOptions] = useState<SkillCheckRequest[]>([]);
@@ -647,14 +650,19 @@ export const DmSession: React.FC = () => {
     }
   }, [id, isAdmin]);
 
+  /** Devuelve { ok: false } si el turno no se completó (error a mitad de stream,
+   *  chunk `error`, o excepción que no sea un abort manual) — así el llamador
+   *  (por ejemplo el loop de auto-simulación) puede detectar el fallo y reintentar,
+   *  cosa que antes era invisible porque esta función nunca relanzaba el error. */
   const consumeStream = useCallback(
-    async (stream: AsyncGenerator<DmModelChunk>, playerInput: string | null, isAuto = false) => {
+    async (stream: AsyncGenerator<DmModelChunk>, playerInput: string | null, isAuto = false): Promise<{ ok: boolean }> => {
       setPendingPlayerInput(playerInput);
       setPendingIsAuto(isAuto);
       setPendingCheckOptions([]);
       setStreamStartedAt(Date.now());
       setStreamingText("");
       let aborted = false;
+      let failed = false;
       let accumulated = "";
       try {
         for await (const chunk of stream) {
@@ -666,6 +674,7 @@ export const DmSession: React.FC = () => {
             accumulated += chunk.delta;
             setStreamingText((prev) => (prev ?? "") + chunk.delta);
           } else if (chunk.type === "error") {
+            failed = true;
             if (chunk.error === "MODEL_OFFLINE") {
               setError("MODEL_OFFLINE");
             } else {
@@ -681,6 +690,7 @@ export const DmSession: React.FC = () => {
           aborted = true;
           await refresh();
         } else {
+          failed = true;
           setError("Se perdió la conexión con el DM");
         }
       } finally {
@@ -694,6 +704,7 @@ export const DmSession: React.FC = () => {
           setError(null);
         }
       }
+      return { ok: !aborted && !failed };
     },
     [refresh],
   );
@@ -757,7 +768,12 @@ export const DmSession: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [session?.turns.length, streamingText]);
 
-  // Auto-simulación: dispara un turno automático cuando está activa y no hay streaming en curso
+  // Auto-simulación: dispara un turno automático cuando está activa y no hay streaming en curso.
+  // Si el auto-jugador falla (mid-stream o al abrir el stream), reintenta con los turnos que
+  // todavía faltaban del pedido original (simTurnsLeftRef solo baja en un turno EXITOSO, así que
+  // un fallo no lo toca — el reintento retoma exactamente donde se cortó, sin perder ni duplicar
+  // turnos, porque el backend solo persiste el turno cuando termina bien). Si falla
+  // MAX_SIM_CONSECUTIVE_FAILURES veces seguidas, corta el loop entero.
   useEffect(() => {
     if (!simulationActive || isStreaming || !id || !session || session.status !== "active") return;
 
@@ -765,6 +781,7 @@ export const DmSession: React.FC = () => {
       simulationActiveRef.current = false;
       setSimulationActive(false);
       setSimTurnsLeft(0);
+      simConsecutiveFailuresRef.current = 0;
       return;
     }
 
@@ -777,15 +794,33 @@ export const DmSession: React.FC = () => {
       try {
         const stream = await simulateTurn(id, controller.signal);
         if (cancelled || !simulationActiveRef.current) return;
-        await consumeStream(stream, null, true);
+        const result = await consumeStream(stream, null, true);
+        if (!result.ok) throw new Error("El turno automático no se completó");
+        simConsecutiveFailuresRef.current = 0;
         simTurnsLeftRef.current -= 1;
         setSimTurnsLeft(simTurnsLeftRef.current);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Error en simulación automática");
+        if (cancelled) return;
+        simConsecutiveFailuresRef.current += 1;
+        const remaining = simTurnsLeftRef.current;
+        const message = err instanceof Error ? err.message : "Error en simulación automática";
+        if (simConsecutiveFailuresRef.current >= MAX_SIM_CONSECUTIVE_FAILURES) {
+          setError(
+            `${message} — simulación detenida tras ${MAX_SIM_CONSECUTIVE_FAILURES} fallos seguidos ` +
+              `(quedaban ${remaining} turno${remaining === 1 ? "" : "s"} por simular)`,
+          );
           simulationActiveRef.current = false;
           setSimulationActive(false);
           setSimTurnsLeft(0);
+          simTurnsLeftRef.current = 0;
+          setSimTurnsTotal(0);
+          simConsecutiveFailuresRef.current = 0;
+        } else {
+          setError(
+            `${message} — reintentando (${simConsecutiveFailuresRef.current}/${MAX_SIM_CONSECUTIVE_FAILURES}) ` +
+              `con ${remaining} turno${remaining === 1 ? "" : "s"} restante${remaining === 1 ? "" : "s"}...`,
+          );
+          setSimRetryTick((t) => t + 1);
         }
       }
     }, 500);
@@ -794,13 +829,14 @@ export const DmSession: React.FC = () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [simulationActive, isStreaming, id, session?.status, consumeStream]);
+  }, [simulationActive, isStreaming, id, session?.status, consumeStream, simRetryTick]);
 
   const startSimulation = (turns: number) => {
     if (!Number.isFinite(turns) || turns < 1) return;
     simTurnsLeftRef.current = turns;
     setSimTurnsLeft(turns);
     setSimTurnsTotal(turns);
+    simConsecutiveFailuresRef.current = 0;
     simulationActiveRef.current = true;
     setSimulationActive(true);
     setShowSimConfig(false);
@@ -817,6 +853,7 @@ export const DmSession: React.FC = () => {
     setSimTurnsLeft(0);
     simTurnsLeftRef.current = 0;
     setSimTurnsTotal(0);
+    simConsecutiveFailuresRef.current = 0;
   };
 
   const handleSend = async (overrideInput?: string) => {
