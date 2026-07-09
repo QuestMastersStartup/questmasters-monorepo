@@ -173,7 +173,8 @@ def _is_opening_turn(request: DmModelRequest) -> bool:
 _SYSTEM_BASE = (
     "Eres un Dungeon Master de D&D 5e. Responde en español.\n\n"
     "REGLAS:\n"
-    "- Máximo 3 párrafos cortos.\n"
+    "- LÍMITE ESTRICTO: máximo 150 palabras y 3 párrafos cortos en total. Cierra "
+    "la idea dentro de ese espacio — NUNCA dejes una frase a medias.\n"
     "- Oraciones cortas, máximo 20 palabras.\n"
     "- Usa \"tú\" para el jugador.\n"
     "- Solo los personajes listados abajo. NO inventes más PJs.\n"
@@ -264,7 +265,7 @@ def _build_messages(request: DmModelRequest, rag_context: str) -> list[dict[str,
 
 def _stream_generation(
     messages: list[dict[str, str]],
-    max_new_tokens: int = 300,
+    max_new_tokens: int = 480,
 ) -> Generator[DeltaChunk, None, str]:
     switch_adapter("monolithic")
     model = get_model()
@@ -308,7 +309,7 @@ def run(request: DmModelRequest) -> Generator[SseChunk, None, None]:
     rag_context = _retrieve_context(request.session_id, player_input)
     messages = _build_messages(request, rag_context)
 
-    token_limit = 400 if opening else 300
+    token_limit = 640 if opening else 480
     full_response = ""
     for chunk in _stream_generation(messages, max_new_tokens=token_limit):
         full_response += chunk.content

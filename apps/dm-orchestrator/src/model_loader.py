@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import os
 import time
-from pathlib import Path
 from threading import Lock
 
 import torch
@@ -16,8 +15,6 @@ log = logging.getLogger(__name__)
 if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN environment variable is not set")
 
-MERGED_DIR = Path.home() / ".cache" / "questmasters" / "merged_model"
-
 _model: PreTrainedModel | None = None
 _tokenizer: PreTrainedTokenizerBase | None = None
 _input_device: torch.device | None = None
@@ -28,15 +25,15 @@ def _load_model() -> tuple[PreTrainedModel, PreTrainedTokenizerBase]:
     global _input_device
     t_start = time.monotonic()
 
-    if not MERGED_DIR.exists() or not any(MERGED_DIR.iterdir()):
+    if not BASE_MODEL_LOCAL.exists() or not any(BASE_MODEL_LOCAL.iterdir()):
         raise RuntimeError(
-            f"Modelo mergeado no encontrado en {MERGED_DIR}. "
-            "Ejecuta primero: docker compose run --rm dm-orchestrator python scripts/merge_lora.py"
+            f"Modelo base no encontrado en {BASE_MODEL_LOCAL}. "
+            "Ejecuta primero: python scripts/download_base_model.py"
         )
 
     log.info("=" * 60)
-    log.info("[init] Cargando modelo mergeado | modo=%s", MODE)
-    log.info("[init] Desde: %s", MERGED_DIR)
+    log.info("[init] Cargando modelo base (sin LoRA) | modo=%s", MODE)
+    log.info("[init] Desde: %s", BASE_MODEL_LOCAL)
     log.info("=" * 60)
 
     if torch.cuda.is_available():
@@ -60,17 +57,21 @@ def _load_model() -> tuple[PreTrainedModel, PreTrainedTokenizerBase]:
         bnb_4bit_quant_type="nf4",
     )
 
-    if free_vram_gb >= 12:
+    # google/gemma-4-26B-A4B-it tiene 26B parámetros totales (MoE: solo 4B activos
+    # por token, pero los pesos de todos los expertos igual deben caber en VRAM).
+    # En float16 eso son ~52GB solo de pesos, así que hace falta bastante más de
+    # 52GB libres para dejar margen a activaciones/KV cache; si no, usar 4-bit NF4.
+    if free_vram_gb >= 60:
         log.info("[1/2] VRAM suficiente (%.1fGB) — float16 en GPU", free_vram_gb)
         model = AutoModelForCausalLM.from_pretrained(
-            str(MERGED_DIR),
+            str(BASE_MODEL_LOCAL),
             torch_dtype=torch.float16,
             device_map={"": 0},
         )
     else:
         log.info("[1/2] VRAM limitada (%.1fGB) — 4-bit NF4 en GPU", free_vram_gb)
         model = AutoModelForCausalLM.from_pretrained(
-            str(MERGED_DIR),
+            str(BASE_MODEL_LOCAL),
             quantization_config=bnb_config,
             device_map={"": 0},
         )
@@ -83,7 +84,7 @@ def _load_model() -> tuple[PreTrainedModel, PreTrainedTokenizerBase]:
         log.info("[1/2] VRAM libre tras carga: %.1fGB", free_vram / 1024 ** 3)
 
     log.info("[2/2] Cargando tokenizer ...")
-    tokenizer = AutoTokenizer.from_pretrained(str(MERGED_DIR))
+    tokenizer = AutoTokenizer.from_pretrained(str(BASE_MODEL_LOCAL))
     _log_elapsed(t_start, "Tokenizer cargado")
 
     log.info("=" * 60)
