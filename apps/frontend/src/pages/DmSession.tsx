@@ -400,6 +400,91 @@ function DmBubble({
 
 // ─── Exportar chat como Markdown ─────────────────────────────────────
 
+/** Misma lógica que CharacterPanel (arriba), portada a texto Markdown en vez de JSX. */
+function formatCharacterSheetAsMarkdown(character: CharacterSnapshot): string {
+  const lines: string[] = [];
+
+  lines.push(`### ${character.name}`);
+  lines.push("");
+  const subtitle = `${character.race} ${character.class} Nv.${character.level}${
+    character.subclass ? ` — ${character.subclass}` : ""
+  }`;
+  lines.push(`*${subtitle}*`);
+  if (character.background) lines.push(`Trasfondo: ${character.background}`);
+  lines.push("");
+
+  if (character.stats) {
+    const profBonus = calculateProficiencyBonus(character.level);
+    const badges = [
+      character.jackOfAllTrades && "Jack of All Trades",
+      character.reliableTalent && "Reliable Talent",
+      `Prof +${profBonus}`,
+    ].filter(Boolean);
+    lines.push(`**${badges.join(" · ")}**`);
+    lines.push("");
+
+    lines.push("**Atributos**");
+    lines.push("");
+    const abilities = Object.entries(ABILITY_ABBREVIATIONS) as [string, string][];
+    lines.push(`| ${abilities.map(([, abbr]) => abbr).join(" | ")} |`);
+    lines.push(`|${abilities.map(() => "---").join("|")}|`);
+    lines.push(
+      `| ${abilities
+        .map(([key]) => {
+          const score = character.stats![key as keyof typeof character.stats];
+          const mod = calculateModifier(score);
+          return `${score} (${mod >= 0 ? "+" : ""}${mod})`;
+        })
+        .join(" | ")} |`,
+    );
+    lines.push("");
+
+    const profs = character.skillProficiencies ?? [];
+    const expertise = character.expertiseSkills ?? [];
+    lines.push("**Habilidades**");
+    lines.push("");
+    lines.push("| Habilidad | Modificador | Detalle |");
+    lines.push("|---|---|---|");
+    for (const skill of ALL_SKILLS) {
+      const abilityMod = calculateModifier(character.stats[skill.ability]);
+      const isProficient = matchSkill(skill.nameES, profs) || matchSkill(skill.nameEN, profs);
+      const isExpert = matchSkill(skill.nameES, expertise) || matchSkill(skill.nameEN, expertise);
+      let totalMod = abilityMod;
+      let detail = "—";
+      if (isExpert) {
+        totalMod += profBonus * 2;
+        detail = "expertise";
+      } else if (isProficient) {
+        totalMod += profBonus;
+        detail = "proficiente";
+      } else if (character.jackOfAllTrades) {
+        totalMod += Math.floor(profBonus / 2);
+        detail = "JoAT";
+      }
+      const sign = totalMod >= 0 ? "+" : "";
+      const abbr = ABILITY_ABBREVIATIONS[skill.ability];
+      lines.push(`| ${skill.nameES} (${abbr}) | ${sign}${totalMod} | ${detail} |`);
+    }
+    lines.push("");
+  } else {
+    lines.push("*Sin ficha de atributos disponible para este personaje.*");
+    lines.push("");
+  }
+
+  if (character.alignment) lines.push(`**Alineamiento:** ${character.alignment}`);
+  if (character.personalityTraits) lines.push(`**Rasgos de personalidad:** ${character.personalityTraits}`);
+  if (character.alignment || character.personalityTraits) lines.push("");
+
+  if (character.backstory) {
+    lines.push("**Backstory:**");
+    lines.push("");
+    lines.push(`> ${character.backstory.replace(/\n/g, "\n> ")}`);
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
 function formatSessionAsMarkdown(session: DmSessionDetail): string {
   const date = new Date(session.createdAt).toLocaleDateString("es-ES", {
     year: "numeric",
@@ -409,9 +494,7 @@ function formatSessionAsMarkdown(session: DmSessionDetail): string {
     minute: "2-digit",
   });
 
-  const characterList = session.characters
-    .map((ch) => `- **${ch.name}** — ${ch.race} ${ch.class} (Nivel ${ch.level})`)
-    .join("\n");
+  const characterSheets = session.characters.map(formatCharacterSheetAsMarkdown).join("\n---\n\n");
 
   const lines: string[] = [
     `# ${session.title}`,
@@ -423,7 +506,7 @@ function formatSessionAsMarkdown(session: DmSessionDetail): string {
     "",
     "## Personajes",
     "",
-    characterList,
+    characterSheets,
     "",
     "---",
     "",
