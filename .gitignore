@@ -26,6 +26,8 @@ apps/dm-orchestrator/loras_dataset/
 
 # Runtime artifacts
 out.txt
+terminal_unitarias_*.txt
+terminal_caja_negra.txt
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -33,7 +35,6 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Generated / external tool output
-graphify-out/cache/
 .superpowers
 .codegraph/
 testsprite_tests/tmp/

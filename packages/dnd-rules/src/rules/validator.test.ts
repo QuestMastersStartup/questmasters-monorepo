@@ -67,4 +67,25 @@ describe("validatePrerequisites", () => {
     // And still keeps the error explanation
     expect(result.errors).toHaveLength(1);
   });
+
+  it("should pass a 'level' prerequisite when the character meets the minimum level", () => {
+    const level5Prereq: Prerequisite = { type: "level", min_level: 5 };
+    const result = validatePrerequisites([level5Prereq], heroContext); // heroContext is level 5
+    expect(result.success).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("should fail a 'level' prerequisite when the character is below the minimum level", () => {
+    const level5Prereq: Prerequisite = { type: "level", min_level: 5 };
+    const result = validatePrerequisites([level5Prereq], weakContext); // weakContext is level 1
+    expect(result.success).toBe(false);
+    expect(result.errors).toContain("Requires Level 5");
+  });
+
+  it("should pass silently on a prerequisite type not handled by the switch (e.g. 'race')", () => {
+    const unknownPrereq: Prerequisite = { type: "race" };
+    const result = validatePrerequisites([unknownPrereq], weakContext);
+    expect(result.success).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
 });

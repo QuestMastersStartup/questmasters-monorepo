@@ -73,4 +73,60 @@ describe("resolveChoice", () => {
       "Invalid selection: skill-flying is not a valid option.",
     );
   });
+
+  it("should warn (not fail) when fewer selections than allowed are made", () => {
+    const selections = ["skill-acrobatics"]; // only 1 of 2 allowed
+    const result = resolveChoice(skillChoice, selections);
+
+    expect(result.features).toHaveLength(1);
+    expect(result.warnings).toContain("Selected only 1/2 items.");
+  });
+
+  it("should resolve a counted_reference option via its 'of' item", () => {
+    const torchesOptions: OptionSet = {
+      option_set_type: "options_array",
+      options: [
+        {
+          option_type: "counted_reference",
+          count: 5,
+          of: { index: "torch", name: "Torch", url: "/api/eq/torch" },
+        },
+      ],
+    };
+    const torchesChoice: Choice = {
+      choose: 1,
+      type: "equipment",
+      from: torchesOptions,
+    };
+
+    const result = resolveChoice(torchesChoice, ["torch"]);
+
+    expect(result.features).toHaveLength(1);
+    expect(result.features[0].name).toBe("Torch");
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("should resolve nothing for an option_set_type it can't enumerate (e.g. equipment_category)", () => {
+    const categoryOptions: OptionSet = {
+      option_set_type: "equipment_category",
+      equipment_category: {
+        index: "simple-weapons",
+        name: "Simple Weapons",
+        url: "/api/ec/simple-weapons",
+      },
+    };
+    const categoryChoice: Choice = {
+      choose: 1,
+      type: "equipment",
+      from: categoryOptions,
+    };
+
+    const result = resolveChoice(categoryChoice, ["dagger"]);
+
+    // getAllOptions() can't enumerate this set type, so every selection is "invalid"
+    expect(result.features).toHaveLength(0);
+    expect(result.warnings).toContain(
+      "Invalid selection: dagger is not a valid option.",
+    );
+  });
 });

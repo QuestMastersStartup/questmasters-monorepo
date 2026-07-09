@@ -1,12 +1,21 @@
-## graphify
+## Grafo de código
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+Este proyecto usa dos MCP de grafo de código (reemplazan a graphify, retirado). Ambos son gratuitos — sin costo de tokens LLM, sin toolchain que mantener — y no indexan markdown/docs, solo código.
 
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- **codebase-memory-mcp**: arquitectura general, clusters y hotspots. Usar `get_architecture` para visión global (packages, rutas, hotspots, capas, clusters — equivalente a los "god nodes" que daba graphify), `search_graph`/`query_graph` para preguntas de código, `trace_path` para relación entre dos símbolos. Reindexar tras cambios grandes con `index_repository` (~0.5s, sin costo). Cada dev reindexa localmente al clonar — no se comitea el artefacto compartido `.codebase-memory/graph.db.zst` (es opcional y reindexar es casi gratis, no vale la pena el merge overhead del binario).
+- **codegraph** (`.codegraph/`): ya corre en segundo plano vía file watcher, se auto-sincroniza solo — nunca hace falta re-indexar manualmente. Usar `codegraph_explore`/`codegraph_impact`/`codegraph_callers`/`codegraph_callees` para "si cambio esto, qué se rompe" (blast radius) y búsqueda rápida de símbolos.
+
+Para preguntas sobre archivos `.md`/`.txt` (no indexados por ninguno de los dos), leer el archivo directamente.
+
+## Convención de shell
+
+El equipo trabaja en Windows con PowerShell, no bash. Cualquier comando que se le dé al usuario para ejecutar manualmente debe estar en PowerShell (no bash/sh). Claude puede seguir usando bash internamente para sus propias tool calls.
+
+## Política de commits y builds
+
+- Nunca commitear si no se pide explícitamente — ni siquiera para arreglos pequeños o "obvios". Excepción: cuando el propio plan de trabajo aprobado por el usuario indica un commit por paso (ej. ejecución de un plan con subagent-driven-development) — ahí el commit ya fue pedido al aprobar el plan.
+- Nunca agregar `Co-Authored-By` ni firmas similares en los mensajes de commit.
+- Antes de dar por terminado cualquier cambio de código, correr el build del app afectado (`bun run build`, o al menos `bun run check-types`) para detectar errores de tipos/compilación antes de reportar éxito.
 
 ## Proyecto QuestMasters
 
@@ -79,6 +88,6 @@ QuestMasters es un VTT (Virtual Tabletop) web-based. El DM humano es el protagon
 
 ### Contexto del dominio
 
-Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`, `dm-session`. Antes de añadir un módulo nuevo, verificar si ya existe con `graphify query "<concepto>"`. Las entidades god node son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
+Los módulos implementados son: `content` (packs + assets), `campaigns`, `characters`, `users`, `dm-session`. Antes de añadir un módulo nuevo, verificar si ya existe con `search_graph` (codebase-memory-mcp) o `codegraph_search`. Las entidades hotspot (mayor fan-in) son: `UUID`, `Result`, `ContentPack`, `Asset`, `UserProfile`, `Character`, `Campaign`, `Slug`.
 
 El módulo `dm-session` conecta con `apps/dm-orchestrator/` vía `StubDmModelAdapter` (dev) o `RunpodDmModelAdapter` (prod) — seleccionado con `DM_USE_RUNPOD` en `.dev.vars`. El modelo base es `google/gemma-4-26B-A4B-it` (sin LoRA, base puro). Para dev local se usa Google Colab con ngrok.

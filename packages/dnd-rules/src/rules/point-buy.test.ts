@@ -5,6 +5,7 @@ import {
   calculateModifier,
   calculateHitPoints,
   calculateProficiencyBonus,
+  getXpRangeForLevel,
   POINT_BUY_BUDGET,
   POINT_BUY_MIN_SCORE,
   POINT_BUY_MAX_SCORE,
@@ -312,6 +313,27 @@ describe("calculateProficiencyBonus", () => {
     expect(calculateProficiencyBonus(18)).toBe(6);
     expect(calculateProficiencyBonus(19)).toBe(6);
     expect(calculateProficiencyBonus(20)).toBe(6);
+  });
+});
+
+// ─── getXpRangeForLevel ─────────────────────────────────────────────────────
+
+describe("getXpRangeForLevel", () => {
+  it("should return [0, 299] for level 1 (floor of the table)", () => {
+    expect(getXpRangeForLevel(1)).toEqual({ min: 0, max: 299 });
+  });
+
+  it("should return a mid-table range bounded by the next level's threshold", () => {
+    // Level 5 floor = 6500; level 6 floor = 14000 → max = 13999
+    expect(getXpRangeForLevel(5)).toEqual({ min: 6500, max: 13999 });
+  });
+
+  it("should return [355000, 355000] for the level 20 cap (no next level)", () => {
+    expect(getXpRangeForLevel(20)).toEqual({ min: 355000, max: 355000 });
+  });
+
+  it("should default min to 0 for a level outside the table", () => {
+    expect(getXpRangeForLevel(21)).toEqual({ min: 0, max: 355000 });
   });
 });
 
