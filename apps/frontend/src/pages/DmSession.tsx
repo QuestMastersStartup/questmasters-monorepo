@@ -627,6 +627,7 @@ export const DmSession: React.FC = () => {
   const [simulationActive, setSimulationActive] = useState(false);
   const [pendingIsAuto, setPendingIsAuto] = useState(false);
   const [showSimConfig, setShowSimConfig] = useState(false);
+  const [customSimTurns, setCustomSimTurns] = useState("");
   const simTurnsLeftRef = useRef(0);
   const [simTurnsLeft, setSimTurnsLeft] = useState(0);
   const [simTurnsTotal, setSimTurnsTotal] = useState(0);
@@ -796,12 +797,18 @@ export const DmSession: React.FC = () => {
   }, [simulationActive, isStreaming, id, session?.status, consumeStream]);
 
   const startSimulation = (turns: number) => {
+    if (!Number.isFinite(turns) || turns < 1) return;
     simTurnsLeftRef.current = turns;
     setSimTurnsLeft(turns);
     setSimTurnsTotal(turns);
     simulationActiveRef.current = true;
     setSimulationActive(true);
     setShowSimConfig(false);
+    setCustomSimTurns("");
+  };
+
+  const startCustomSimulation = () => {
+    startSimulation(Math.floor(Number(customSimTurns)));
   };
 
   const stopSimulation = () => {
@@ -966,6 +973,28 @@ export const DmSession: React.FC = () => {
                               {n}
                             </button>
                           ))}
+                        </div>
+                        <p className="text-xs font-semibold text-slate-300 mb-1.5">O una cantidad específica</p>
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <input
+                            type="number"
+                            min={1}
+                            step={1}
+                            value={customSimTurns}
+                            onChange={(e) => setCustomSimTurns(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") startCustomSimulation();
+                            }}
+                            placeholder="Ej. 25"
+                            className="w-full bg-slate-900/80 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                          />
+                          <button
+                            onClick={startCustomSimulation}
+                            disabled={!Number.isFinite(Number(customSimTurns)) || Math.floor(Number(customSimTurns)) < 1}
+                            className="shrink-0 px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 hover:bg-amber-600 text-slate-200 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-slate-700"
+                          >
+                            Ir
+                          </button>
                         </div>
                         <button
                           onClick={() => setShowSimConfig(false)}
