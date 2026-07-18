@@ -684,7 +684,14 @@ export const DmSession: React.FC = () => {
         }
         await refresh();
         const options = parseSkillCheckOptions(accumulated);
-        if (options.length > 0) setPendingCheckOptions(options);
+        if (options.length > 0) {
+          setPendingCheckOptions(options);
+        } else if (/tirada/i.test(accumulated)) {
+          // El DM parece pedir una tirada pero no se reconoció ningún formato.
+          // Se loguea el texto crudo (bytes reales) para diagnosticar variantes
+          // que un reporte de bug transcrito a mano no puede capturar.
+          console.warn("[dice-roll] posible tirada no detectada:", JSON.stringify(accumulated));
+        }
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           aborted = true;

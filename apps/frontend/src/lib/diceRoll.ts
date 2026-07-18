@@ -116,7 +116,13 @@ export interface RollResult {
 }
 
 function stripMarkdown(s: string): string {
-  return s.replace(/\*{1,2}/g, "").replace(/_{1,2}/g, "").replace(/`/g, "");
+  return s
+    .normalize("NFC") // Gemma a veces emite acentos en forma NFD (o + acento combinante)
+    .replace(/[\u00A0\u2000-\u200A\u202F\u205F]/g, " ") // NBSP y otros espacios unicode -> espacio normal
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // caracteres de ancho cero
+    .replace(/\*{1,2}/g, "")
+    .replace(/_{1,2}/g, "")
+    .replace(/`/g, "");
 }
 
 function resolveSkills(raw: string): { skillName: string; ability: AbilityName }[] {

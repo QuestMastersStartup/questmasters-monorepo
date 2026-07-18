@@ -8,6 +8,7 @@ import { DmSessionError } from '../dm-session/application/errors';
 import type { DmModelChunk } from '../dm-session/domain/ports/dm-model.provider';
 import type { GroqAutoPlayerAdapter, SessionMemory } from '../dm-session/infrastructure/adapters/groq-auto-player.adapter';
 import { parseSkillCheck, autoRollSkillCheck } from '../dm-session/infrastructure/utils/dice-roll';
+import { logger } from '../shared/infrastructure/logger';
 
 function errorToStatus(error: DmSessionError): number {
   switch (error) {
@@ -258,6 +259,16 @@ export function dmSessionsRoutes(container: Container, autoPlayer: GroqAutoPlaye
 
     const lastDmResponse = turns.length > 0 ? turns[turns.length - 1].dmResponse : '';
     const skillCheck = parseSkillCheck(lastDmResponse);
+
+    if (!skillCheck && /tirada/i.test(lastDmResponse)) {
+      // El DM parece estar pidiendo una tirada pero el parser no la reconoció.
+      // Loguear el texto crudo (con sus bytes reales) para diagnosticar variantes
+      // que un reporte de bug transcrito a mano no puede capturar (unicode, espacios invisibles, etc).
+      logger.warn('auto-turn: posible tirada no detectada por parseSkillCheck', {
+        sessionId: id,
+        rawText: lastDmResponse,
+      });
+    }
 
     const existingMemory: SessionMemory = {
       npcs: (session.memorySnapshot as Record<string, unknown>)?.npcs as string[] ?? [],
