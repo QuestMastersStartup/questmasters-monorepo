@@ -35,6 +35,16 @@ describe("parseSkillCheck", () => {
     });
   });
 
+  it("caso límite: reconoce una salvación con mayúscula y sin cláusula final (punto justo tras la CD)", () => {
+    const check = parseSkillCheck("Haz una tirada de Salvación de Destreza (CD 17).");
+    expect(check).toEqual({
+      skillName: "Salvación de Destreza",
+      ability: "dexterity",
+      dc: 17,
+      isSavingThrow: true,
+    });
+  });
+
   it("caso límite: reconoce una salvación con cláusula final tras la CD (mayúscula en 'Salvación')", () => {
     const check = parseSkillCheck(
       "Haz una tirada de Salvación de Destreza (CD 13) para esquivar el primer impacto lateral.",
@@ -124,6 +134,33 @@ describe("rollSkillCheck", () => {
 
     expect(roll.d20).toBe(10); // el 2 original se sube a 10
     expect(roll.isReliable).toBe(true);
+  });
+
+  it("caso estadístico: 200 tiradas de d20 no muestran sesgo hacia ningún valor (chi-cuadrado)", () => {
+    // Sin mock de Math.random: usa el RNG real para detectar un seed fijo,
+    // un valor cacheado, o cualquier otra fuente de sesgo real.
+    const N = 200;
+    const counts = new Array(21).fill(0); // índices 1..20
+
+    for (let i = 0; i < N; i++) {
+      const roll = rollSkillCheck("dexterity", ctx, "sigilo");
+      counts[roll.d20] += 1;
+    }
+
+    const expected = N / 20;
+    let chiSquare = 0;
+    for (let value = 1; value <= 20; value++) {
+      chiSquare += (counts[value] - expected) ** 2 / expected;
+    }
+
+    // Valor crítico de chi-cuadrado para df=19 a alpha=0.001 es ~43.8.
+    // Usamos ese umbral (en vez de alpha=0.05 ~30.1) para que el test no sea flaky
+    // por variación estadística normal, pero siga detectando un sesgo real
+    // (un RNG con seed fija o un valor cacheado dispara un chi2 muchísimo mayor).
+    expect(chiSquare).toBeLessThan(45);
+
+    // Ningún valor individual debería dominar de forma anómala (esperado: 10/200 = 5%).
+    expect(Math.max(...counts)).toBeLessThan(N * 0.25);
   });
 
   it("caso inválido: salvación no aplica bono de competencia aunque sea proficiente en la habilidad", () => {
