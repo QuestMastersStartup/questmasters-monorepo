@@ -106,3 +106,6 @@ context/
 # Wrangler
 .wrangler/
 /extras
+
+# Capturas de pantalla del manual de usuario (solo insumo local, nunca al repo)
+apps/frontend/screenshots-manual/

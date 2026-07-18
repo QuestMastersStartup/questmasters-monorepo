@@ -23,6 +23,18 @@ describe("parseSkillCheck", () => {
     });
   });
 
+  it("caso límite: reconoce una salvación aunque el DM la envuelva en markdown", () => {
+    const check = parseSkillCheck(
+      "Haz una **tirada de salvación de Destreza** (CD 14) para esquivar la trampa.",
+    );
+    expect(check).toEqual({
+      skillName: "Salvación de Destreza",
+      ability: "dexterity",
+      dc: 14,
+      isSavingThrow: true,
+    });
+  });
+
   it("caso inválido: texto sin ninguna tirada devuelve null", () => {
     expect(parseSkillCheck("Caminas por el pasillo en silencio.")).toBeNull();
   });

@@ -126,10 +126,12 @@ function parseSavingThrow(dmText: string): SkillCheckRequest | null {
 }
 
 export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
-  const savingThrow = parseSavingThrow(dmText);
+  const text = stripMarkdown(dmText);
+
+  const savingThrow = parseSavingThrow(text);
   if (savingThrow) return savingThrow;
 
-  const matchCD = dmText.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
+  const matchCD = text.match(/tirada de ([^(]+)\(CD\s*(\d+)\)/i);
   if (matchCD) {
     const dc = parseInt(matchCD[2], 10);
     const resolved = resolveSkill(matchCD[1]);
@@ -139,7 +141,7 @@ export function parseSkillCheck(dmText: string): SkillCheckRequest | null {
     }
   }
 
-  const matchAbility = dmText.match(/tirada de ([^(]+)\((?:Sabiduría|Fuerza|Destreza|Constitución|Inteligencia|Carisma)\)/i);
+  const matchAbility = text.match(/tirada de ([^(]+)\((?:Sabiduría|Fuerza|Destreza|Constitución|Inteligencia|Carisma)\)/i);
   if (matchAbility) {
     const resolved = resolveSkill(matchAbility[1]);
     if (resolved) return { ...resolved, dc: 12 };
