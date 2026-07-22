@@ -6,7 +6,7 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "rootDir": "./src",
     "declaration": false,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,8 +14,8 @@
     "resolveJsonModule": true,
     "types": ["@cloudflare/workers-types"],
     "paths": {
-      "@shared/*": ["src/shared/*"],
-      "@content/*": ["src/content/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@content/*": ["./src/content/*"]
     }
   },
   "include": ["src/**/*.ts"],
